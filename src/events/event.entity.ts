@@ -19,4 +19,14 @@ export class EventEntity {
 
     @Column()
     isActive: boolean;
+
+    @Column({
+        type: 'text',
+        nullable: true,
+        transformer: {
+          to: (value: string[]) => JSON.stringify(value),
+          from: (value: string) => JSON.parse(value),
+        },
+    })
+    images: string[];
 }

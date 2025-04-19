@@ -1,14 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { EventsService } from './events.service';
 import CreateEventDto from './dto/create-event.dto';
 import UpdateEventDto from './dto/update-event-dto';
+import FileUpload from 'src/decorators/file-upload.decorator';
 
 @Controller('events')
 export class EventsController {
     constructor(private readonly eventsService: EventsService) {}
     @Post()
-    async createEvent(@Body() eventData: CreateEventDto) {
-        const event = await this.eventsService.createEvent(eventData);
+    @FileUpload()
+    async createEvent(@Body() eventData: CreateEventDto, @UploadedFiles() files: {images?: Express.Multer.File[]}) {
+        const imagesUrls:string[] = files.images?.map(file => `/uploads/${file.filename}`) || [];
+        const event = await this.eventsService.createEvent(eventData, imagesUrls);
         return event;
     }
 

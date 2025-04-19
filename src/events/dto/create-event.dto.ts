@@ -17,6 +17,6 @@ export default class CreateEventDto {
     @Length(3, 255)
     location: string;
 
-    @IsBoolean()
-    isActive: boolean;
+    @IsString()
+    isActive: string;
 }

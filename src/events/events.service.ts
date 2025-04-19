@@ -15,10 +15,14 @@ export class EventsService {
      * @param eventData 
      * @returns 
      */
-    async createEvent(eventData: CreateEventDto): Promise<EventEntity> {
+    async createEvent(eventData: CreateEventDto, imagesUrls:string[]): Promise<EventEntity> {
         // Here you would typically save the event to a database
         // For this example, we'll just return the event data
-        const event = this._eventRepo.create(eventData);
+        const event = this._eventRepo.create({
+            ...eventData,
+            images: imagesUrls,
+            isActive: eventData.isActive === 'true' ? true : false,
+        });
         await this._eventRepo.save(event);
         return event;
     }
