@@ -28,5 +28,5 @@ export class EventEntity {
           from: (value: string) => JSON.parse(value),
         },
     })
-    images: string[];
+    imagesUrls: string[];
 }

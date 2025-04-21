@@ -1,4 +1,4 @@
-import { IsBoolean, IsISO8601, IsString, Length } from "class-validator";
+import { IsBoolean, IsISO8601, IsNumber, IsString, Length } from "class-validator";
 
 export default class CreateEventDto {
     @IsString()
@@ -17,6 +17,6 @@ export default class CreateEventDto {
     @Length(3, 255)
     location: string;
 
-    @IsString()
-    isActive: string;
+    @IsNumber({},{each: true})
+    imagesIds: number[];
 }

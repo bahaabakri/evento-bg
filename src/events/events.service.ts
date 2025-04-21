@@ -4,24 +4,34 @@ import { Repository } from 'typeorm';
 import { EventEntity } from './event.entity';
 import CreateEventDto from './dto/create-event.dto';
 import UpdateEventDto from './dto/update-event-dto';
+import { UploadImageService } from 'src/upload-image/upload-image.service';
 
 @Injectable()
 export class EventsService {
 
-    constructor(@InjectRepository(EventEntity) private _eventRepo:Repository<EventEntity>) {}
+    constructor(
+        @InjectRepository(EventEntity) private _eventRepo:Repository<EventEntity>,
+        private _uploadImageService:UploadImageService
+
+) {}
     
     /**
      * Create a new event
      * @param eventData 
      * @returns 
      */
-    async createEvent(eventData: CreateEventDto, imagesUrls:string[]): Promise<EventEntity> {
+    async createEvent(eventData: CreateEventDto): Promise<EventEntity> {
         // Here you would typically save the event to a database
         // For this example, we'll just return the event data
+        const imagesUrls:string[] = []
+        eventData.imagesIds.forEach(async (id:number) => {
+            const image = await this._uploadImageService.getImageById(id)
+            imagesUrls.push(image.imagePath)
+        })
         const event = this._eventRepo.create({
             ...eventData,
-            images: imagesUrls,
-            isActive: eventData.isActive === 'true' ? true : false,
+            imagesUrls,
+            isActive:true,
         });
         await this._eventRepo.save(event);
         return event;

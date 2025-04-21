@@ -1,12 +1,12 @@
 import { UseInterceptors } from "@nestjs/common";
-import { FileFieldsInterceptor } from "@nestjs/platform-express";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
 
 export default function FileUpload() {
+    console.log('FileUpload decorator called');
         return UseInterceptors(
-            FileFieldsInterceptor(
-              [{ name: 'images', maxCount: 10 }],
+          FileInterceptor('image',
               {
                 storage: diskStorage({
                   destination: './uploads',
