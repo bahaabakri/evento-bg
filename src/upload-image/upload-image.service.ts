@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UploadImage } from "./upload-image.entity";
 import { UploadIntent } from "./upload-intent.entity";
 import { Repository } from "typeorm";
+import { deleteFileAsync } from "src/util";
 
 @Injectable()
 export class UploadImageService {
@@ -41,16 +42,40 @@ export class UploadImageService {
      * Upload Image
      * @param uploadImage 
      */
-    async uploadImage(key:string, imagePath:string) {
+    async uploadImage(key:string, imagePath:string, imageName:string) {
         const intent = await this._uploadIntentRepo.findOneBy({key})
         if (!intent || Date.now() > new Date(intent.createdAt).getTime() + 10 * 60 * 1000) {
             throw  new UnauthorizedException('Upload Intent Expired or Invalid');
         }
         const uploadImage = this._uploadImageRepo.create({
             imagePath,
+            name:imageName,
             uploadIntent: intent
         });
         await this._uploadImageRepo.save(uploadImage);
         return uploadImage;
+    }
+
+    /**
+     * Remove Image
+     */
+    async removeImage(id:string) {
+        const deletedImage = await this.getImageById(+id)
+
+        // remove image from db
+        const removeImageFromDb = this._uploadImageRepo.remove(deletedImage)
+
+        // remove image from file system
+        const deleteImageFromFile = deleteFileAsync(deletedImage.name, 'uploads')
+
+        const deleteImagePromise = await Promise.all([removeImageFromDb, deleteImageFromFile])
+
+        if (!deleteImagePromise) {
+            throw new BadRequestException('Something went wrong while deleting image')
+        }
+        return {
+            image: deleteImagePromise[0],
+            message: 'Removing Image Successfully'
+        }
     }
 }

@@ -10,6 +10,11 @@ export class UploadImage {
     @Column()
     imagePath: string;
 
+    @Column({
+        default: null
+    })
+    name: string;
+    
     @ManyToOne(() => UploadIntent, (uploadIntent) => uploadIntent.images)
     uploadIntent: UploadIntent;
 }
