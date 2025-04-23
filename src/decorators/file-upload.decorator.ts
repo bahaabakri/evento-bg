@@ -3,7 +3,7 @@ import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from "@nestj
 import { diskStorage } from "multer";
 import { extname } from "path";
 
-export default function FileUpload() {
+export default function FilesUpload() {
     console.log('FileUpload decorator called');
         return UseInterceptors(
           FileFieldsInterceptor(

@@ -14,7 +14,7 @@ export class UploadImageService {
     /**
      * Create intent
      */
-    async createIntent() {
+    async createIntent(): Promise<UploadIntent> {
         const intent = this._uploadIntentRepo.create({
             createdAt: new Date()
         });
@@ -38,28 +38,32 @@ export class UploadImageService {
         return image;
     
     }
+
     /**
-     * Upload Image
-     * @param uploadImage 
+     * Upload Images
      */
-    async uploadImage(key:string, imagePath:string, imageName:string) {
+    async uploadImages(key:string, imagesFiles: Express.Multer.File[]): Promise<UploadImage[]> {
         const intent = await this._uploadIntentRepo.findOneBy({key})
         if (!intent || Date.now() > new Date(intent.createdAt).getTime() + 10 * 60 * 1000) {
             throw  new UnauthorizedException('Upload Intent Expired or Invalid');
         }
-        const uploadImage = this._uploadImageRepo.create({
-            imagePath,
-            name:imageName,
-            uploadIntent: intent
-        });
-        await this._uploadImageRepo.save(uploadImage);
-        return uploadImage;
+        const uploadedImages: Omit<UploadImage, 'id'>[] = []
+        imagesFiles?.forEach((image) => {
+            const imagePath = '/uploads/' + image.filename;
+            uploadedImages.push({
+                imagePath,
+                name: image.filename,
+                uploadIntent: intent
+            })
+        })
+        const imagesInstances = this._uploadImageRepo.create(uploadedImages)
+        return this._uploadImageRepo.save(imagesInstances)
     }
 
     /**
      * Remove Image
      */
-    async removeImage(id:string) {
+    async removeImage(id:string): Promise<{message:string, image:UploadImage}> {
         const deletedImage = await this.getImageById(+id)
 
         // remove image from db

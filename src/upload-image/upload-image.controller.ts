@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Param, Post, UploadedFile, UploadedFiles } from "@nestjs/common";
 import { UploadImageService } from "./upload-image.service";
 import { UploadIntent } from "./upload-intent.entity";
-import FileUpload from "../decorators/file-upload.decorator";
 import { UploadImage } from "./upload-image.entity";
+import FilesUpload from "../decorators/file-upload.decorator";
 
 @Controller("upload-image")
 export class UploadImageController {
@@ -20,17 +20,11 @@ export class UploadImageController {
      * Create upload images
      */
     @Post("/image")
-    @FileUpload()
+    @FilesUpload()
     async uploadImage(
         @Body('key') key: string,
-        @UploadedFiles() files: {images?: Express.Multer.File[]}):Promise<UploadImage[]> {
-            const uploadedImages:UploadImage[] = []
-            files.images?.forEach(async (image) => {
-                const imagePath = '/uploads/' + image.filename;
-                uploadedImages.push(await this._uploadImageService.uploadImage(key, imagePath, image.filename))
-            })
-            return uploadedImages
-
+        @UploadedFiles() files: {images: Express.Multer.File[]}):Promise<UploadImage[]> {
+            return this._uploadImageService.uploadImages(key, files.images)
     }
 
     /**
