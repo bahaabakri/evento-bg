@@ -24,8 +24,8 @@ export class EventsService {
         // Here you would typically save the event to a database
         // For this example, we'll just return the event data
         const imagesUrls:string[] = []
-        eventData.imagesIds.forEach(async (id:number) => {
-            const image = await this._uploadImageService.getImageById(id)
+        eventData.imagesIds.forEach(async (id:string) => {
+            const image = await this._uploadImageService.getImageById(+id)
             imagesUrls.push(image.imagePath)
         })
         const event = this._eventRepo.create({

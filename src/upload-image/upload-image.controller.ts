@@ -19,7 +19,7 @@ export class UploadImageController {
     /**
      * Create upload images
      */
-    @Post("/image")
+    @Post("/images")
     @FilesUpload()
     async uploadImage(
         @Body('key') key: string,

@@ -17,6 +17,6 @@ export default class CreateEventDto {
     @Length(3, 255)
     location: string;
 
-    @IsNumber({},{each: true})
-    imagesIds: number[];
+    @IsString({each: true})
+    imagesIds: string[];
 }
