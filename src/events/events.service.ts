@@ -76,12 +76,20 @@ export class EventsService {
     async updateEvent(id: number, eventData: UpdateEventDto): Promise<{message:string, event:EventEntity}> {
         // Here you would typically update an event in a database
         // For this example, we'll just return the updated event data
-        const event = await this.getEventById(id);
-        const updateEvent = { ...event, ...eventData };
-        await this._eventRepo.save(updateEvent);
+        const savedEvent = await this.getEventById(id);
+        let updatedEvent = { ...savedEvent, ...eventData };
+        if (eventData.imagesIds) {
+            const imagesUrls:string[] = []
+            eventData.imagesIds.forEach(async (id:string) => {
+                const image = await this._uploadImageService.getImageById(+id)
+                imagesUrls.push(image.imagePath)
+            })
+            updatedEvent = {...updatedEvent, imagesUrls}
+        }
+        await this._eventRepo.save(updatedEvent);
         return {
             message: 'Event updated successfully',
-            event: updateEvent,
+            event: updatedEvent,
         }
     }
     /**

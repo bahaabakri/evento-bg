@@ -22,6 +22,6 @@ export default class UpdateEventDto {
     location: string;
 
     @IsOptional()
-    @IsNumber({},{each: true})
-    imagesIds: number[];
+    @IsString({each: true})
+    imagesIds: string[];
 }
