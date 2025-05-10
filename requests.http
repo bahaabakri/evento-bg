@@ -37,9 +37,26 @@ DELETE http://localhost:3000/events/1
 Content-Type: application/json
 
 ### create user
-POST http://localhost:3000/users
+POST http://localhost:3000/users/loginRegister
 Content-Type: application/json
 
 {
     "email": "baha@innovationfactory.biz"
 }
+
+### verify user
+POST http://localhost:3000/users/verify
+Content-Type: application/json
+
+{
+    "email": "baha@innovationfactory.biz",
+    "otp": "743737"
+}
+
+### delete user
+DELETE  http://localhost:3000/users/6
+
+
+### logout
+POST http://localhost:3000/users/logout
+Content-Type: application/json

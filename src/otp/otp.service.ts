@@ -35,5 +35,16 @@ export class OtpService {
 
     }
 
+    /**
+     * To get user otps
+     */
+
+    async getLastUserOtp(user: User):Promise<Otp | null> {
+        return this._otpRepo.findOne({
+            where: { user: { id: user.id } },
+            order: { createdAt: 'DESC' },
+        });
+    }
+
 
 }

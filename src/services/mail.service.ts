@@ -11,7 +11,11 @@ export class MailService {
       subject: 'Your OTP Code',
       template: './send-otp', // points to templates/otp.hbs
       context: { 
-        otp, 
+        logoUrl: 'http://localhost:3000/uploads/logo/logo.png',
+        primaryColor: '#C21E56',
+        otp: otp,
+        expiryMinutes: 5,
+        year: new Date().getFullYear(),
       },
     });
   }
