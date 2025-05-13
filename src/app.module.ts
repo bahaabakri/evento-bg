@@ -13,6 +13,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { UserModule } from './users/user.module';
 import { Otp } from './otp/otp.entity';
 import { User } from './users/user.entity';
+import { HeroModule } from './hero/hero.module';
 @Module({
   imports: [
     EventsModule,
@@ -47,6 +48,7 @@ import { User } from './users/user.entity';
         },
       },
     }),
+    HeroModule,
   ],
   controllers: [AppController],
   providers: [AppService],
