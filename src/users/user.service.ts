@@ -2,51 +2,31 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity";
 import { Repository } from "typeorm";
-import { OtpService } from "src/otp/otp.service";
 
 @Injectable()
 
 export class UserService {
     constructor(
         @InjectRepository(User) private _userRepo:Repository<User>,
-        private _otpService:OtpService
     ) {}
-    /**
-     * create user if not exist and send otp
-     * @param email 
-     * @returns return user entity
-     */
-    async createOrLoginUser(email:string): Promise<{user:User, message:string}> {
-        // is this email exist
-        let message = ''
-        let user = await this.findUserByEmail(email)
-        message = 'Logged in Successfully'
-        if (!user) {
-            // create user
-            user = await this.createUser(email)
-            message = 'User Created Successfully'
-        }
-        // send otp
-        await this._otpService.sendOtp(user)
-        message = message + ',and Otp has been send to your email address'
-        return {
-            user,
-            message
-        }
-    }
+
     /**
      * create user in db
      * @param email 
      * @returns 
      */
-    async createUser(email:string) {
+    async createUser(email:string): Promise<User> {
         // create user in db
         const user = this._userRepo.create({
             email: email,
             isVerified:false
         })
         // save user in db
-        return this._userRepo.save(user)
+        return this.saveUser(user)
+    }
+
+    saveUser(user:User):Promise<User> {
+       return  this._userRepo.save(user)
     }
     /**
      * find user by email
@@ -63,34 +43,19 @@ export class UserService {
     }
 
     /**
-     * Verify user
+     * get all users
      */
-    async verifyUser(email:string, enteredOtp:string): Promise<{user:User, message:string}> {
-        // get user
-        const user = await this.findUserByEmail(email)
-        if(!user) {
-            throw new NotFoundException('User Not Found');
-        }
-        // check if user has otp and NOT expired
-        const dbOtp = await this._otpService.getLastUserOtp(user)
-        if (!dbOtp) {
-            throw new NotFoundException('No otp send to this user');
-        }
-        if (dbOtp.code !== enteredOtp) {
-            throw new BadRequestException('Wrong otp, try again')
-        }
-        if (new Date(dbOtp.expiredAt).getTime() < new Date().getTime()) {
-            throw new BadRequestException('Expired otp, try again')
-        }
-        const newUser = {...user, isVerified:true}
-        const updatedUser = await this._userRepo.save(newUser)
-        return {
-            user: updatedUser,
-            message: 'User Verified Successfully'
-        }
+
+    findAllUsers():Promise<User[]> {
+        return this._userRepo.find()
     }
 
 
+    /**
+     * Remove user
+     * @param id 
+     * @returns 
+     */
     async removeUser(id:number) {
         const user = await this.findUserById(id)
         if (!user) {

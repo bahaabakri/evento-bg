@@ -14,6 +14,7 @@ import { UserModule } from './users/user.module';
 import { Otp } from './otp/otp.entity';
 import { User } from './users/user.entity';
 import { HeroModule } from './hero/hero.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     EventsModule,
@@ -49,6 +50,7 @@ import { HeroModule } from './hero/hero.module';
       },
     }),
     HeroModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,53 +1,38 @@
-import { Controller, Get, Post, Body, Param, Session, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Delete, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateLoginDto } from './dto/create-login.dto';
-import { VerifyUserDto } from './dto/verfiy-user.dto';
-import { CurrentUser } from './decorators/current-user.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from './user.entity';
+import { AuthGuard } from '../auth/gurads/auth.guard';
+import { AdminGuard } from 'src/auth/gurads/admin.guard';
 
 @Controller('users')
+@UseGuards(AuthGuard)
 export class UserController {
     constructor(private _userService:UserService) {}
+
+    ///////////////////////// Authenticated Routes /////////////////////////
+    @UseGuards(AdminGuard)
     @Get()
     findAll() {
         // Logic to fetch all users
-        return 'This action returns all users';
+        return this._userService.findAllUsers()
     }
 
+    @UseGuards(AdminGuard)
     @Get(':id')
     findOne(@Param('id') id: string) {
         // Logic to fetch a user by ID
-        return `This action returns user with id: ${id}`;
+        return this._userService.findUserById(parseInt(id))
     }
-
-    @Post('loginRegister')
-    async createOrLogin(@Body() {email}:CreateLoginDto, @Session() session:any) {
-        // Logic to create a new user
-        const res = await this._userService.createOrLoginUser(email)
-        session.userId = res.user.id
-        return res
-    }
-
-    @Post('verify')
-    async verifyUser(@Body() {email, otp}: VerifyUserDto) {
-        return this._userService.verifyUser(email, otp)
-    }
-
+    
+    @UseGuards(AdminGuard)
     @Delete(':id')
     removeUser(@Param('id') id: string) {
       return this._userService.removeUser(parseInt(id));
     }
 
-
     @Post('me')
     getCurrentUser(@CurrentUser() user:User) {
         return user
-    }
-    @Post('logout')
-    async logout(@Session() session:any) {
-        session.userId = null
-        return {
-            message:'User logout successfully'
-        }
     }
 }
