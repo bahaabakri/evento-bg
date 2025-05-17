@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventsModule } from './events/events.module';
@@ -15,6 +15,9 @@ import { Otp } from './otp/otp.entity';
 import { User } from './users/user.entity';
 import { HeroModule } from './hero/hero.module';
 import { AuthModule } from './auth/auth.module';
+import CurrentUserMiddleware from './auth/middlewares/current-user.middleware';
+import { UserService } from './users/user.service';
+import CurrentAdminMiddleware from './auth/middlewares/current-admin.middleware';
 @Module({
   imports: [
     EventsModule,
@@ -26,6 +29,7 @@ import { AuthModule } from './auth/auth.module';
       entities: [EventEntity, UploadIntent, UploadImage, User, Otp],
       synchronize: true
     }),
+    TypeOrmModule.forFeature([User]),
     MailerModule.forRoot({
       transport: {
         host: 'sandbox.smtp.mailtrap.io',
@@ -53,6 +57,20 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, UserService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  // config currentUser middleware
+  
+    configure(consumer: MiddlewareConsumer) {
+      // this middleware will be used to get the current admin from the requests coming from /admin route
+      consumer
+        .apply(CurrentAdminMiddleware)
+        .forRoutes({ path: 'admin/*', method: 0 }); // 0 corresponds to RequestMethod.ALL
+      // this middleware will be used to get the current user from the request
+      consumer
+        .apply(CurrentUserMiddleware)
+        .exclude({ path: 'admin/*', method: 0 })
+        .forRoutes('*');
+    }
+}

@@ -2,31 +2,36 @@ import { Controller, Get, Post, Param, Delete, UseGuards } from '@nestjs/common'
 import { UserService } from './user.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from './user.entity';
-import { AuthGuard } from '../auth/gurads/auth.guard';
-import { AdminGuard } from 'src/auth/gurads/admin.guard';
+import { Roles } from './decorators/roles.decorator';
+import { Role } from './roles.enum';
+import { RolesGuard } from 'src/auth/gurads/roles.guard';
+import { AdminAuthGuard } from 'src/auth/gurads/admin-auth.guard';
+import { CurrentAdmin } from 'src/auth/decorators/current-admin.decorator';
 
 @Controller('users')
-@UseGuards(AuthGuard)
 export class UserController {
     constructor(private _userService:UserService) {}
 
     ///////////////////////// Authenticated Routes /////////////////////////
-    @UseGuards(AdminGuard)
+    @UseGuards(AdminAuthGuard,RolesGuard)
     @Get()
+    @Roles(Role.ADMIN)
     findAll() {
         // Logic to fetch all users
         return this._userService.findAllUsers()
     }
 
-    @UseGuards(AdminGuard)
+    @UseGuards(AdminAuthGuard,RolesGuard)
     @Get(':id')
+    @Roles(Role.ADMIN)
     findOne(@Param('id') id: string) {
         // Logic to fetch a user by ID
         return this._userService.findUserById(parseInt(id))
     }
-    
-    @UseGuards(AdminGuard)
+
+    @UseGuards(AdminAuthGuard,RolesGuard)
     @Delete(':id')
+    @Roles(Role.SUPER_ADMIN)
     removeUser(@Param('id') id: string) {
       return this._userService.removeUser(parseInt(id));
     }
@@ -34,5 +39,10 @@ export class UserController {
     @Post('me')
     getCurrentUser(@CurrentUser() user:User) {
         return user
+    }
+
+    @Post('admin/me')
+    getCurrentAdmin(@CurrentAdmin() admin:User) {
+        return admin
     }
 }

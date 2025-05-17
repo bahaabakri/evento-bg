@@ -1,7 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity";
-import { Repository } from "typeorm";
+import { Not, Repository } from "typeorm";
+import { Role } from "./roles.enum";
+import { CreateLoginDto } from "src/auth/dto/create-login.dto";
+import { isAdminPanelRole } from "src/util";
 
 @Injectable()
 
@@ -15,11 +18,12 @@ export class UserService {
      * @param email 
      * @returns 
      */
-    async createUser(email:string): Promise<User> {
+    async createUser(body:CreateLoginDto, role:Role = Role.USER): Promise<User> {
         // create user in db
         const user = this._userRepo.create({
-            email: email,
-            isVerified:false
+            ...body,
+            isVerified:false,
+            role
         })
         // save user in db
         return this.saveUser(user)
@@ -32,6 +36,24 @@ export class UserService {
      * find user by email
      */
     findUserByEmail(email:string):Promise<User | null> {
+        return this._userRepo.findOneBy({email, role:Role.USER})
+    }
+
+    /**
+     * find admin by email
+     */
+    findAdminByEmail(email:string):Promise<User | null> {
+        return this._userRepo.findOne({
+            where: {
+            email,
+            role: Not(Role.USER),
+            },
+        });
+    }
+    /**
+     * find admin or user by email
+     */
+    findUserAdminByEmail(email:string):Promise<User | null> {
         return this._userRepo.findOneBy({email})
     }
 

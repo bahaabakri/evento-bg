@@ -41,7 +41,7 @@ POST http://localhost:3000/auth/loginRegister
 Content-Type: application/json
 
 {
-    "email": "baha@innovationfactory.biz"
+    "email": "test@innovationfactory.biz",
 }
 
 ### verify user
@@ -49,13 +49,19 @@ POST http://localhost:3000/auth/verify
 Content-Type: application/json
 
 {
-    "email": "baha@innovationfactory.biz",
-    "otp": "291925"
+    "email": "test@innovationfactory.biz",
+    "otp": "428804"
 }
 
 ### delete user
-DELETE  http://localhost:3000/users/6
+DELETE  http://localhost:3000/users/10
 
+
+### get all users
+
+GET http://localhost:3000/users
+### get user by id
+POST http://localhost:3000/users/me
 
 ### logout
 POST http://localhost:3000/auth/logout

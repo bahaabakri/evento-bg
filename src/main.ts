@@ -12,10 +12,35 @@ async function bootstrap() {
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads/',
   });
-  // configure cookie session
-  app.use(cookieSession({
-    keys:['userId']
-  }))
+  // Session for regular users
+  app.use(
+    (req, res, next) => {
+      if (!req.originalUrl.startsWith('/admin')) {
+        cookieSession({
+          name: 'user_session',
+          keys: ['user_key'],
+          maxAge: 24 * 60 * 60 * 1000, // 1 day
+        })(req, res, next);
+      } else {
+        next();
+      }
+    }
+  );
+
+  // Session for admins
+  app.use(
+    (req, res, next) => {
+      if (req.originalUrl.startsWith('/admin')) {
+        cookieSession({
+          name: 'admin_session',
+          keys: ['admin_key'],
+          maxAge: 24 * 60 * 60 * 1000, // 1 day
+        })(req, res, next);
+      } else {
+        next();
+      }
+    }
+  );
   // configure global pips
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true
