@@ -1,10 +1,10 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '../users/user.entity';
 // Update the import path below if the actual file name or location is different
-import { UserService } from 'src/users/user.service';
-import { OtpService } from 'src/otp/otp.service';
+import { UserService } from '../users/user.service';
+import { OtpService } from '../otp/otp.service';
 import { CreateLoginDto } from './dto/create-login.dto';
-import { Role } from 'src/users/roles.enum';
+import { Role } from '../users/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -28,7 +28,11 @@ export class AuthService {
             message = 'Admin Created Successfully'
         }
         // send otp
-        await this._otpService.sendOtp(admin)
+        try {
+            await this._otpService.sendOtp(admin)
+        } catch (error) {
+            throw new BadRequestException('Unable to send otp, please try again')
+        }
         message = message + ',and Otp has been send to your email address'
         return {
             admin,
@@ -51,7 +55,11 @@ export class AuthService {
             message = 'User Created Successfully'
         }
         // send otp
-        await this._otpService.sendOtp(user)
+        try {
+            await this._otpService.sendOtp(user)
+        } catch (error) {
+            throw new BadRequestException('Unable to send otp, please try again')
+        }
         message = message + ',and Otp has been send to your email address'
         return {
             user,

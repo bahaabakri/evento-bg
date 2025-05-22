@@ -1,5 +1,4 @@
-import e from "express";
-import { Otp } from "src/otp/otp.entity";
+import { Otp } from "../otp/otp.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Role } from "./roles.enum";
 

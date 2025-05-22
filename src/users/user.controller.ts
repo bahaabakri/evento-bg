@@ -4,9 +4,9 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from './user.entity';
 import { Roles } from './decorators/roles.decorator';
 import { Role } from './roles.enum';
-import { RolesGuard } from 'src/auth/gurads/roles.guard';
-import { AdminAuthGuard } from 'src/auth/gurads/admin-auth.guard';
-import { CurrentAdmin } from 'src/auth/decorators/current-admin.decorator';
+import { RolesGuard } from '../auth/gurads/roles.guard';
+import { AdminAuthGuard } from '../auth/gurads/admin-auth.guard';
+import { CurrentAdmin } from '../auth/decorators/current-admin.decorator';
 
 @Controller('users')
 export class UserController {
