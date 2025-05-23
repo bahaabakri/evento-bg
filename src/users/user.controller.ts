@@ -20,7 +20,7 @@ export class UserController {
         // Logic to fetch all users
         return this._userService.findAllUsers()
     }
-
+ 
     @UseGuards(AdminAuthGuard,RolesGuard)
     @Get(':id')
     @Roles(Role.ADMIN)
