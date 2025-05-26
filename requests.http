@@ -41,7 +41,7 @@ POST http://localhost:3000/auth/loginRegister
 Content-Type: application/json
 
 {
-    "email": "test@innovationfactory.biz",
+    "email": "test@innovationfactory.biz"
 }
 
 ### verify user
@@ -50,7 +50,7 @@ Content-Type: application/json
 
 {
     "email": "test@innovationfactory.biz",
-    "otp": "428804"
+    "otp": "302747"
 }
 
 ### delete user
