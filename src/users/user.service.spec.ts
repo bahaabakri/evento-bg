@@ -6,7 +6,7 @@ import { Role } from "./roles.enum"
 import { NotFoundException } from "@nestjs/common"
 import { getRepositoryToken } from "@nestjs/typeorm"
 let mockUser:User = {
-    id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps:[]
+    id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps:[], events:[]
 }
 describe('UserService', () => {
     let userService: UserService;

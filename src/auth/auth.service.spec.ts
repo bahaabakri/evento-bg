@@ -7,10 +7,9 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { User } from '../users/user.entity';
 import { Test } from '@nestjs/testing';
 import { Otp } from 'src/otp/otp.entity';
-import { mock } from 'node:test';
 
 let mockUser:User = {
-    id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps:[]
+    id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps:[], events:[]
 }
 let mockOtp:Otp = {
     id: 1, code: '123456', createdAt: new Date(), expiredAt: new Date(Date.now() + 5 * 60 * 1000), user: mockUser
@@ -42,87 +41,61 @@ describe('AuthService', () => {
         }).compile();
         authService = module.get<AuthService>(AuthService);
     });
-
-    describe('createLoginAdmin', () => {
-        it('should create admin if not exists and send otp', async () => {
-            const res = await authService.createLoginAdmin({email: mockUser.email});
-            expect(fakeUserService.findAdminByEmail).toHaveBeenCalledTimes(1);
+    describe('createLoginUserAdmin', () => {
+        it('should create admin or user if not exists and send otp', async () => {
+            const res = await authService.createLoginUserAdmin({email: mockUser.email}, null);
+            // expect(fakeUserService.findAdminByEmail).toHaveBeenCalledTimes(1);
             expect(fakeUserService.createUser).toHaveBeenCalledTimes(1);
             expect(fakeOtpService.sendOtp).toHaveBeenCalledTimes(1);
-            expect(res.admin).toBeDefined();
-            expect(res.admin.email).toBe(mockUser.email);
+            expect(res.user).toBeDefined();
+            expect(res.user.email).toBe(mockUser.email);
         });
 
-        it('should login admin if exists and send otp', async () => {
+        it('should login admin or user if exists and send otp', async () => {
             (fakeUserService.findAdminByEmail as jest.Mock).mockResolvedValue(mockUser);
-            const res = await authService.createLoginAdmin({email: mockUser.email});
-            expect(fakeUserService.findAdminByEmail).toHaveBeenCalledTimes(1);
-            expect(fakeUserService.createUser).toHaveBeenCalledTimes(0);
-            expect(res.admin).toBeDefined();
-            expect(res.admin.email).toBe(mockUser.email);
-        });
-        it('should throw BadRequestException if sendOtp fails', async () => {
-            (fakeOtpService.sendOtp as jest.Mock).mockRejectedValue(new Error('Unable to send otp'));
-            await expect(authService.createLoginAdmin({email: mockUser.email})).rejects.toThrow(BadRequestException);
-            expect(fakeOtpService.sendOtp).toHaveBeenCalledTimes(1);
-        })
-    });
-
-    describe('createLoginUser', () => {
-        it('should create user if not exists and send otp', async () => {
-            const res = await authService.createLoginUser({email: mockUser.email});
-            expect(fakeUserService.findUserByEmail).toHaveBeenCalledTimes(1);
-            expect(fakeUserService.createUser).toHaveBeenCalledTimes(1);
-            expect(fakeOtpService.sendOtp).toHaveBeenCalledTimes(1);
-            expect(res.user).toBeDefined();
-            expect(res.user.email).toBe(mockUser.email);
-        });
-
-        it('should login admin if exists and send otp', async () => {
-            (fakeUserService.findUserByEmail as jest.Mock).mockResolvedValue(mockUser);
-            const res = await authService.createLoginUser({email: mockUser.email});
-            expect(fakeUserService.findUserByEmail).toHaveBeenCalledTimes(1);
+            const res = await authService.createLoginUserAdmin({email: mockUser.email}, mockUser);
+            // expect(fakeUserService.findAdminByEmail).toHaveBeenCalledTimes(1);
             expect(fakeUserService.createUser).toHaveBeenCalledTimes(0);
             expect(res.user).toBeDefined();
             expect(res.user.email).toBe(mockUser.email);
         });
         it('should throw BadRequestException if sendOtp fails', async () => {
             (fakeOtpService.sendOtp as jest.Mock).mockRejectedValue(new Error('Unable to send otp'));
-            await expect(authService.createLoginUser({email: mockUser.email})).rejects.toThrow(BadRequestException);
+            await expect(authService.createLoginUserAdmin({email: mockUser.email}, mockUser)).rejects.toThrow(BadRequestException);
             expect(fakeOtpService.sendOtp).toHaveBeenCalledTimes(1);
         })
     });
 
     describe('verifyUserAdmin', () => {
-        it('should throw NotFoundException if user not found', async () => {
+        it('should throw NotFoundException if user or admin not found', async () => {
             // (fakeUserService.findUserAdminByEmail as jest.Mock).mockResolvedValue(null);
-            await expect(authService.verifyUserAdmin(mockUser.email, mockOtp.code)).rejects.toThrow(NotFoundException);
+            await expect(authService.verifyUserAdmin(mockOtp.code, null)).rejects.toThrow(NotFoundException);
         });
 
         it('should throw NotFoundException if no otp sent', async () => {
-            (fakeUserService.findUserAdminByEmail as jest.Mock).mockResolvedValue(mockUser);
+            // (fakeUserService.findUserAdminByEmail as jest.Mock).mockResolvedValue(mockUser);
             (fakeOtpService.getLastUserOtp as jest.Mock).mockResolvedValue(null);
-            await expect(authService.verifyUserAdmin(mockUser.email, mockOtp.code)).rejects.toThrow(NotFoundException);
+            await expect(authService.verifyUserAdmin(mockOtp.code, mockUser)).rejects.toThrow(NotFoundException);
         });
 
         it('should throw BadRequestException if otp is wrong', async () => {
-            (fakeUserService.findUserAdminByEmail as jest.Mock).mockResolvedValue(mockUser);
+            // (fakeUserService.findUserAdminByEmail as jest.Mock).mockResolvedValue(mockUser);
             (fakeOtpService.getLastUserOtp as jest.Mock).mockResolvedValue(mockOtp);
-            await expect(authService.verifyUserAdmin(mockUser.email, '654321')).rejects.toThrow(BadRequestException);
+            await expect(authService.verifyUserAdmin('654321', mockUser)).rejects.toThrow(BadRequestException);
         });
 
         it('should throw BadRequestException if otp is expired', async () => {
-            (fakeUserService.findUserAdminByEmail as jest.Mock).mockResolvedValue(mockUser);
+            // (fakeUserService.findUserAdminByEmail as jest.Mock).mockResolvedValue(mockUser);
             (fakeOtpService.getLastUserOtp as jest.Mock).mockResolvedValue({
                 ...mockOtp,
                 expiredAt: new Date(Date.now() - 10 * 60 * 1000), // mocking expiredAt
             });
-            await expect(authService.verifyUserAdmin(mockUser.email, mockOtp.code)).rejects.toThrow(BadRequestException);
+            await expect(authService.verifyUserAdmin(mockOtp.code, mockUser)).rejects.toThrow(BadRequestException);
         });
-        it('should verify user with correct otp', async () => {
-            (fakeUserService.findUserAdminByEmail as jest.Mock).mockResolvedValue(mockUser);
+        it('should verify user or admin with correct otp', async () => {
+            // (fakeUserService.findUserAdminByEmail as jest.Mock).mockResolvedValue(mockUser);
             (fakeOtpService.getLastUserOtp as jest.Mock).mockResolvedValue(mockOtp);
-            const res = await authService.verifyUserAdmin(mockUser.email, mockOtp.code);
+            const res = await authService.verifyUserAdmin(mockOtp.code, mockUser);
             expect(fakeUserService.saveUser).toHaveBeenCalledWith(expect.objectContaining({ isVerified: true }));
             expect(res.user).toBeDefined();
         });

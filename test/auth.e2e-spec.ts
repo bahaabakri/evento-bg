@@ -11,8 +11,9 @@ import { Otp } from 'src/otp/otp.entity';
 import { Repository } from 'typeorm';
 
 let mockUser:User = {
-    id: 1, email: 'test22@gmail.com', role: Role.USER, isVerified: false, otps:[]
+    id: 1, email: 'test22@gmail.com', role: Role.USER, isVerified: false, otps:[], events:[]
 }
+let mockOtpCode:string = '123456';
 describe('AuthController (e2e)', () => {
   let app: INestApplication<App>;
   let otpService: OtpService;
@@ -35,7 +36,7 @@ describe('AuthController (e2e)', () => {
     // Step 1: mock sendOtp before it's triggered
     jest.spyOn(otpService, 'sendOtp').mockImplementation(async (user) => {
       await otpRepo.save({
-        code: '123456',
+        code: mockOtpCode,
         user,
         expiredAt: new Date(Date.now() + 5 * 60 * 1000),
       } as any); // cast to any if needed
@@ -54,7 +55,7 @@ describe('AuthController (e2e)', () => {
     // Step 3: verify user with otp
     const {status: verifyStatus, body: verifyBody} = await request(app.getHttpServer())
       .post('/auth/verify')
-      .send({email: mockUser.email, otp: '123456'})
+      .send({email: mockUser.email, otp: mockOtpCode})
     expect([200, 201]).toContain(verifyStatus); // Check either status
     const { user:verifyUser } = verifyBody;
     expect(verifyUser).toBeDefined();

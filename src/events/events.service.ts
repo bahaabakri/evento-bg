@@ -5,6 +5,7 @@ import { EventEntity } from './event.entity';
 import CreateEventDto from './dto/create-event.dto';
 import UpdateEventDto from './dto/update-event-dto';
 import { UploadImageService } from 'src/upload-image/upload-image.service';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class EventsService {
@@ -20,7 +21,7 @@ export class EventsService {
      * @param eventData 
      * @returns 
      */
-    async createEvent(eventData: CreateEventDto): Promise<EventEntity> {
+    async createEvent(eventData: CreateEventDto, admin:User): Promise<EventEntity> {
         // Here you would typically save the event to a database
         // For this example, we'll just return the event data
         const imagesUrls:string[] = []
@@ -32,6 +33,7 @@ export class EventsService {
             ...eventData,
             imagesUrls,
             isActive:true,
+            user: admin   
         });
         await this._eventRepo.save(event);
         return event;
@@ -44,7 +46,11 @@ export class EventsService {
     async getEvents(): Promise<EventEntity[]> {
         // Here you would typically fetch events from a database
         // For this example, we'll just return an empty array
-        const events = await this._eventRepo.find();
+        const events = await this._eventRepo.find({
+            relations: {
+                user: true,
+            }
+        });
         return events;
     }
 
@@ -59,7 +65,11 @@ export class EventsService {
         if(!id) {
             throw new NotFoundException('Event Not Found')
         }
-        const event = await this._eventRepo.findOneBy({ id });
+        const event = await this._eventRepo.findOne({ 
+            where: {id},
+            relations: {
+                user: true,
+            }});
         if (!event) {
             throw new NotFoundException('Event Not Found');
         }

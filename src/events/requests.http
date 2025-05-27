@@ -1,0 +1,40 @@
+# Example HTTP requests to test APIs
+
+# GET request to fetch all items
+GET http://localhost:3000/admin/events
+
+
+### Get request to fetch a single item by ID
+GET http://localhost:3000/admin/events/12
+###
+
+# POST request to create a new item
+POST http://localhost:3000/admin/events
+Content-Type: application/json
+
+{
+    "name": "Sample Item sdsdfsdf 22222222222222",
+    "description": "This is a sample item.",
+    "date": "2023-10-01T00:00:00Z",
+    "location": "Sample Location",
+    "isActive": true,
+    "lat": 40.7128,
+    "lng": -74.0060,
+    "imagesIds": ["68"]
+}
+
+###
+
+# PUT request to update an existing item
+PATCH  http://localhost:3000/events/1
+Content-Type: application/json
+
+{
+    "name": "Updated Item updated"
+}
+
+###
+
+# DELETE request to delete an item
+DELETE http://localhost:3000/events/1
+Content-Type: application/json

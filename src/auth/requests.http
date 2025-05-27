@@ -1,0 +1,20 @@
+### login register user
+POST http://localhost:3000/admin/auth/loginRegister
+Content-Type: application/json
+
+{
+    "email": "test@innovationfactory.biz"
+}
+
+### verify user
+POST http://localhost:3000/admin/auth/verify
+Content-Type: application/json
+
+{
+    "email": "test@innovationfactory.biz",
+    "otp": "111445"
+}
+
+### logout
+POST http://localhost:3000/auth/logout
+Content-Type: application/json

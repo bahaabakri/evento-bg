@@ -1,4 +1,4 @@
-import { IsBoolean, IsISO8601, IsNumber, IsString, Length } from "class-validator";
+import { IsBoolean, IsISO8601, IsLatitude, IsLongitude, IsNumber, IsString, Length } from "class-validator";
 
 export default class CreateEventDto {
     @IsString()
@@ -16,6 +16,12 @@ export default class CreateEventDto {
     @IsString()
     @Length(3, 255)
     location: string;
+
+    @IsLongitude()
+    lng:number;
+
+    @IsLatitude()
+    lat: number;
 
     @IsString({each: true})
     imagesIds: string[];

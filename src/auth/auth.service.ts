@@ -14,40 +14,34 @@ export class AuthService {
     ) {}
 
     /**
-     * create admin if not exist and send otp
-     * @param body 
-     * @returns return user entity
-     */
-    async createLoginAdmin(body:CreateLoginDto): Promise<{admin:User, message:string}> {
-        let message = ''
-        let admin = await this._userService.findAdminByEmail(body.email)
-        message = 'Logged in Successfully'
-        if (!admin) {
-            // create admin
-            admin = await this._userService.createUser(body, Role.ADMIN)
-            message = 'Admin Created Successfully'
-        }
-        // send otp
-        try {
-            await this._otpService.sendOtp(admin)
-        } catch (error) {
-            throw new BadRequestException('Unable to send otp, please try again')
-        }
-        message = message + ',and Otp has been send to your email address'
-        return {
-            admin,
-            message
-        }
-    }
-    /**
      * create user if not exist and send otp
      * @param email 
      * @returns return user entity
      */
     async createLoginUser(body:CreateLoginDto): Promise<{user:User, message:string}> {
         // is this email exist
-        let message = ''
         let user = await this._userService.findUserByEmail(body.email)
+        return this.createLoginUserAdmin(body, user)
+    }
+
+    /**
+     * create admin if not exist and send otp
+     * @param email 
+     * @returns return user entity
+     */
+    async createLoginAdmin(body:CreateLoginDto): Promise<{user:User, message:string}> {
+        // is this email exist
+        let user = await this._userService.findAdminByEmail(body.email)
+        return this.createLoginUserAdmin(body, user)
+    }
+    /**
+     * create user or admin logic
+     * @param email 
+     * @returns return user entity
+     */
+    async createLoginUserAdmin(body:CreateLoginDto, user:User| null): Promise<{user:User, message:string}> {
+        // is this email exist
+        let message = ''
         message = 'Logged in Successfully'
         if (!user) {
             // create user
@@ -70,9 +64,25 @@ export class AuthService {
     /**
      * Verify user
      */
-    async verifyUserAdmin(email:string, enteredOtp:string): Promise<{user:User, message:string}> {
+    async verifyUser(email:string, enteredOtp:string): Promise<{user:User, message:string}> {
         // get user
-        const user = await this._userService.findUserAdminByEmail(email)
+        const user = await this._userService.findUserByEmail(email)
+        return this.verifyUserAdmin(enteredOtp, user)
+    }
+
+    /**
+     * Verify admin
+     */
+    async verifyAdmin(email:string, enteredOtp:string): Promise<{user:User, message:string}> {
+        // get user
+        const admin = await this._userService.findAdminByEmail(email)
+        return this.verifyUserAdmin(enteredOtp, admin)
+    }
+
+     /**
+     * Verify user or admin logic
+     */
+    async verifyUserAdmin(enteredOtp:string, user:User|null): Promise<{user:User, message:string}> {
         if(!user) {
             throw new NotFoundException('User Not Found');
         }

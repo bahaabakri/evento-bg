@@ -1,6 +1,7 @@
 import { Otp } from "../otp/otp.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Role } from "./roles.enum";
+import { EventEntity } from "../events/event.entity";
 
 @Entity()
 export class User {
@@ -19,4 +20,7 @@ export class User {
   
     @OneToMany(() => Otp, (otp) => otp.user, { cascade: true })
     otps: Otp[];
+
+    @OneToMany(() => EventEntity, (eventEntity) => eventEntity.user, {cascade:true})
+    events:EventEntity[];
 }

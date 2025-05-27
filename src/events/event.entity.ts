@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { User } from '../users/user.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
 @Entity('events')
 export class EventEntity {
@@ -17,6 +18,12 @@ export class EventEntity {
     @Column()
     location: string;
 
+    @Column({ type: 'float', nullable: true, default: null })
+    lng:number;
+
+    @Column({ type: 'float', nullable: true, default: null })
+    lat: number;
+
     @Column()
     isActive: boolean;
 
@@ -29,4 +36,7 @@ export class EventEntity {
         },
     })
     imagesUrls: string[];
+
+    @ManyToOne(() => User, (user) => user.events, {onDelete: 'CASCADE'})
+    user:User;
 }
