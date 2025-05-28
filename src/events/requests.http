@@ -1,11 +1,11 @@
 # Example HTTP requests to test APIs
 
 # GET request to fetch all items
-GET http://localhost:3000/admin/events
+GET http://localhost:3000/admin/events?name=sample&lng=52.63&lat=-12.63
 
 
 ### Get request to fetch a single item by ID
-GET http://localhost:3000/admin/events/12
+GET http://localhost:3000/admin/events/13
 ###
 
 # POST request to create a new item
@@ -26,7 +26,7 @@ Content-Type: application/json
 ###
 
 # PUT request to update an existing item
-PATCH  http://localhost:3000/events/1
+PATCH  http://localhost:3000/events/13
 Content-Type: application/json
 
 {
@@ -36,5 +36,14 @@ Content-Type: application/json
 ###
 
 # DELETE request to delete an item
-DELETE http://localhost:3000/events/1
+DELETE http://localhost:3000/admin/events/13
 Content-Type: application/json
+
+
+### Patch request to approve an event
+PATCH http://localhost:3000/admin/events/3/approve
+Content-Type: application/json
+
+{
+    "approved": true
+}

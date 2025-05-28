@@ -26,6 +26,9 @@ export class EventDto {
     isActive: boolean;
 
     @Expose()
+    isApproved: boolean;
+
+    @Expose()
     imagesUrls: string[];
 
     @Expose()

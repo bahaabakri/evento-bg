@@ -7,7 +7,7 @@ GET http://localhost:3000/users
 
 
 ### get current user
-POST http://localhost:3000/users/me
+POST http://localhost:3000/admin/users/me
 
 ### get user by id
-GET http://localhost:3000/users/1
+GET http://localhost:3000/admin/users/15

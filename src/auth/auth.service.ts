@@ -3,7 +3,7 @@ import { User } from '../users/user.entity';
 // Update the import path below if the actual file name or location is different
 import { UserService } from '../users/user.service';
 import { OtpService } from '../otp/otp.service';
-import { CreateLoginDto } from './dto/create-login.dto';
+import { CreateLoginDto } from './dto/request/create-login.dto';
 import { Role } from '../users/roles.enum';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class AuthService {
     async createLoginUser(body:CreateLoginDto): Promise<{user:User, message:string}> {
         // is this email exist
         let user = await this._userService.findUserByEmail(body.email)
-        return this.createLoginUserAdmin(body, user)
+        return this.createLoginUserAdmin(body, user, Role.USER)
     }
 
     /**
@@ -29,23 +29,23 @@ export class AuthService {
      * @param email 
      * @returns return user entity
      */
-    async createLoginAdmin(body:CreateLoginDto): Promise<{user:User, message:string}> {
+    async createLoginAdmin(body:CreateLoginDto, role:Exclude<Role, Role.USER> = Role.SUPER_ADMIN): Promise<{user:User, message:string}> {
         // is this email exist
         let user = await this._userService.findAdminByEmail(body.email)
-        return this.createLoginUserAdmin(body, user)
+        return this.createLoginUserAdmin(body, user, role)
     }
     /**
      * create user or admin logic
      * @param email 
      * @returns return user entity
      */
-    async createLoginUserAdmin(body:CreateLoginDto, user:User| null): Promise<{user:User, message:string}> {
+    async createLoginUserAdmin(body:CreateLoginDto, user:User| null, role:Role = Role.USER): Promise<{user:User, message:string}> {
         // is this email exist
         let message = ''
         message = 'Logged in Successfully'
         if (!user) {
             // create user
-            user = await this._userService.createUser(body)
+            user = await this._userService.createUser(body,role)
             message = 'User Created Successfully'
         }
         // send otp

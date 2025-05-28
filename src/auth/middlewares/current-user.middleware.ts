@@ -1,7 +1,6 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor, NestMiddleware } from "@nestjs/common";
-
+import {Injectable, NestMiddleware } from "@nestjs/common";
 import { UserService } from "../../users/user.service";
-import { NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 
 @Injectable()
 export default class CurrentUserMiddleware implements NestMiddleware {
@@ -12,7 +11,7 @@ export default class CurrentUserMiddleware implements NestMiddleware {
         if (userId) {
         const user = await this._userService.findUserById(userId);
         if (user) {
-            (req as any).currentUser = user;
+            req.currentUser = user;
         }
         }
         next();

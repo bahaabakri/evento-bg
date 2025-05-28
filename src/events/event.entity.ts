@@ -27,6 +27,8 @@ export class EventEntity {
     @Column()
     isActive: boolean;
 
+    @Column({default: false})
+    isApproved: boolean;
     @Column({
         type: 'text',
         nullable: true,

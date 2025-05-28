@@ -2,10 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEntity } from './event.entity';
-import CreateEventDto from './dto/create-event.dto';
-import UpdateEventDto from './dto/update-event-dto';
+import CreateEventDto from './dto/request/create-event.dto';
+import UpdateEventDto from './dto/request/update-event-dto';
 import { UploadImageService } from 'src/upload-image/upload-image.service';
 import { User } from 'src/users/user.entity';
+import SearchEventDto from './dto/request/search-event.dto';
 
 @Injectable()
 export class EventsService {
@@ -21,7 +22,7 @@ export class EventsService {
      * @param eventData 
      * @returns 
      */
-    async createEvent(eventData: CreateEventDto, admin:User): Promise<EventEntity> {
+    async createEvent(eventData: CreateEventDto, admin:User): Promise<{message:string, event:EventEntity}> {
         // Here you would typically save the event to a database
         // For this example, we'll just return the event data
         const imagesUrls:string[] = []
@@ -35,17 +36,21 @@ export class EventsService {
             isActive:true,
             user: admin   
         });
-        await this._eventRepo.save(event);
-        return event;
+        const createdSavedEvent = await this._eventRepo.save(event);
+        return {
+            message: 'Event updated successfully',
+            event: createdSavedEvent,
+        }
     }
 
     /**
      * Get all events
      * @returns 
      */
-    async getEvents(): Promise<EventEntity[]> {
+    async getEvents(query:SearchEventDto): Promise<EventEntity[]> {
         // Here you would typically fetch events from a database
         // For this example, we'll just return an empty array
+        // console.log(query);
         const events = await this._eventRepo.find({
             relations: {
                 user: true,
@@ -96,10 +101,10 @@ export class EventsService {
             })
             updatedEvent = {...updatedEvent, imagesUrls}
         }
-        await this._eventRepo.save(updatedEvent);
+        const updatedSavedEvent = await this._eventRepo.save(updatedEvent);
         return {
             message: 'Event updated successfully',
-            event: updatedEvent,
+            event: updatedSavedEvent,
         }
     }
     /**
@@ -110,10 +115,24 @@ export class EventsService {
         // Here you would typically remove an event from a database
         // For this example, we'll just return the updated event data
         const event = await this.getEventById(id);
-        await this._eventRepo.remove(event);
+        const deletedEvent = await this._eventRepo.remove(event);
         return {
             message: 'Event deleted successfully',
-            event: event,
+            event: deletedEvent,
+        }
+    }
+
+    /**
+     * Approve an event by ID
+     * @param id
+     */
+    async approveEvent(id: number, approved:boolean): Promise<{message:string, event:EventEntity}> {
+        const event = await this.getEventById(id);
+        event.isApproved = approved;
+        const updatedSavedEvent = await this._eventRepo.save(event);
+        return {
+            message: `Event ${approved ? 'approved' : 'disapproved'} successfully`,
+            event: updatedSavedEvent,
         }
     }
 }
