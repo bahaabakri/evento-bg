@@ -44,19 +44,43 @@ export class EventsService {
     }
 
     /**
-     * Get all events
+     * Get  events
      * @returns 
      */
-    async getEvents(query:SearchEventDto): Promise<EventEntity[]> {
+    async getEvents({query}:SearchEventDto): Promise<EventEntity[]> {
         // Here you would typically fetch events from a database
         // For this example, we'll just return an empty array
         // console.log(query);
-        const events = await this._eventRepo.find({
+        if(!query) {
+            return this.getAllEvents();
+        }
+        return this.getSearchEvents(query);
+    }
+
+
+    /**
+     * Get all events
+     * @returns
+     */
+    async getAllEvents(): Promise<EventEntity[]> {
+        return this._eventRepo.find({
             relations: {
                 user: true,
             }
-        });
-        return events;
+        }); 
+    }
+
+    /**
+     * get events by search query
+     */
+    getSearchEvents(query:string): Promise<EventEntity[]> {
+        return this._eventRepo.createQueryBuilder('event')
+            .leftJoinAndSelect('event.user', 'user')
+            .where('LOWER(event.name) LIKE LOWER(:query)', {query: `%${query}%`})
+            .orWhere('LOWER(event.description) LIKE LOWER(:query)', {query: `%${query}%`})
+            .orWhere('LOWER(event.location) LIKE LOWER(:query)', {query: `%${query}%`})
+            .orderBy('event.date', 'DESC')
+            .getMany();
     }
 
     /**
