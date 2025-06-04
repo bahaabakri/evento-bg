@@ -1,7 +1,7 @@
 # Example HTTP requests to test APIs
 
 # GET request to fetch all items
-GET http://localhost:3000/admin/events?name=sample&lng=52.63&lat=-12.63
+GET http://localhost:3000/admin/events?query=dfg
 
 
 ### Get request to fetch a single item by ID
@@ -13,7 +13,7 @@ POST http://localhost:3000/admin/events
 Content-Type: application/json
 
 {
-    "name": "Sample Item sdsdfsdf 22222222222222",
+    "name": "Item sdsdfsdf 22222222222222 sample",
     "description": "This is a sample item.",
     "date": "2023-10-01T00:00:00Z",
     "location": "Sample Location",
