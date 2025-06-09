@@ -7,8 +7,10 @@ import { User } from './user.entity';
 export class UserController {
     constructor(private _userService:UserService) {}
 
-    @Post('me')
+    @Get('me')
     getCurrentUser(@CurrentUser() user:User) {
-        return user
+        return {
+            user
+        }
     }
 }

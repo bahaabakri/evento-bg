@@ -8,6 +8,8 @@ export default class CurrentUserMiddleware implements NestMiddleware {
     constructor(private _userService: UserService) {}
     async use(req: Request, res: Response, next: NextFunction) {
         const { userId } = (req as any).session || {};
+        // console.log((req as any).session)
+        console.log('Request Headers:', req.headers.cookie)
         if (userId) {
         const user = await this._userService.findUserById(userId);
         if (user) {

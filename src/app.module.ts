@@ -23,6 +23,8 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 import * as express from 'express';
 import * as cookieSession from 'cookie-session';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+const isProduction = process.env.NODE_ENV === 'production';
 @Module({
   imports: [
     EventsModule,
@@ -83,15 +85,22 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useValue: new ValidationPipe({
         whitelist: true
       })
-    }],
+    }
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-
-    // Configure static file serving using express.static
-      consumer
-      .apply(express.static(join(process.cwd(), 'uploads')))
-      .forRoutes('*');
+  // Log the CWD when the app starts
+  // console.log('Current Working Directory:', process.cwd());
+  // // Log the intended static path
+  // console.log('Static files path:', join(process.cwd(), 'uploads'));
+  //   // Configure static file serving using express.static
+    //   const staticFilesPath = join(process.cwd(), 'uploads');
+    // console.log('MiddlewareConsumer: Serving static files from:', staticFilesPath)
+    //   consumer
+    //   .apply(express.static(join(process.cwd(), 'uploads')))
+    //   .forRoutes({ path: '/uploads/*', method: RequestMethod.GET });
+      // console.log(`Current directory: ${join(process.cwd(), 'uploads')}`);
 
 
       // Configure cookie session for admin and user sessions
@@ -99,7 +108,9 @@ export class AppModule implements NestModule {
       consumer.apply(cookieSession({
         name: 'admin_session',
         keys: ['admin_key'],
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
+        maxAge: 24 * 60 * 60 * 1000, // 1 day,
+        secure: isProduction,       // 🔒 true only in prod (HTTPS)
+        sameSite: isProduction ? 'none': 'lax', // 🛡️ 'none' only in prod
       }))
       .forRoutes({ path: 'admin/*', method: RequestMethod.ALL }); // 0 corresponds to RequestMethod.ALL
       
@@ -109,7 +120,9 @@ export class AppModule implements NestModule {
         {
             name: 'user_session',
             keys: ['user_key'],
-            maxAge: 24 * 60 * 60 * 1000, // 1 day
+            maxAge: 24 * 60 * 60 * 1000, // 1 day,
+            secure: isProduction,       // 🔒 true only in prod (HTTPS)
+            sameSite: isProduction ? 'none': 'lax', // 🛡️ 'none' only in prod
           }
       ))
       .exclude({ path: 'admin/*', method: RequestMethod.ALL })

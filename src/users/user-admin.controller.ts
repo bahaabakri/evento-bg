@@ -36,8 +36,10 @@ export class UserAdminController {
       return this._userService.removeUser(parseInt(id));
     }
 
-    @Post('me')
+    @Get('me')
     getCurrentAdmin(@CurrentAdmin() admin:User) {
-        return admin
+        return {
+            admin
+        }
     }
 }

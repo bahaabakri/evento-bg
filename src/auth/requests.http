@@ -1,5 +1,5 @@
 ### login register user
-POST http://localhost:3000/admin/auth/loginRegister
+POST http://localhost:3000/auth/loginRegister
 Content-Type: application/json
 
 {
@@ -7,14 +7,14 @@ Content-Type: application/json
 }
 
 ### verify user
-POST http://localhost:3000/admin/auth/verify
+POST http://localhost:3000/auth/verify
 Content-Type: application/json
 
 {
     "email": "testbbb@innovationfactory.biz",
-    "otp": "228271"
+    "otp": "143665"
 }
 
 ### logout
-POST http://localhost:3000/admin/auth/logout
+POST http://localhost:3000/auth/logout
 Content-Type: application/json

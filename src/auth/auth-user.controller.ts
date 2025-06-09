@@ -31,7 +31,7 @@ export class AuthUserController {
     @UseGuards(NotUserAuthGuard)
     @Post('verify')
     async verifyUser(@Body() {email, otp}: VerifyUserDto,  @Session() session:any) {
-        const res = await this._authService.verifyAdmin(email, otp)
+        const res = await this._authService.verifyUser(email, otp)
         session.userId = res.user.id
         return res
     }

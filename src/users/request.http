@@ -3,7 +3,7 @@ DELETE  http://localhost:3000/users/10
 
 
 ### get all users
-GET http://localhost:3000/users
+POST http://localhost:3000/users/me
 
 
 ### get current user
