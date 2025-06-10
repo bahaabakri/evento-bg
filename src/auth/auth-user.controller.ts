@@ -21,18 +21,18 @@ export class AuthUserController {
     }
     ///////////////////////// Unauthenticated Routes /////////////////////////
     @Serialize(UserResponseDto)
-    @UseGuards(NotUserAuthGuard)
+    // @UseGuards(NotUserAuthGuard)
     @Post('loginRegister')
     async createOrLogin(@Body() body:CreateLoginDto) {
         // Logic to create a new user
         return this._authService.createLoginUser(body)
     }
     @Serialize(UserResponseDto)
-    @UseGuards(NotUserAuthGuard)
+    // @UseGuards(NotUserAuthGuard)
     @Post('verify')
     async verifyUser(@Body() {email, otp}: VerifyUserDto,  @Session() session:any) {
         const res = await this._authService.verifyUser(email, otp)
-        session.userId = res.user.id
+        // session.userId = res.user.id
         return res
     }
 }

@@ -9,4 +9,7 @@ export class UserResponseDto {
   @Expose()
   @Type(() => UserDto)
   user: UserDto;
+
+  @Expose()
+  access_token:string
 }

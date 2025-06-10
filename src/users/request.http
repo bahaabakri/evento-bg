@@ -3,7 +3,8 @@ DELETE  http://localhost:3000/users/10
 
 
 ### get all users
-POST http://localhost:3000/users/me
+GET  http://localhost:3000/users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE4LCJlbWFpbCI6InRlc3RiYmJAaW5ub3ZhdGlvbmZhY3RvcnkuYml6IiwiaXNWZXJpZmllZCI6dHJ1ZSwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk1NjkxNTcsImV4cCI6MTc1MDg2NTE1N30.43kNOQxs71pJqliHKqaJdjCKD1OnOJ9uXwvqP2dzcfE
 
 
 ### get current user

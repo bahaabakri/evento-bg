@@ -105,28 +105,32 @@ export class AppModule implements NestModule {
 
       // Configure cookie session for admin and user sessions
       // Session for admins
-      consumer.apply(cookieSession({
-        name: 'admin_session',
-        keys: ['admin_key'],
-        maxAge: 24 * 60 * 60 * 1000, // 1 day,
-        secure: isProduction,       // 🔒 true only in prod (HTTPS)
-        sameSite: isProduction ? 'none': 'lax', // 🛡️ 'none' only in prod
-      }))
-      .forRoutes({ path: 'admin/*', method: RequestMethod.ALL }); // 0 corresponds to RequestMethod.ALL
+//       console.log('isProduction:', isProduction);
+// console.log('User Session Config:');
+// console.log('  secure:', isProduction);
+// console.log('  sameSite:', isProduction ? 'none' : 'lax');
+      // consumer.apply(cookieSession({
+      //   name: 'admin_session',
+      //   keys: ['admin_key'],
+      //   maxAge: 24 * 60 * 60 * 1000, // 1 day,
+      //   secure: isProduction,       // 🔒 true only in prod (HTTPS)
+      //   // sameSite: isProduction ? 'none': 'lax', // 🛡️ 'none' only in prod
+      // }))
+      // .forRoutes({ path: 'admin/*', method: RequestMethod.ALL }); // 0 corresponds to RequestMethod.ALL
       
       
-      // Session for regular users
-      consumer.apply(cookieSession(
-        {
-            name: 'user_session',
-            keys: ['user_key'],
-            maxAge: 24 * 60 * 60 * 1000, // 1 day,
-            secure: isProduction,       // 🔒 true only in prod (HTTPS)
-            sameSite: isProduction ? 'none': 'lax', // 🛡️ 'none' only in prod
-          }
-      ))
-      .exclude({ path: 'admin/*', method: RequestMethod.ALL })
-      .forRoutes('*');
+      // // Session for regular users
+      // consumer.apply(cookieSession(
+      //   {
+      //       name: 'user_session',
+      //       keys: ['user_key'],
+      //       maxAge: 24 * 60 * 60 * 1000, // 1 day,
+      //       secure: isProduction,       // 🔒 true only in prod (HTTPS)
+      //       sameSite: isProduction ? 'none': 'lax', // 🛡️ 'none' only in prod
+      //     }
+      // ))
+      // .exclude({ path: 'admin/*', method: RequestMethod.ALL })
+      // .forRoutes('*');
 
       // this middleware will be used in order to handle cors
       // and allow requests from the frontend running on localhost:5173

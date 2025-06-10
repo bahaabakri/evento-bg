@@ -9,10 +9,24 @@ import { Otp } from 'src/otp/otp.entity';
 import { User } from 'src/users/user.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthAdminController } from './auth-admin.controller';
-
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './jwt.strategy'; // We'll create this next
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Otp])],
+  imports: [
+    TypeOrmModule.forFeature([User, Otp]),
+    PassportModule.register({ defaultStrategy: 'jwt' }), // Configure Passport
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'), // Get secret from env
+        signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '60m' }, // Get expiry from env
+      }),
+    }),
+  ],
   controllers: [AuthUserController, AuthAdminController],
-  providers: [UserService, OtpService, AuthService, MailService]
+  providers: [UserService, OtpService, AuthService, MailService, JwtStrategy]
 })
 export class AuthModule {}

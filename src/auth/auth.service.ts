@@ -5,12 +5,14 @@ import { UserService } from '../users/user.service';
 import { OtpService } from '../otp/otp.service';
 import { CreateLoginDto } from './dto/request/create-login.dto';
 import { Role } from '../users/roles.enum';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
     constructor(
         private _userService: UserService,
         private _otpService: OtpService,
+        private _jwtService: JwtService,
     ) {}
 
     /**
@@ -64,7 +66,7 @@ export class AuthService {
     /**
      * Verify user
      */
-    async verifyUser(email:string, enteredOtp:string): Promise<{user:User, message:string}> {
+    async verifyUser(email:string, enteredOtp:string): Promise<{user:User, message:string, access_token:string}> {
         // get user
         const user = await this._userService.findUserByEmail(email)
         return this.verifyUserAdmin(enteredOtp, user)
@@ -73,7 +75,7 @@ export class AuthService {
     /**
      * Verify admin
      */
-    async verifyAdmin(email:string, enteredOtp:string): Promise<{user:User, message:string}> {
+    async verifyAdmin(email:string, enteredOtp:string): Promise<{user:User, message:string, access_token:string}> {
         // get user
         const admin = await this._userService.findAdminByEmail(email)
         return this.verifyUserAdmin(enteredOtp, admin)
@@ -82,7 +84,7 @@ export class AuthService {
      /**
      * Verify user or admin logic
      */
-    async verifyUserAdmin(enteredOtp:string, user:User|null): Promise<{user:User, message:string}> {
+    async verifyUserAdmin(enteredOtp:string, user:User|null): Promise<{user:User, message:string, access_token:string}> {
         if(!user) {
             throw new NotFoundException('User Not Found');
         }
@@ -99,7 +101,16 @@ export class AuthService {
         }
         const newUser = {...user, isVerified:true}
         const updatedUser = await this._userService.saveUser(newUser)
+          const payload = {
+            sub: user.id, // 'sub' is standard for user ID
+            email: user.email,
+            isVerified: user.isVerified,
+            role: user.role,
+            // Add any other scalar properties you frequently need in the frontend
+            // or for authorization decisions without another DB lookup
+        };
         return {
+            access_token: this._jwtService.sign(payload),
             user: updatedUser,
             message: 'User Verified Successfully'
         }
