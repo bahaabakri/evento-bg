@@ -24,16 +24,17 @@ export class RolesGuard implements CanActivate {
         // no role is required
         if(!requiredRoles) {
             return true;
-        }
-        const {currentAdmin}: {currentAdmin:User} = context.switchToHttp().getRequest();
+        }        
+        const {user}: {user:User} = context.switchToHttp().getRequest();
         // no authenticated user
-        if(!currentAdmin) {
+        if(!user) {
             return false;
         }
         // check if the user has the required role
-        const userRoleOrder = this.hierarchyOrder[currentAdmin.role];
+        const userRoleOrder = this.hierarchyOrder[user.role];
         return requiredRoles.some(requiredRole => {
             return userRoleOrder >= this.hierarchyOrder[requiredRole]; // or === if you want exact match
         });
+
     }
 }   

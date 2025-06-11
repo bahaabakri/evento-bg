@@ -2,11 +2,8 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFiles
 import { EventsService } from './events.service';
 import CreateEventDto from './dto/request/create-event.dto';
 import UpdateEventDto from './dto/request/update-event-dto';
-import { UserAuthGuard } from 'src/auth/gurads/user-auth.guard';
-import { CurrentAdmin } from 'src/auth/decorators/current-admin.decorator';
 import { User } from 'src/users/user.entity';
-import { AdminAuthGuard } from 'src/auth/gurads/admin-auth.guard';
-import { RolesGuard } from 'src/auth/gurads/roles.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/users/decorators/roles.decorator';
 import { Role } from 'src/users/roles.enum';
 import { EventDto } from './dto/response/event.dto';
@@ -14,8 +11,10 @@ import Serialize from 'src/decorators/serialize.decorator';
 import { ApproveEventDto } from './dto/request/approve-event.dto';
 import { EventResponseDto } from './dto/response/event-response.dto';
 import SearchEventDto from './dto/request/search-event.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
-@UseGuards(AdminAuthGuard)
+@UseGuards(AuthGuard('jwt'))
 @Controller('admin/events')
 export class EventsAdminController {
     constructor(private readonly eventsService: EventsService) {}
@@ -42,7 +41,7 @@ export class EventsAdminController {
     @UseGuards(RolesGuard)
     @Roles(Role.MODERATOR)
     @Post()
-    async createEvent(@Body() eventData: CreateEventDto, @CurrentAdmin() admin:User) {
+    async createEvent(@Body() eventData: CreateEventDto, @CurrentUser() admin:User) {
         const event = await this.eventsService.createEvent(eventData, admin);
         return event;
     }

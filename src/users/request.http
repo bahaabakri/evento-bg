@@ -4,11 +4,12 @@ DELETE  http://localhost:3000/users/10
 
 ### get all users
 GET  http://localhost:3000/users/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE4LCJlbWFpbCI6InRlc3RiYmJAaW5ub3ZhdGlvbmZhY3RvcnkuYml6IiwiaXNWZXJpZmllZCI6dHJ1ZSwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk1NjkxNTcsImV4cCI6MTc1MDg2NTE1N30.43kNOQxs71pJqliHKqaJdjCKD1OnOJ9uXwvqP2dzcfE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE4LCJlbWFpbCI6InRlc3RiYmJAaW5ub3ZhdGlvbmZhY3RvcnkuYml6IiwiaXNWZXJpZmllZCI6dHJ1ZSwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk2NDU0MzMsImV4cCI6MTc1MDk0MTQzM30.ebL0evh7j5iFBLlrOrtvfiyhuPVMEaYjw_BNNpfN5OA
 
 
 ### get current user
-POST http://localhost:3000/admin/users/me
+GET http://localhost:3000/admin/users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE2LCJlbWFpbCI6InRlc3RiYmJAaW5ub3ZhdGlvbmZhY3RvcnkuYml6IiwiaXNWZXJpZmllZCI6dHJ1ZSwicm9sZSI6InN1cGVyX2FkbWluIiwiaWF0IjoxNzQ5NjQ1NTkzLCJleHAiOjE3NTA5NDE1OTN9.CNtypEWDTdqPxGJrqJ1z-HHHKJlNTT55PZR0zJ1Jz2k
 
 ### get user by id
 GET http://localhost:3000/admin/users/15
