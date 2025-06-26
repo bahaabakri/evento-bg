@@ -13,6 +13,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy'; // We'll create this next
+import { HttpModule } from '@nestjs/axios';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Otp]),
@@ -25,6 +26,7 @@ import { JwtStrategy } from './jwt.strategy'; // We'll create this next
         signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '60m' }, // Get expiry from env
       }),
     }),
+    HttpModule
   ],
   controllers: [AuthUserController, AuthAdminController],
   providers: [UserService, OtpService, AuthService, MailService, JwtStrategy]

@@ -24,4 +24,9 @@ export class AuthUserController {
         const res = await this._authService.verifyUser(email, otp)
         return res
     }
+
+    @Post('google-login')
+    async googleLogin(@Body('token') token: string) {
+        return this._authService.loginWithGoogle(token);
+    }
 }

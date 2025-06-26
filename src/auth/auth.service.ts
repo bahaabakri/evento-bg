@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { User } from '../users/user.entity';
 // Update the import path below if the actual file name or location is different
 import { UserService } from '../users/user.service';
@@ -6,14 +6,23 @@ import { OtpService } from '../otp/otp.service';
 import { CreateLoginDto } from './dto/request/create-login.dto';
 import { Role } from '../users/roles.enum';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { OAuth2Client } from 'google-auth-library';
+import { lastValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class AuthService {
+    private client
     constructor(
         private _userService: UserService,
         private _otpService: OtpService,
         private _jwtService: JwtService,
-    ) {}
+        private _configService: ConfigService,
+        private _httpService: HttpService, // Ensure you have HttpService imported from @nestjs/axios
+    ) {
+        this.client = new OAuth2Client(this._configService.get<string>('GOOGLE_CLIENT_ID'))
+    }
 
     /**
      * create user if not exist and send otp
@@ -99,6 +108,32 @@ export class AuthService {
         if (new Date(dbOtp.expiredAt).getTime() < new Date().getTime()) {
             throw new BadRequestException('Expired otp, try again')
         }
+        return this.handleUserVerification(user)
+    }
+
+    /**
+     * Login with google
+     */
+    async loginWithGoogle(accessToken:string) {
+    try {
+      const { data } = await lastValueFrom(
+        this._httpService.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }),
+      );
+      const { email, name, picture } = data;
+      let user = await this._userService.findUserByEmail(email);
+      if(!user) {
+        // If user does not exist, create a new user
+        user = await this._userService.createUser({email}, Role.USER);
+      }
+      return this.handleUserVerification(user);
+    } catch (err) {
+      throw new UnauthorizedException(err);
+    }
+    }
+
+    private async handleUserVerification(user:User) {
         const newUser = {...user, isVerified:true}
         const updatedUser = await this._userService.saveUser(newUser)
           const payload = {
