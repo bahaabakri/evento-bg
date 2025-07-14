@@ -14,14 +14,14 @@ import SearchEventDto from './dto/request/search-event.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
-@UseGuards(AuthGuard('jwt'))
+// @UseGuards(AuthGuard('jwt'))
 @Controller('admin/events')
 export class EventsAdminController {
     constructor(private readonly eventsService: EventsService) {}
     ////////////////// get apis for admin //////////////////
     @Serialize(EventDto)
     @UseGuards(RolesGuard)
-    @Roles(Role.ADMIN)
+    // @Roles(Role.ADMIN)
     @Get()
     async getEvents(@Query() query:SearchEventDto) {
         const events = await this.eventsService.getEvents(query);
