@@ -13,13 +13,14 @@ import { EventResponseDto } from './dto/response/event-response.dto';
 import SearchEventDto from './dto/request/search-event.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { PaginatedEventsDto } from './dto/response/paginated-events.dto';
 
 // @UseGuards(AuthGuard('jwt'))
 @Controller('admin/events')
 export class EventsAdminController {
     constructor(private readonly eventsService: EventsService) {}
     ////////////////// get apis for admin //////////////////
-    @Serialize(EventDto)
+    @Serialize(PaginatedEventsDto)
     @UseGuards(RolesGuard)
     // @Roles(Role.ADMIN)
     @Get()

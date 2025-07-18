@@ -7,6 +7,9 @@ import UpdateEventDto from './dto/request/update-event-dto';
 import { UploadImageService } from 'src/upload-image/upload-image.service';
 import { User } from 'src/users/user.entity';
 import SearchEventDto from './dto/request/search-event.dto';
+import { plainToInstance } from 'class-transformer';
+import { EventDto } from './dto/response/event.dto';
+import { PaginatedEventsDto } from './dto/response/paginated-events.dto';
 
 @Injectable()
 export class EventsService {
@@ -47,14 +50,15 @@ export class EventsService {
      * Get  events
      * @returns 
      */
-    async getEvents({query}:SearchEventDto): Promise<EventEntity[]> {
+    async getEvents({query, page = 1, perPage = 10}:SearchEventDto): Promise<PaginatedEventsDto> {
         // Here you would typically fetch events from a database
         // For this example, we'll just return an empty array
         // console.log(query);
+        const skip = (page - 1) * perPage;
         if(!query) {
-            return this.getAllEvents();
+            return this.getAllEvents(page, perPage, skip);
         }
-        return this.getSearchEvents(query);
+        return this.getSearchEvents(query, page, perPage, skip);
     }
 
 
@@ -62,25 +66,43 @@ export class EventsService {
      * Get all events
      * @returns
      */
-    async getAllEvents(): Promise<EventEntity[]> {
-        return this._eventRepo.find({
-            relations: {
-                user: true,
-            }
-        }); 
+    async getAllEvents(page:number, perPage:number, skip:number): Promise<PaginatedEventsDto> {
+        const [events, total] = await this._eventRepo.findAndCount({
+            skip,
+            take: perPage,
+            relations: { user: true },
+            order: { date: 'DESC' }
+        });
+        return this.getEventsResponse(events, page, perPage, total);
     }
+
+
 
     /**
      * get events by search query
      */
-    getSearchEvents(query:string): Promise<EventEntity[]> {
-        return this._eventRepo.createQueryBuilder('event')
+    async getSearchEvents(query:string, page:number, perPage:number, skip:number): Promise<PaginatedEventsDto> {
+        const [events, total] = await this._eventRepo.createQueryBuilder('event')
             .leftJoinAndSelect('event.user', 'user')
-            .where('LOWER(event.name) LIKE LOWER(:query)', {query: `%${query}%`})
-            .orWhere('LOWER(event.description) LIKE LOWER(:query)', {query: `%${query}%`})
-            .orWhere('LOWER(event.location) LIKE LOWER(:query)', {query: `%${query}%`})
+            .where('LOWER(event.name) LIKE LOWER(:query)', { query: `%${query}%` })
+            .orWhere('LOWER(event.description) LIKE LOWER(:query)', { query: `%${query}%` })
+            .orWhere('LOWER(event.location) LIKE LOWER(:query)', { query: `%${query}%` })
             .orderBy('event.date', 'DESC')
-            .getMany();
+            .skip(skip)
+            .take(perPage)
+            .getManyAndCount();
+          return this.getEventsResponse(events, page, perPage, total);
+    }
+
+    private getEventsResponse(events: EventEntity[], page: number, perPage: number, total:number): PaginatedEventsDto {
+        return {
+            data: plainToInstance(EventDto, events, { excludeExtraneousValues: true }),
+            meta: {
+                total,
+                page,
+                perPage
+            }
+        };
     }
 
     /**

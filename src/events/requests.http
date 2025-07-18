@@ -1,7 +1,7 @@
 # Example HTTP requests to test APIs
 
 # GET request to fetch all items
-GET http://localhost:3000/admin/events?query=dfg
+GET http://localhost:3000/admin/events?page=1&perPage=10
 
 
 ### Get request to fetch a single item by ID
