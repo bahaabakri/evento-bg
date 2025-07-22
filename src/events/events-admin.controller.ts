@@ -39,8 +39,8 @@ export class EventsAdminController {
 
     ///////////////////// post apis for moderator ///////////
     @Serialize(EventResponseDto)
-    @UseGuards(RolesGuard)
-    @Roles(Role.MODERATOR)
+    // @UseGuards(RolesGuard)
+    // @Roles(Role.MODERATOR)
     @Post()
     async createEvent(@Body() eventData: CreateEventDto, @CurrentUser() admin:User) {
         const event = await this.eventsService.createEvent(eventData, admin);

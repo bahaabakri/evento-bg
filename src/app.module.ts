@@ -83,7 +83,7 @@ export class AppModule implements NestModule {
       // and allow requests from the frontend running on localhost:5173
       const cors = require('cors');
       const corsOptions: CorsOptions = {
-        origin: ['http://localhost:5172', 'http://localhost:5174'],
+        origin: ['http://localhost:5172', 'http://localhost:5174', 'http://localhost:5173'],
         credentials: true,
       };
       consumer
