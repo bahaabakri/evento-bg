@@ -30,7 +30,7 @@ export class EventsAdminController {
     }
     @Serialize(EventDto)
     @UseGuards(RolesGuard)
-    @Roles(Role.ADMIN)
+    // @Roles(Role.ADMIN)
     @Get(':id')
     async getEventById(@Param('id') id: number) {
         const event = await this.eventsService.getEventById(id);
@@ -47,8 +47,8 @@ export class EventsAdminController {
         return event;
     }
     @Serialize(EventResponseDto)
-    @UseGuards(RolesGuard)
-    @Roles(Role.MODERATOR)
+    // @UseGuards(RolesGuard)
+    // @Roles(Role.MODERATOR)
     @Patch(':id')
     async updateEvent(@Param('id') id: number, @Body() eventData: UpdateEventDto) {
         const event = await this.eventsService.updateEvent(id, eventData);
@@ -57,8 +57,8 @@ export class EventsAdminController {
 
      ///////////////////// post apis for super admin ///////////
      @Serialize(EventResponseDto)
-    @UseGuards(RolesGuard)
-    @Roles(Role.SUPER_ADMIN)
+    // @UseGuards(RolesGuard)
+    // @Roles(Role.SUPER_ADMIN)
     @Delete(':id')
     async deleteEvent(@Param('id') id: number) {
         const event = await this.eventsService.deleteEvent(id);
@@ -66,8 +66,8 @@ export class EventsAdminController {
     }
 
     @Serialize(EventResponseDto)
-    @UseGuards(RolesGuard)
-    @Roles(Role.SUPER_ADMIN)
+    // @UseGuards(RolesGuard)
+    // @Roles(Role.SUPER_ADMIN)
     @Patch(':id/approve')
     async approveEvent(@Param('id') id: number, @Body() {approved}:ApproveEventDto) {
         const event = await this.eventsService.approveEvent(id, approved);
