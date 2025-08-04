@@ -1,4 +1,5 @@
 import { Expose, Transform } from "class-transformer";
+import { ImageObject } from "src/events/event.type";
 
 export class EventDto {
     @Expose()
@@ -29,7 +30,7 @@ export class EventDto {
     isApproved: boolean;
 
     @Expose()
-    imagesUrls: string[];
+    images: ImageObject[];
 
     @Expose()
     createdAt: Date;

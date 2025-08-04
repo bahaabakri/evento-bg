@@ -5,7 +5,7 @@ GET http://localhost:3000/admin/events?page=1&perPage=10
 
 
 ### Get request to fetch a single item by ID
-GET http://localhost:3000/admin/events/13
+GET http://localhost:3000/admin/events/31
 ###
 
 # POST request to create a new item
@@ -13,14 +13,14 @@ POST http://localhost:3000/admin/events
 Content-Type: application/json
 
 {
-    "name": "Item sdsdfsdf 22222222222222 sample",
+    "name": "test with images",
     "description": "This is a sample item.",
     "date": "2023-10-01T00:00:00Z",
     "location": "Sample Location",
     "isActive": true,
     "lat": 40.7128,
     "lng": -74.0060,
-    "imagesIds": ["68"]
+    "imagesIds": ["138"]
 }
 
 ###
