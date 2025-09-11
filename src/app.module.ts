@@ -44,15 +44,15 @@ const isProduction = process.env.NODE_ENV === 'production';
         host: 'sandbox.smtp.mailtrap.io',
         port: 587,
         auth: {
-          user: 'dc3f149b7f32f7',
-          pass: 'f71e7a0e66fa56',
+          user: '8c39f8bb36c637',
+          pass: 'dc639a4fd212f4',
         },
         tls: {
           rejectUnauthorized: false,
         },
       },
       defaults: {
-        from: 'baha@innovationfactory.biz',
+        from: 'bahaa.bakri1995@gmail.com',
       },
       template: {
         dir: join(__dirname, 'templates'),
