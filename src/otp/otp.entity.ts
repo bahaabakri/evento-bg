@@ -15,6 +15,9 @@ export class Otp {
     @Column()
     expiredAt:Date;
 
+    @Column({default: 'login'})
+    context: string; 
+
     @ManyToOne(() => User, (user) => user.otps, {onDelete: 'CASCADE'})
     user: User
 

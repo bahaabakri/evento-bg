@@ -1,0 +1,1 @@
+export type OtpContext = 'auth' | 'password-reset' | '2fa';

@@ -12,16 +12,27 @@ Content-Type: application/json
 
 {
     "email": "testbbb@innovationfactory.biz",
-    "otp": "923198"
+    "otp": "134681"
 }
 
 
-### login register admin
-POST http://localhost:3000/admin/auth/loginRegister
+### login admin
+POST http://localhost:3000/admin/auth/login
 Content-Type: application/json
 
 {
-    "email": "testbbb@innovationfactory.biz"
+    "email": "testadmin@innovationfactory.biz"
+}
+
+### register admin
+POST http://localhost:3000/admin/auth/register
+Content-Type: application/json
+
+{
+    "email": "testadmin@innovationfactory.biz",
+    "firstname": "Bahaa",
+    "lastname": "Bakri",
+    "phone": "+971524371041"
 }
 
 ### verify user
@@ -29,6 +40,6 @@ POST http://localhost:3000/admin/auth/verify
 Content-Type: application/json
 
 {
-    "email": "testbbb@innovationfactory.biz",
-    "otp": "161829"
+    "email": "testadmin@innovationfactory.biz",
+    "otp": "160793"
 }

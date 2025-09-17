@@ -2,6 +2,7 @@ import { Otp } from "../otp/otp.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Role } from "./roles.enum";
 import { EventEntity } from "../events/event.entity";
+import { Status } from "./status.enum";
 
 @Entity()
 export class User {
@@ -11,6 +12,14 @@ export class User {
     @Column()
     email: string;
 
+    @Column({ nullable: true })
+    firstname: string;
+
+    @Column({ nullable: true })
+    lastname: string;
+
+    @Column({ nullable: true })
+    phone: string;
   
     @Column({ default: false })
     isVerified: boolean;
@@ -18,6 +27,9 @@ export class User {
     @Column({default: Role.USER })
     role: Role;
   
+    @Column({ default: Status.PENDING })
+    status: Status;
+    
     @OneToMany(() => Otp, (otp) => otp.user, { cascade: true })
     otps: Otp[];
 

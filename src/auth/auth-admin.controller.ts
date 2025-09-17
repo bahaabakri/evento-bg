@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import Serialize from 'src/decorators/serialize.decorator';
 import { UserResponseDto } from './dto/response/user-response.dto';
 import { GuestGuard } from './guards/guest.guard';
+import { CreateAdminDto } from './dto/request/create-admin.dto';
 
 @Serialize(UserResponseDto)
 @UseGuards(GuestGuard)
@@ -12,10 +13,16 @@ import { GuestGuard } from './guards/guest.guard';
 export class AuthAdminController {
     constructor(private _authService:AuthService) {}
     
-    @Post('loginRegister')
-    async createOrLoginAdmin(@Body() body:CreateLoginDto) {
+    @Post('login')
+    async loginAdmin(@Body() body:CreateLoginDto) {
+        // Logic to login as an admin
+        return this._authService.loginAdmin(body)
+    }
+
+    @Post('register')
+    async createAdmin(@Body() body:CreateAdminDto) {
         // Logic to create a new admin
-        return this._authService.createLoginAdmin(body)
+        return this._authService.createAdmin(body)
     }
     
     @Post('verify')

@@ -44,4 +44,11 @@ export class UserAdminController {
       return this._userService.removeUser(parseInt(id));
     }
 
+    @UseGuards(RolesGuard)
+    @Roles(Role.SUPER_ADMIN)
+    @Post(':id/approve')
+    approveAdmin(@Param('id') id: string) {
+        return this._userService.approveAdmin(parseInt(id))
+    }
+
 }
