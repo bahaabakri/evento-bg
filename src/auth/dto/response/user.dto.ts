@@ -10,6 +10,18 @@ export class UserDto {
     email: string;
 
     @Expose()
+    firstname: string;
+
+    @Expose()
+    lastname: string;
+
+    @Expose()
+    phone: string;
+
+    @Expose()
+    status: string;
+    
+    @Expose()
     isVerified: boolean;
 
     @Expose()

@@ -3,7 +3,7 @@ POST http://localhost:3000/auth/loginRegister
 Content-Type: application/json
 
 {
-    "email": "testbbb@innovationfactory.biz"
+    "email": "testtbbb@innovationfactory.biz"
 }
 
 ### verify user
@@ -11,8 +11,8 @@ POST http://localhost:3000/auth/verify
 Content-Type: application/json
 
 {
-    "email": "testbbb@innovationfactory.biz",
-    "otp": "134681"
+    "email": "testtbbb@innovationfactory.biz",
+    "otp": "690464"
 }
 
 
@@ -21,7 +21,7 @@ POST http://localhost:3000/admin/auth/login
 Content-Type: application/json
 
 {
-    "email": "testadmin@innovationfactory.biz"
+    "email": "testadmin2@innovationfactory.biz"
 }
 
 ### register admin
@@ -29,17 +29,17 @@ POST http://localhost:3000/admin/auth/register
 Content-Type: application/json
 
 {
-    "email": "testadmin@innovationfactory.biz",
+    "email": "testadmin2@innovationfactory.biz",
     "firstname": "Bahaa",
     "lastname": "Bakri",
     "phone": "+971524371041"
 }
 
-### verify user
+### verify admin
 POST http://localhost:3000/admin/auth/verify
 Content-Type: application/json
 
 {
-    "email": "testadmin@innovationfactory.biz",
-    "otp": "160793"
+    "email": "testadmin2@innovationfactory.biz",
+    "otp": "536759"
 }
