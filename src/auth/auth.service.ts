@@ -40,7 +40,7 @@ export class AuthService {
         return { user, message };
     }
     // Used for regular users
-    private async _handleUserVerification(user: User) {
+    private async _handleVerification(user: User) {
         user.isVerified = true;
         const updatedUser = await this._userService.saveUser(user);
 
@@ -58,17 +58,6 @@ export class AuthService {
         };
     }
 
-    // Used for admins (no JWT, just mark verified)
-    private async _handleAdminVerification(admin: User) {
-        admin.isVerified = true;
-        const updatedAdmin = await this._userService.saveUser(admin);
-
-        return {
-            user: updatedAdmin,
-            message: 'Admin Verified Successfully',
-        };
-    }
-
     /////////////////////// Public Functions ///////////////////////
 
     /** 
@@ -76,7 +65,7 @@ export class AuthService {
      * @param body 
      * @returns
     **/
-    async createLoginUser(body: CreateLoginDto): Promise<{ user: User; message: string }> {
+    async registerLoginUser(body: CreateLoginDto): Promise<{ user: User; message: string }> {
         let user = await this._userService.findUserByEmail(body.email);
         let message = user ? 'Logged in Successfully' : 'User Created Successfully';
 
@@ -94,7 +83,7 @@ export class AuthService {
      * @param role 
      * @returns 
      */
-    async createAdmin(body: CreateAdminDto, role: Exclude<Role, Role.USER> = Role.ADMIN): Promise<{ user: User; message: string }> {
+    async registerAdmin(body: CreateAdminDto, role: Exclude<Role, Role.USER> = Role.ADMIN): Promise<{ user: User; message: string }> {
         const existing = await this._userService.findAdminByEmail(body.email);
         if (existing) throw new BadRequestException('Admin with this email already exists');
 
@@ -125,7 +114,7 @@ export class AuthService {
         const user = await this._userService.findUserByEmail(email)
         if(!user) throw new NotFoundException('User with this email does not exist');
         await this._otpService.verifyOtp(user, enteredOtp, 'auth')
-        return this._handleUserVerification(user);
+        return this._handleVerification(user);
     }
 
     /**
@@ -136,7 +125,7 @@ export class AuthService {
         const admin = await this._userService.findAdminByEmail(email)
         if(!admin) throw new NotFoundException('Admin with this email does not exist');
         await this._otpService.verifyOtp(admin, enteredOtp, 'auth')
-        return this._handleAdminVerification(admin);  
+        return this._handleVerification(admin);  
     }
 
     // /**
@@ -176,7 +165,7 @@ export class AuthService {
                 // If user does not exist, create a new user
                 user = await this._userService.createUser({ email });
             }
-            return this._handleUserVerification(user);
+            return this._handleVerification(user);
         } catch (err) {
             throw new UnauthorizedException(err);
         }

@@ -22,7 +22,7 @@ export class AuthAdminController {
     @Post('register')
     async createAdmin(@Body() body:CreateAdminDto) {
         // Logic to create a new admin
-        return this._authService.createAdmin(body)
+        return this._authService.registerAdmin(body)
     }
     
     @Post('verify')

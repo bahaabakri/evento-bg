@@ -13,3 +13,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE2LCJlbWFpb
 
 ### get user by id
 GET http://localhost:3000/admin/users/15
+
+### Approve admin
+POST http://localhost:3000/admin/users/25/approve
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIwLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaXNWZXJpZmllZCI6dHJ1ZSwicm9sZSI6InN1cGVyX2FkbWluIiwiaWF0IjoxNzU4MTgyMjU3LCJleHAiOjE3NTgxODU4NTd9.Yf09cJtQyWXUDnsZtsD3gF4YUE4vzj7nLGZiXfqX-ns

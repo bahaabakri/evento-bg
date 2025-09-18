@@ -29,7 +29,7 @@ POST http://localhost:3000/admin/auth/register
 Content-Type: application/json
 
 {
-    "email": "testadmin2@innovationfactory.biz",
+    "email": "testadmin5@innovationfactory.biz",
     "firstname": "Bahaa",
     "lastname": "Bakri",
     "phone": "+971524371041"
@@ -40,6 +40,6 @@ POST http://localhost:3000/admin/auth/verify
 Content-Type: application/json
 
 {
-    "email": "testadmin2@innovationfactory.biz",
-    "otp": "536759"
+    "email": "testadmin5@innovationfactory.biz",
+    "otp": "977176"
 }

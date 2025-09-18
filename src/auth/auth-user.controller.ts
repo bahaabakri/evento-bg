@@ -16,7 +16,7 @@ export class AuthUserController {
     @Post('loginRegister')
     async createOrLogin(@Body() body:CreateLoginDto) {
         // Logic to create a new user
-        return this._authService.createLoginUser(body)
+        return this._authService.registerLoginUser(body)
     }
 
     @Post('verify')
