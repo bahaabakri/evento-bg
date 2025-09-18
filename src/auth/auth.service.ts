@@ -11,7 +11,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { CreateAdminDto } from './dto/request/create-admin.dto';
-import { Status } from 'src/users/status.enum';
+import { Status } from '../../src/users/status.enum';
 
 @Injectable()
 export class AuthService {
@@ -120,7 +120,7 @@ export class AuthService {
     /**
      * Verify admin
      */
-    async verifyAdmin(email: string, enteredOtp: string): Promise<{ user: User, message: string}> {
+    async verifyAdmin(email: string, enteredOtp: string): Promise<{ user: User, message: string, access_token: string }> {
         // get user
         const admin = await this._userService.findAdminByEmail(email)
         if(!admin) throw new NotFoundException('Admin with this email does not exist');
