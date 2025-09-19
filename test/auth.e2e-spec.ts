@@ -9,9 +9,10 @@ import { OtpService } from 'src/otp/otp.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Otp } from 'src/otp/otp.entity';
 import { Repository } from 'typeorm';
+import { Status } from 'src/users/status.enum';
 
-let mockUser:User = {
-    id: 1, email: 'test22@gmail.com', role: Role.USER, isVerified: false, otps:[], events:[]
+let mockUser: User = {
+    id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps: [], events: [], firstname: 'Test', lastname: 'User', phone: '111111', status: Status.APPROVED
 }
 let mockOtpCode:string = '123456';
 describe('AuthController (e2e)', () => {

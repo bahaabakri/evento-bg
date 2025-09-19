@@ -44,18 +44,6 @@ export class UserService {
         return this._createWithRole(body, Role.ADMIN);
     }
 
-    /**
-     * Approve admin
-     * @param adminId 
-     * @returns 
-     */
-    async approveAdmin(adminId: number): Promise<User> {
-        const admin = await this._userRepo.findOne({ where: { id: adminId, role: Role.ADMIN } });
-        if (!admin) throw new NotFoundException('Admin not found');
-        admin.status = Status.APPROVED;
-        return this.saveUser(admin);
-    }
-
     saveUser(user: User): Promise<User> {
         return this._userRepo.save(user)
     }
@@ -88,7 +76,15 @@ export class UserService {
      * find user by id
      */
     findUserById(id: number): Promise<User | null> {
-        return this._userRepo.findOneBy({ id })
+        return this._userRepo.findOneBy({ id, role: Role.USER })
+    }
+    /**
+     * find admin by id
+     */
+    findAdminById(id: number): Promise<User | null> {
+        return this._userRepo.findOne({
+            where: { id, role: Not(Role.USER)}
+        })
     }
 
     /**
@@ -114,5 +110,16 @@ export class UserService {
         return {
             message: 'User has been deleted successfully'
         }
+    }
+    /**
+     * Approve admin
+     * @param adminId 
+     * @returns 
+     */
+    async approveAdmin(adminId: number): Promise<User> {
+        const admin = await this.findAdminById(adminId);
+        if (!admin) throw new NotFoundException('Admin not found');
+        admin.status = Status.APPROVED;
+        return this.saveUser(admin);
     }
 }

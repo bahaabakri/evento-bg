@@ -21,18 +21,27 @@ describe('AuthService', () => {
     let authService: AuthService;
     let fakeUserService: Partial<UserService>;
     let fakeOtpService: Partial<OtpService>;
+    let fakeHttpService: Partial<HttpService>;
+    let fakeJwtService: Partial<JwtService>;
     beforeEach(async () => {
         fakeUserService = {
             findAdminByEmail: jest.fn().mockResolvedValue(null),
             createUser: jest.fn().mockResolvedValue(mockUser),
+            createAdmin: jest.fn().mockResolvedValue(mockUser),
             findUserByEmail: jest.fn().mockResolvedValue(null),
             findUserAdminByEmail: jest.fn().mockResolvedValue(null),
             saveUser: jest.fn().mockResolvedValue(mockUser),
-        }
-
+        },
+        fakeHttpService = {
+            get: jest.fn(),
+        },
         fakeOtpService = {
             sendOtp: jest.fn().mockResolvedValue(undefined),
-            getLastUserOtp: jest.fn().mockResolvedValue(null)
+            getLastUserOtp: jest.fn().mockResolvedValue(null),
+            verifyOtp: jest.fn().mockResolvedValue(true),
+        },
+        fakeJwtService = {
+            sign: jest.fn().mockReturnValue('signed-token'),
         }
         // create test module
         const module = await Test.createTestingModule({
@@ -42,7 +51,9 @@ describe('AuthService', () => {
                 ConfigService,
                 HttpService,
                 { provide: UserService, useValue: fakeUserService },
+                {provide: HttpService, useValue: fakeHttpService},
                 { provide: OtpService, useValue: fakeOtpService },
+                { provide: JwtService, useValue: fakeJwtService },
             ],
         }).compile();
         authService = module.get<AuthService>(AuthService);
@@ -99,11 +110,11 @@ describe('AuthService', () => {
     })
     describe('verifyUser', () => {
         it('should throw NotFoundException if user not found', async () => {
-            await expect(authService.verifyUser(mockOtp.code, mockUser.email)).rejects.toThrow(NotFoundException);
+            await expect(authService.verifyUser(mockUser.email, mockOtp.code)).rejects.toThrow(NotFoundException);
         });
         it('should verify otp and return access token if user found', async () => {
             (fakeUserService.findUserByEmail as jest.Mock).mockResolvedValue(mockUser);
-            const res = await authService.verifyUser(mockOtp.code, mockUser.email);
+            const res = await authService.verifyUser(mockUser.email, mockOtp.code);
             expect(fakeOtpService.verifyOtp).toHaveBeenCalledTimes(1);
             expect(res.user).toBeDefined();
             expect(res.user.email).toBe(mockUser.email);
@@ -112,11 +123,11 @@ describe('AuthService', () => {
     });
     describe('verifyAdmin', () => {
         it('should throw NotFoundException if admin not found', async () => {
-            await expect(authService.verifyAdmin(mockOtp.code, mockUser.email)).rejects.toThrow(NotFoundException);
+            await expect(authService.verifyAdmin(mockUser.email, mockOtp.code)).rejects.toThrow(NotFoundException);
         });
         it('should verify otp and return access token if admin found', async () => {
             (fakeUserService.findAdminByEmail as jest.Mock).mockResolvedValue(mockUser);
-            const res = await authService.verifyAdmin(mockOtp.code, mockUser.email);
+            const res = await authService.verifyAdmin(mockUser.email, mockOtp.code);
             expect(fakeOtpService.verifyOtp).toHaveBeenCalledTimes(1);
             expect(res.user).toBeDefined();
             expect(res.user.email).toBe(mockUser.email);
