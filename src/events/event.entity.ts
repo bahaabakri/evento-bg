@@ -1,7 +1,6 @@
+import { ImageObject } from 'src/types/types';
 import { User } from '../users/user.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { ImageObject } from './event.type';
-
 @Entity('events')
 export class EventEntity {
   @PrimaryGeneratedColumn()

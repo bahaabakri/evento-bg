@@ -7,10 +7,7 @@ import UpdateEventDto from './dto/request/update-event-dto';
 import { UploadImageService } from 'src/upload-image/upload-image.service';
 import { User } from 'src/users/user.entity';
 import SearchEventDto from './dto/request/search-event.dto';
-import { plainToInstance } from 'class-transformer';
-import { EventDto } from './dto/response/event.dto';
-import { PaginatedEventsDto } from './dto/response/paginated-events.dto';
-import { ImageObject } from './event.type';
+import { ImageObject, PaginatedResult } from 'src/types/types';
 
 @Injectable()
 export class EventsService {
@@ -60,7 +57,7 @@ export class EventsService {
     query,
     page = 1,
     perPage = 10,
-  }: SearchEventDto): Promise<PaginatedEventsDto> {
+  }: SearchEventDto): Promise<PaginatedResult<EventEntity>> {
     // Here you would typically fetch events from a database
     // For this example, we'll just return an empty array
     // console.log(query);
@@ -79,7 +76,7 @@ export class EventsService {
     page: number,
     perPage: number,
     skip: number,
-  ): Promise<PaginatedEventsDto> {
+  ): Promise<PaginatedResult<EventEntity>> {
     const [events, total] = await this._eventRepo.findAndCount({
       skip,
       take: perPage,
@@ -96,8 +93,8 @@ export class EventsService {
     query: string,
     page: number,
     perPage: number,
-    skip: number,
-  ): Promise<PaginatedEventsDto> {
+    skip: number, 
+  ): Promise<PaginatedResult<EventEntity>>{
     const [events, total] = await this._eventRepo
       .createQueryBuilder('event')
       .leftJoinAndSelect('event.user', 'user')
@@ -120,11 +117,9 @@ export class EventsService {
     page: number,
     perPage: number,
     total: number,
-  ): PaginatedEventsDto {
+  ): PaginatedResult<EventEntity> {
     return {
-      data: plainToInstance(EventDto, events, {
-        excludeExtraneousValues: true,
-      }),
+      data: events,
       meta: {
         total,
         page,

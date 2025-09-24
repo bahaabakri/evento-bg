@@ -1,20 +1,21 @@
+import { ImageObject } from "src/types/types";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
+@Entity('heros')
 export class Hero {
-    @PrimaryGeneratedColumn()
-    id:number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({default:false})
-    isActive: boolean;
+  @Column({ default: false })
+  isActive: boolean;
 
-    @Column({
-        type: 'text',
-        nullable: true,
-        transformer: {
-          to: (value: string[]) => JSON.stringify(value),
-          from: (value: string) => JSON.parse(value),
-        },
-    })
-    imagesUrls: string[];
+  @Column({
+    type: 'text', // or 'json' / 'jsonb' if using Postgres
+    nullable: true,
+    transformer: {
+      to: (value: ImageObject[]) => JSON.stringify(value),
+      from: (value: string) => JSON.parse(value),
+    },
+  })
+  images: ImageObject[];
 }

@@ -3,13 +3,14 @@ import { HeroService } from './hero.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Hero } from './hero.entity';
 import { UploadImageService } from 'src/upload-image/upload-image.service';
-import { HeroController } from './hero.controller';
 import { UploadIntent } from 'src/upload-image/upload-intent.entity';
 import { UploadImage } from 'src/upload-image/upload-image.entity';
+import { HeroAdminController } from './hero-admin.controller';
+import { HeroUserController } from './hero-user.controller';
 
 @Module({
     imports:[TypeOrmModule.forFeature([Hero, UploadImage, UploadIntent])],
-    controllers: [HeroController],
+    controllers: [HeroAdminController, HeroUserController],
     providers:[HeroService, UploadImageService]
 })
 export class HeroModule {}

@@ -1,0 +1,14 @@
+### Get all heros
+GET http://localhost:3000/admin/heros
+
+### Get a single hero by ID
+GET http://localhost:3000/admin/heros/1
+
+### Create a new hero
+POST http://localhost:3000/admin/heros
+Content-Type: application/json
+
+{
+    "isActive": true,
+    "imagesIds": ["4", "5"]
+}

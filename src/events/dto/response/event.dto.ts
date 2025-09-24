@@ -1,6 +1,5 @@
 import { Expose, Transform } from "class-transformer";
-import { ImageObject } from "src/events/event.type";
-
+import { ImageObject } from "src/types/types";
 export class EventDto {
     @Expose()
     id: number;
