@@ -1,11 +1,11 @@
 # Example HTTP requests to test APIs
 
 # GET request to fetch all items
-GET http://localhost:3000/admin/events?page=1&perPage=10
+GET http://localhost:3000/events?page=1&perPage=10
 
 
 ### Get request to fetch a single item by ID
-GET http://localhost:3000/admin/events/31
+GET http://localhost:3000/events/32
 ###
 
 # POST request to create a new item
