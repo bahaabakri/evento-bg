@@ -4,11 +4,26 @@ GET http://localhost:3000/admin/heros
 ### Get a single hero by ID
 GET http://localhost:3000/admin/heros/1
 
+### Get the active hero
+GET http://localhost:3000/admin/heros/activeHero
+
 ### Create a new hero
 POST http://localhost:3000/admin/heros
 Content-Type: application/json
 
 {
-    "isActive": true,
-    "imagesIds": ["4", "5"]
+    "imagesIds": ["152", "153", "154", "155", "156", "157"]
 }
+
+### Make it active
+PATCH http://localhost:3000/admin/heros/makeItActive/2
+Content-Type: application/json
+
+{
+    "isActive": true
+}
+
+
+// USER
+### Get the active hero
+GET http://localhost:3000/heros/activeHero

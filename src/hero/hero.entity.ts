@@ -13,8 +13,8 @@ export class Hero {
     type: 'text', // or 'json' / 'jsonb' if using Postgres
     nullable: true,
     transformer: {
-      to: (value: ImageObject[]) => JSON.stringify(value),
-      from: (value: string) => JSON.parse(value),
+      to: (value: ImageObject[]) => JSON.stringify(value), // saving to db
+      from: (value: string) => JSON.parse(value), // reading from db
     },
   })
   images: ImageObject[];

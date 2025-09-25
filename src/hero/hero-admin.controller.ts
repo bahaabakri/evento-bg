@@ -17,7 +17,12 @@ export class HeroAdminController {
     findAllHeros() {
         return this._heroService.getAllHeros();
     }
-
+    
+    @Serialize(HeroDto)
+    @Get('activeHero')
+    findActiveHero() {
+        return this._heroService.getActiveHero()
+    }
     @Serialize(HeroDto)
     @Get(':id')
     findById(@Param('id') id: number) {

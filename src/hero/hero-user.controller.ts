@@ -12,15 +12,15 @@ import { PaginatedHerosDto } from './dto/response/paginated-heros.dto';
 @Controller('heros')
 export class HeroUserController {
     constructor(private _heroService: HeroService) { }
+    @Serialize(HeroDto)
+    @Get('activeHero')
+    findActiveHero() {
+        return this._heroService.getActiveHero()
+    }
     @Serialize(PaginatedHerosDto)
     @Get()
     findAllHeros() {
         return this._heroService.getAllHeros();
     }
 
-    @Serialize(HeroDto)
-    @Get(':id')
-    findById(@Param('id') id: number) {
-        return this._heroService.getHero(id)
-    }
 }

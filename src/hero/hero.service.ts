@@ -29,7 +29,7 @@ export class HeroService {
       });
     })
     const hero = this._heroRepo.create({
-      isActive: heroData.isActive,
+      isActive: false,
       images
     })
     const createdSavedHero = await this._heroRepo.save(hero)
@@ -61,10 +61,23 @@ export class HeroService {
     }
     const hero = await this._heroRepo.findOneBy({ id });
     if (!hero) {
-      throw new NotFoundException('Event Not Found');
+      throw new NotFoundException('Hero Not Found');
     }
     return hero;
   }
+
+  /*
+    * get active hero
+  */
+
+  async getActiveHero(): Promise<Hero> {
+    const activeHero = await this._heroRepo.findOneBy({ isActive: true });
+    if (!activeHero) {
+      throw new NotFoundException('Active Hero Not Found');
+    }
+    return activeHero;
+  }
+
 
   /**
    * make hero active

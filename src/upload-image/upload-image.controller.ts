@@ -28,7 +28,7 @@ export class UploadImageController {
     }
 
     /**
-     * Delete image
+     * Delete image  
      */
     @Delete("/image/:id")
     async deleteImage(@Param('id') id:string):Promise<{message:string, image:UploadImage}> {
