@@ -16,7 +16,7 @@ Content-Type: application/json
 }
 
 ### Make it active
-PATCH http://localhost:3000/admin/heros/makeItActive/2
+PATCH http://localhost:3000/admin/heros/makeItActive/4
 Content-Type: application/json
 
 {

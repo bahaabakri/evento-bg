@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { MailService } from "../services/mail.service";
 import { User } from "../users/user.entity";
@@ -41,9 +41,9 @@ export class OtpService {
             order: { createdAt: 'DESC' },
         });
 
-        if (!otp) throw new Error('No OTP found');
-        if (otp.code !== code) throw new Error('Invalid OTP');
-        if (otp.expiredAt.getTime() < Date.now()) throw new Error('Expired OTP');
+        if (!otp) throw new NotFoundException('No OTP found');
+        if (otp.code !== code) throw new BadRequestException('Invalid OTP');
+        if (otp.expiredAt.getTime() < Date.now()) throw new BadRequestException('Expired OTP');
     }
     /**
      * To get user otps
