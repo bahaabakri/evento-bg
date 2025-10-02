@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { EventEntity } from './event.entity';
 import CreateEventDto from './dto/request/create-event.dto';
 import UpdateEventDto from './dto/request/update-event-dto';
-import { UploadImageService } from 'src/upload-image/upload-image.service';
-import { User } from 'src/users/user.entity';
+import { UploadImageService } from 'src/modules/upload-image/upload-image.service';
+import { User } from 'src/modules/users/user.entity';
 import SearchEventDto from './dto/request/search-event.dto';
 import { ImageObject, PaginatedResult } from 'src/types/types';
 

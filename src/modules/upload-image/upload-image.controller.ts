@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Param, Post, UploadedFile, UploadedFiles } fr
 import { UploadImageService } from "./upload-image.service";
 import { UploadIntent } from "./upload-intent.entity";
 import { UploadImage } from "./upload-image.entity";
-import FilesUpload from "../decorators/file-upload.decorator";
+import FilesUpload from "../../decorators/file-upload.decorator";
 
 @Controller("upload-image")
 export class UploadImageController {

@@ -11,7 +11,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { CreateAdminDto } from './dto/request/create-admin.dto';
-import { Status } from '../../src/users/status.enum';
+import { Status } from '../users/status.enum';
 
 @Injectable()
 export class AuthService {

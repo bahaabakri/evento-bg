@@ -3,13 +3,13 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
-import { User } from 'src/users/user.entity';
-import { Role } from 'src/users/roles.enum';
-import { OtpService } from 'src/otp/otp.service';
+import { User } from 'src/modules/users/user.entity';
+import { Role } from 'src/modules/users/roles.enum';
+import { OtpService } from 'src/modules/otp/otp.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Otp } from 'src/otp/otp.entity';
+import { Otp } from 'src/modules/otp/otp.entity';
 import { Repository } from 'typeorm';
-import { Status } from 'src/users/status.enum';
+import { Status } from 'src/modules/users/status.enum';
 
 let mockUser: User = {
     id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps: [], events: [], firstname: 'Test', lastname: 'User', phone: '111111', status: Status.APPROVED

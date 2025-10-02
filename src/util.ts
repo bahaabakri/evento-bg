@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Role } from './users/roles.enum';
+import { Role } from './modules/users/roles.enum';
 
 export async function deleteFileAsync(filename: string, directory = 'uploads'):Promise<string> {
     const filePath = path.join(process.cwd(), directory, filename);

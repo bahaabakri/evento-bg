@@ -1,25 +1,25 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { EventsModule } from './events/events.module';
+import { EventsModule } from './modules/events/events.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EventEntity } from './events/event.entity';
-import { UploadIntent } from './upload-image/upload-intent.entity';
-import { UploadImage } from './upload-image/upload-image.entity';
-import { UploadImageModule } from './upload-image/upload-image.module';
+import { EventEntity } from './modules/events/event.entity';
+import { UploadIntent } from './modules/upload-image/upload-intent.entity';
+import { UploadImage } from './modules/upload-image/upload-image.entity';
+import { UploadImageModule } from './modules/upload-image/upload-image.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { UserModule } from './users/user.module';
-import { Otp } from './otp/otp.entity';
-import { User } from './users/user.entity';
-import { HeroModule } from './hero/hero.module';
-import { AuthModule } from './auth/auth.module';
-import { UserService } from './users/user.service';
+import { UserModule } from './modules/users/user.module';
+import { Otp } from './modules/otp/otp.entity';
+import { User } from './modules/users/user.entity';
+import { HeroModule } from './modules/hero/hero.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UserService } from './modules/users/user.service';
 import { APP_PIPE } from '@nestjs/core';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Hero } from './hero/hero.entity';
+import { Hero } from './modules/hero/hero.entity';
 const isProduction = process.env.NODE_ENV === 'production';
 @Module({
   imports: [

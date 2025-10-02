@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Session, UseGuards } from '@nestjs/common';
-import { CreateLoginDto } from 'src/auth/dto/request/create-login.dto';
-import { VerifyUserDto } from 'src/auth/dto/request/verfiy-user.dto';
+import { CreateLoginDto } from 'src/modules/auth/dto/request/create-login.dto';
+import { VerifyUserDto } from 'src/modules/auth/dto/request/verfiy-user.dto';
 import { AuthService } from './auth.service';
 import Serialize from 'src/decorators/serialize.decorator';
 import { UserResponseDto } from './dto/response/user-response.dto';

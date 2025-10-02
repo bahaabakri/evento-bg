@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Hero } from './hero.entity';
 import { Not, Repository } from 'typeorm';
-import { UploadImageService } from 'src/upload-image/upload-image.service';
+import { UploadImageService } from 'src/modules/upload-image/upload-image.service';
 import { CreateHeroDto } from './dto/request/create-hero.dto';
 import { ImageObject, PaginatedResult } from 'src/types/types';
 

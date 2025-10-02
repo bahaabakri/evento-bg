@@ -4,7 +4,7 @@ import { User } from "./user.entity";
 import { Not, Repository } from "typeorm";
 import { Role } from "./roles.enum";
 import { CreateLoginDto } from "../auth/dto/request/create-login.dto";
-import { CreateAdminDto } from "src/auth/dto/request/create-admin.dto";
+import { CreateAdminDto } from "src/modules/auth/dto/request/create-admin.dto";
 import { Status } from "./status.enum";
 @Injectable()
 

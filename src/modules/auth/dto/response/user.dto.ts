@@ -1,6 +1,6 @@
 import { Expose, Type } from "class-transformer";
 import { IsBoolean, IsEmail, IsNumber, IsString } from "class-validator";
-import { Role } from "src/users/roles.enum";
+import { Role } from "src/modules/users/roles.enum";
 
 export class UserDto {
     @Expose()

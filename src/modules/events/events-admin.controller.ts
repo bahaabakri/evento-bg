@@ -2,17 +2,17 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFiles
 import { EventsService } from './events.service';
 import CreateEventDto from './dto/request/create-event.dto';
 import UpdateEventDto from './dto/request/update-event-dto';
-import { User } from 'src/users/user.entity';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Roles } from 'src/users/decorators/roles.decorator';
-import { Role } from 'src/users/roles.enum';
+import { User } from 'src/modules/users/user.entity';
+import { RolesGuard } from 'src/modules/auth/guards/roles.guard';
+import { Roles } from 'src/modules/users/decorators/roles.decorator';
+import { Role } from 'src/modules/users/roles.enum';
 import { EventDto } from './dto/response/event.dto';
 import Serialize from 'src/decorators/serialize.decorator';
 import { ApproveEventDto } from './dto/request/approve-event.dto';
 import { EventResponseDto } from './dto/response/event-response.dto';
 import SearchEventDto from './dto/request/search-event.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { CurrentUser } from 'src/modules/auth/decorators/current-user.decorator';
 import { PaginatedEventsDto } from './dto/response/paginated-events.dto';
 
 // @UseGuards(AuthGuard('jwt'))
