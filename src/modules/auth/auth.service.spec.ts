@@ -6,11 +6,11 @@ import { Role } from '../users/roles.enum';
 import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { User } from '../users/user.entity';
 import { Test } from '@nestjs/testing';
-import { Otp } from '../../src/otp/otp.entity';
-import { Status } from '../../src/users/status.enum';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
+import { Otp } from '../otp/otp.entity';
+import { Status } from '../users/status.enum';
 let mockUser: User = {
     id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps: [], events: [], firstname: 'Test', lastname: 'User', phone: '111111', status: Status.APPROVED
 }

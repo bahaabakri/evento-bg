@@ -15,7 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/modules/auth/decorators/current-user.decorator';
 import { PaginatedEventsDto } from './dto/response/paginated-events.dto';
 
-// @UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'))
 @Controller('admin/events')
 export class EventsAdminController {
     constructor(private readonly eventsService: EventsService) {}
@@ -39,8 +39,8 @@ export class EventsAdminController {
 
     ///////////////////// post apis for moderator ///////////
     @Serialize(EventResponseDto)
-    // @UseGuards(RolesGuard)
-    // @Roles(Role.MODERATOR)
+    @UseGuards(RolesGuard)
+    @Roles(Role.MODERATOR)
     @Post()
     async createEvent(@Body() eventData: CreateEventDto, @CurrentUser() admin:User) {
         const event = await this.eventsService.createEvent(eventData, admin);

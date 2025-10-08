@@ -5,7 +5,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjI4LCJlbWFpb
 
 ### get current user
 GET http://localhost:3000/admin/users/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE2LCJlbWFpbCI6InRlc3RiYmJAaW5ub3ZhdGlvbmZhY3RvcnkuYml6IiwiaXNWZXJpZmllZCI6dHJ1ZSwicm9sZSI6InN1cGVyX2FkbWluIiwiaWF0IjoxNzQ5NjQ1NTkzLCJleHAiOjE3NTA5NDE1OTN9.CNtypEWDTdqPxGJrqJ1z-HHHKJlNTT55PZR0zJ1Jz2k
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIwLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaXNWZXJpZmllZCI6dHJ1ZSwicm9sZSI6InN1cGVyX2FkbWluIiwiaWF0IjoxNzU5OTIzNzI4LCJleHAiOjE3NTk5MjczMjh9.a1-qY8mqJy0yvn7Huokdu0z1EojlX1s_rvwtB0K_c9E
 
 
 ### get all users
@@ -14,8 +14,8 @@ GET http://localhost:3000/admin/users
 GET http://localhost:3000/admin/users/15
 
 ### Approve admin
-POST http://localhost:3000/admin/users/25/approve
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIwLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaXNWZXJpZmllZCI6dHJ1ZSwicm9sZSI6InN1cGVyX2FkbWluIiwiaWF0IjoxNzU4MTgyMjU3LCJleHAiOjE3NTgxODU4NTd9.Yf09cJtQyWXUDnsZtsD3gF4YUE4vzj7nLGZiXfqX-ns
+POST http://localhost:3000/admin/users/15/approve
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIwLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaXNWZXJpZmllZCI6dHJ1ZSwicm9sZSI6InN1cGVyX2FkbWluIiwiaWF0IjoxNzU5OTIzNzI4LCJleHAiOjE3NTk5MjczMjh9.a1-qY8mqJy0yvn7Huokdu0z1EojlX1s_rvwtB0K_c9E
 
 ### delete user
 DELETE  http://localhost:3000/admin/users/10

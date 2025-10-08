@@ -39,12 +39,12 @@ export class EventsService {
     const event = this._eventRepo.create({
       ...eventData,
       isActive: true,
-      user: admin,
+      createdBy: admin,
       images,
     });
     const createdSavedEvent = await this._eventRepo.save(event);
     return {
-      message: 'Event updated successfully',
+      message: 'Event created successfully',
       event: createdSavedEvent,
     };
   }
@@ -80,7 +80,7 @@ export class EventsService {
     const [events, total] = await this._eventRepo.findAndCount({
       skip,
       take: perPage,
-      relations: { user: true },
+      relations: { createdBy: true },
       order: { date: 'DESC' },
     });
     return this.getEventsResponse(events, page, perPage, total);
@@ -142,7 +142,7 @@ export class EventsService {
     const event = await this._eventRepo.findOne({
       where: { id },
       relations: {
-        user: true,
+        createdBy: true,
       },
     });
     if (!event) {

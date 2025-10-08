@@ -5,22 +5,22 @@ GET http://localhost:3000/events?page=2&perPage=10
 
 
 ### Get request to fetch a single item by ID
-GET http://localhost:3000/events/32
+GET http://localhost:3000/events/35
 ###
 
 # POST request to create a new item
 POST http://localhost:3000/admin/events
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIwLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaXNWZXJpZmllZCI6dHJ1ZSwicm9sZSI6InN1cGVyX2FkbWluIiwiaWF0IjoxNzU5OTIzNzI4LCJleHAiOjE3NTk5MjczMjh9.a1-qY8mqJy0yvn7Huokdu0z1EojlX1s_rvwtB0K_c9E
 
 {
-    "name": "test with images",
+    "name": "test with images 38",
     "description": "This is a sample item.",
     "date": "2023-10-01T00:00:00Z",
     "location": "Sample Location",
-    "isActive": true,
     "lat": 40.7128,
     "lng": -74.0060,
-    "imagesIds": ["138"]
+    "imagesIds": ["22"]
 }
 
 ###

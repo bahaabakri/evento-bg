@@ -38,7 +38,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // In this example, 'payload.sub' is assumed to be the user's unique ID.
     // You fetch the user from your database based on this ID.
     // This step ensures that the user still exists and is active.
-    const user = await this._userService.findUserById(payload.sub); // Adjust based on your UsersService method
+    const user = await this._userService.findById(payload.sub); // Adjust based on your UsersService method
 
     if (!user) {
       // If the user doesn't exist in the database (e.g., deleted account),

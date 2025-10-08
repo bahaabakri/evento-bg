@@ -86,6 +86,12 @@ export class UserService {
             where: { id, role: Not(Role.USER)}
         })
     }
+    /**
+     * find user or admin by id
+     */
+    findById(id:number): Promise<User | null> {
+        return this._userRepo.findOneBy({id})
+    }
 
     /**
      * get all users

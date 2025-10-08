@@ -41,5 +41,5 @@ export class EventEntity {
   images: ImageObject[];
 
   @ManyToOne(() => User, (user) => user.events, { onDelete: 'CASCADE' })
-  user: User;
+  createdBy: User;
 }

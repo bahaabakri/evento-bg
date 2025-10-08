@@ -33,6 +33,6 @@ export class User {
     @OneToMany(() => Otp, (otp) => otp.user, { cascade: true })
     otps: Otp[];
 
-    @OneToMany(() => EventEntity, (eventEntity) => eventEntity.user, {cascade:true})
+    @OneToMany(() => EventEntity, (eventEntity) => eventEntity.createdBy, {cascade:true})
     events:EventEntity[];
 }

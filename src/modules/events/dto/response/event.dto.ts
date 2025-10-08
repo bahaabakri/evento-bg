@@ -1,43 +1,47 @@
-import { Expose, Transform } from "class-transformer";
-import { ImageObject } from "src/types/types";
+import { Expose, Transform } from 'class-transformer';
+import { UserDto } from 'src/modules/auth/dto/response/user.dto';
+import { User } from 'src/modules/users/user.entity';
+import { ImageObject } from 'src/types/types';
+import { Type } from 'class-transformer';
+
 export class EventDto {
-    @Expose()
-    id: number;
+  @Expose()
+  id: number;
 
-    @Expose()
-    name: string;
+  @Expose()
+  name: string;
 
-    @Expose()
-    description: string;
+  @Expose()
+  description: string;
 
-    @Expose()
-    date: string;
+  @Expose()
+  date: string;
 
-    @Expose()
-    location: string;
+  @Expose()
+  location: string;
 
-    @Expose()
-    lng: number;
+  @Expose()
+  lng: number;
 
-    @Expose()
-    lat: number;
+  @Expose()
+  lat: number;
 
-    @Expose()
-    isActive: boolean;
+  @Expose()
+  isActive: boolean;
 
-    @Expose()
-    isApproved: boolean;
+  @Expose()
+  isApproved: boolean;
 
-    @Expose()
-    images: ImageObject[];
+  @Expose()
+  images: ImageObject[];
 
-    @Expose()
-    createdAt: Date;
+  @Expose()
+  createdAt: Date;
 
-    @Expose()
-    updatedAt: Date;
+  @Expose()
+  updatedAt: Date;
 
-    @Transform(({ obj }) => obj.user?.id)
-    @Expose()
-    createdAdminId: number;
+  @Expose()
+  @Type(() => UserDto)
+  createdBy: UserDto;
 }
