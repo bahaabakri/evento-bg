@@ -1,5 +1,6 @@
 import { Expose, Type } from "class-transformer";
 import { EventDto } from "./event.dto";
+import { PaginationDto } from "src/shared-dto/pagination.dto";
 
 export class PaginatedEventsDto {
   @Expose()
@@ -7,9 +8,6 @@ export class PaginatedEventsDto {
   data: EventDto[];
 
   @Expose()
-  meta: {
-    total: number;
-    page: number;
-    perPage: number;
-  };
+  @Type(() => PaginationDto)
+  meta: PaginationDto;
 }

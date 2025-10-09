@@ -12,7 +12,7 @@ import { HttpService } from '@nestjs/axios';
 import { Otp } from '../otp/otp.entity';
 import { Status } from '../users/status.enum';
 let mockUser: User = {
-    id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps: [], events: [], firstname: 'Test', lastname: 'User', phone: '111111', status: Status.APPROVED
+    id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps: [], createdEvents: [],joinedEvents:[], firstname: 'Test', lastname: 'User', phone: '111111', status: Status.APPROVED
 }
 let mockOtp: Otp = {
     id: 1, code: '123456', createdAt: new Date(), expiredAt: new Date(Date.now() + 5 * 60 * 1000), user: mockUser, context: 'auth'

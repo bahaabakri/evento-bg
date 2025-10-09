@@ -1,7 +1,6 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { EventsService } from './events.service';
 import Serialize from 'src/decorators/serialize.decorator';
-import { EventResponseDto } from './dto/response/event-response.dto';
 import SearchEventDto from './dto/request/search-event.dto';
 import { PaginatedEventsDto } from './dto/response/paginated-events.dto';
 import { EventDto } from './dto/response/event.dto';

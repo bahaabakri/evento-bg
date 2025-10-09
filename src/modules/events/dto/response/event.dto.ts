@@ -1,8 +1,9 @@
 import { Expose, Transform } from 'class-transformer';
-import { UserDto } from 'src/modules/auth/dto/response/user.dto';
 import { User } from 'src/modules/users/user.entity';
 import { ImageObject } from 'src/types/types';
 import { Type } from 'class-transformer';
+import { UserEventsDto } from 'src/modules/user-events/dto/response/user-events.dto';
+import { UserDto } from 'src/modules/users/dto/response/user.dto';
 
 export class EventDto {
   @Expose()
@@ -44,4 +45,8 @@ export class EventDto {
   @Expose()
   @Type(() => UserDto)
   createdBy: UserDto;
+
+  @Expose()
+  @Type(() => UserEventsDto)
+  joinedUsers: UserEventsDto[];
 }

@@ -1,6 +1,7 @@
 import { ImageObject } from 'src/types/types';
 import { User } from '../users/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { UserEvent } from '../user-events/user-events.entity';
 @Entity('events')
 export class EventEntity {
   @PrimaryGeneratedColumn()
@@ -40,6 +41,9 @@ export class EventEntity {
   })
   images: ImageObject[];
 
-  @ManyToOne(() => User, (user) => user.events, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.createdEvents, { onDelete: 'CASCADE' })
   createdBy: User;
+
+  @OneToMany(() => UserEvent, (userEvent) => userEvent.event)
+  joinedUsers: UserEvent[];
 }

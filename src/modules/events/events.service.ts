@@ -143,6 +143,9 @@ export class EventsService {
       where: { id },
       relations: {
         createdBy: true,
+        joinedUsers: {
+          user: true
+        }  
       },
     });
     if (!event) {

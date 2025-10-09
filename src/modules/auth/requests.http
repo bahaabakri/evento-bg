@@ -11,7 +11,7 @@ POST http://localhost:3000/auth/verify
 Content-Type: application/json
 
 {
-    "email": "testtbbb@innovationfactory.biz",  
+    "email": "testrrr@innovationfactory.biz",  
     "otp": "654681"
 }
 
@@ -21,7 +21,7 @@ POST http://localhost:3000/admin/auth/login
 Content-Type: application/json
 
 {
-    "email": "testrrr@innovationfactory.biz"
+    "email": "test@gmail.com"
 }
 
 ### register admin

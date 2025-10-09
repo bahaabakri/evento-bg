@@ -8,4 +8,4 @@ export class EventResponseDto {
   @Expose()
   @Type(() => EventDto)
   event: EventDto;
-}
+} 

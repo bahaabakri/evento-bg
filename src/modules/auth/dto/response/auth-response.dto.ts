@@ -1,8 +1,8 @@
 import { Expose, Type } from "class-transformer";
-import { UserDto } from "./user.dto";
+import { UserDto } from "../../../users/dto/response/user.dto";
 
 
-export class UserResponseDto {
+export class AuthResponseDto {
   @Expose()
   message: string;
 

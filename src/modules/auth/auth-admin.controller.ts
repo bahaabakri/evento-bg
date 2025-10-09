@@ -3,11 +3,11 @@ import { CreateLoginDto } from 'src/modules/auth/dto/request/create-login.dto';
 import { VerifyUserDto } from 'src/modules/auth/dto/request/verfiy-user.dto';
 import { AuthService } from './auth.service';
 import Serialize from 'src/decorators/serialize.decorator';
-import { UserResponseDto } from './dto/response/user-response.dto';
+import { AuthResponseDto } from './dto/response/auth-response.dto';
 import { GuestGuard } from './guards/guest.guard';
 import { CreateAdminDto } from './dto/request/create-admin.dto';
 
-@Serialize(UserResponseDto)
+@Serialize(AuthResponseDto)
 @UseGuards(GuestGuard)
 @Controller('admin/auth')
 export class AuthAdminController {

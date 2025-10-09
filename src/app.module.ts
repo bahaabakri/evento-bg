@@ -20,10 +20,13 @@ import { APP_PIPE } from '@nestjs/core';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Hero } from './modules/hero/hero.entity';
+import { UserEventsModule } from './modules/user-events/user-events.module';
+import { UserEvent } from './modules/user-events/user-events.entity';
 const isProduction = process.env.NODE_ENV === 'production';
 @Module({
   imports: [
     EventsModule,
+    UserEventsModule,
     UserModule,
     UploadImageModule,
     ConfigModule.forRoot({
@@ -35,7 +38,7 @@ const isProduction = process.env.NODE_ENV === 'production';
       useFactory: (configService: ConfigService) => ({
         type: 'sqlite',
         database: configService.get<string>('DB_NAME'),
-        entities: [EventEntity, UploadIntent, UploadImage, User, Otp, Hero],
+        entities: [EventEntity, UserEvent, UploadIntent, UploadImage, User, Otp, Hero],
         synchronize: true
       })
     }),

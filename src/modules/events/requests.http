@@ -5,16 +5,16 @@ GET http://localhost:3000/events?page=2&perPage=10
 
 
 ### Get request to fetch a single item by ID
-GET http://localhost:3000/events/35
+GET http://localhost:3000/events/40
 ###
 
 # POST request to create a new item
 POST http://localhost:3000/admin/events
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIwLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaXNWZXJpZmllZCI6dHJ1ZSwicm9sZSI6InN1cGVyX2FkbWluIiwiaWF0IjoxNzU5OTIzNzI4LCJleHAiOjE3NTk5MjczMjh9.a1-qY8mqJy0yvn7Huokdu0z1EojlX1s_rvwtB0K_c9E
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE3LCJlbWFpbCI6ImJhaGFhLmJha3JpMTk5NUBnbWFpbC5jb20iLCJpc1ZlcmlmaWVkIjp0cnVlLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDAwNzE0MCwiZXhwIjoxNzYwNjExOTQwfQ.Pr1NneSjYM7n1DeTG5B8x-J1SZeJR-3MdCL7qwGvj7M
 
 {
-    "name": "test with images 38",
+    "name": "test with images 40",
     "description": "This is a sample item.",
     "date": "2023-10-01T00:00:00Z",
     "location": "Sample Location",
@@ -26,7 +26,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIwLCJlbWFpb
 ###
 
 # PUT request to update an existing item
-PATCH  http://localhost:3000/events/13
+PATCH  http://localhost:3000/events/40
 Content-Type: application/json
 
 {
@@ -47,3 +47,8 @@ Content-Type: application/json
 {
     "approved": true
 }
+
+### join event
+POST http://localhost:3000/user-events/40/join
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE3LCJlbWFpbCI6ImJhaGFhLmJha3JpMTk5NUBnbWFpbC5jb20iLCJpc1ZlcmlmaWVkIjp0cnVlLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDAwNzE0MCwiZXhwIjoxNzYwNjExOTQwfQ.Pr1NneSjYM7n1DeTG5B8x-J1SZeJR-3MdCL7qwGvj7M

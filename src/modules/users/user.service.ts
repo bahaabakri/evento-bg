@@ -76,7 +76,14 @@ export class UserService {
      * find user by id
      */
     findUserById(id: number): Promise<User | null> {
-        return this._userRepo.findOneBy({ id, role: Role.USER })
+        return this._userRepo.findOne({ 
+            where: {id, role: Role.USER},
+            relations: {
+                joinedEvents: {
+                    event: true
+                }
+            }
+        })
     }
     /**
      * find admin by id
@@ -107,14 +114,15 @@ export class UserService {
      * @param id 
      * @returns 
      */
-    async removeUser(id: number) {
-        const user = await this.findUserById(id)
+    async removeUser(id: number): Promise<{user: User, message:string}> {
+        const user = await this.findById(id)
         if (!user) {
             throw new NotFoundException('User Not Found')
         }
-        await this._userRepo.remove(user)
+        const removedUser = await this._userRepo.remove(user)
         return {
-            message: 'User has been deleted successfully'
+            message: 'User has been deleted successfully',
+            user: removedUser
         }
     }
     /**
@@ -122,10 +130,14 @@ export class UserService {
      * @param adminId 
      * @returns 
      */
-    async approveAdmin(adminId: number): Promise<User> {
+    async approveAdmin(adminId: number): Promise<{user: User, message:string}> {
         const admin = await this.findAdminById(adminId);
         if (!admin) throw new NotFoundException('Admin not found');
         admin.status = Status.APPROVED;
-        return this.saveUser(admin);
+        const approvedUser = await this.saveUser(admin);
+        return {
+            message: 'Admin has been approved successfully',
+            user: approvedUser
+        }
     }
 }

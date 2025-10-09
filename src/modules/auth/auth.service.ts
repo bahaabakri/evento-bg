@@ -30,7 +30,9 @@ export class AuthService {
 
     private async _sendOtpOrFail(user: User): Promise<void> {
         try {
-            await this._otpService.sendOtp(user, 'auth');
+            // await this._otpService.sendOtp(user, 'auth');
+            await Promise.resolve(true)
+
         } catch {
             throw new BadRequestException('Unable to send otp, please try again');
         }
