@@ -1,143 +1,163 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "./user.entity";
-import { Not, Repository } from "typeorm";
-import { Role } from "./roles.enum";
-import { CreateLoginDto } from "../auth/dto/request/create-login.dto";
-import { CreateAdminDto } from "src/modules/auth/dto/request/create-admin.dto";
-import { Status } from "./status.enum";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './user.entity';
+import { Not, Repository } from 'typeorm';
+import { Role } from './roles.enum';
+import { CreateLoginDto } from '../auth/dto/request/create-login.dto';
+import { CreateAdminDto } from 'src/modules/auth/dto/request/create-admin.dto';
+import { Status } from './status.enum';
+import SearchUserDto from './dto/request/search-user.dto';
+import { PaginatedResult } from 'src/types/types';
 @Injectable()
-
 export class UserService {
-    constructor(
-        @InjectRepository(User) private _userRepo: Repository<User>,
-    ) { }
+  constructor(@InjectRepository(User) private _userRepo: Repository<User>) {}
 
-    /////////////////////// Private Helper Functions ///////////////////////
-    private async _createWithRole<T extends Partial<User>>(
-        body: T,
-        role: Role
-    ): Promise<User> {
-        const user = this._userRepo.create({
-            ...body,
-            isVerified: false,
-            status: role === Role.ADMIN ? Status.PENDING : Status.APPROVED, // set status based on role
-            role,
-        });
-        return this.saveUser(user);
-    }
-    /**
-     * Create user with role
-     * @param body 
-     * @returns 
-     */
-    async createUser(body: CreateLoginDto): Promise<User> {
-        return this._createWithRole(body, Role.USER);
-    }
+  /////////////////////// Private Helper Functions ///////////////////////
+  private async _createWithRole<T extends Partial<User>>(
+    body: T,
+    role: Role,
+  ): Promise<User> {
+    const user = this._userRepo.create({
+      ...body,
+      isVerified: false,
+      status: role === Role.ADMIN ? Status.PENDING : Status.APPROVED, // set status based on role
+      role,
+    });
+    return this.saveUser(user);
+  }
+  /**
+   * Create user with role
+   * @param body
+   * @returns
+   */
+  async createUser(body: CreateLoginDto): Promise<User> {
+    return this._createWithRole(body, Role.USER);
+  }
 
-    /**
-     * Create admin with role
-     * @param body 
-     * @returns 
-     */
-    async createAdmin(body: CreateAdminDto): Promise<User> {
-        return this._createWithRole(body, Role.ADMIN);
-    }
+  /**
+   * Create admin with role
+   * @param body
+   * @returns
+   */
+  async createAdmin(body: CreateAdminDto): Promise<User> {
+    return this._createWithRole(body, Role.ADMIN);
+  }
 
-    saveUser(user: User): Promise<User> {
-        return this._userRepo.save(user)
-    }
-    /**
-     * find user by email
-     */
-    findUserByEmail(email: string): Promise<User | null> {
-        return this._userRepo.findOneBy({ email, role: Role.USER })
-    }
+  saveUser(user: User): Promise<User> {
+    return this._userRepo.save(user);
+  }
+  /**
+   * find user by email
+   */
+  findUserByEmail(email: string): Promise<User | null> {
+    return this._userRepo.findOneBy({ email, role: Role.USER });
+  }
 
-    /**
-     * find admin by email
-     */
-    findAdminByEmail(email: string): Promise<User | null> {
-        return this._userRepo.findOne({
-            where: {
-                email,
-                role: Not(Role.USER),
-            },
-        });
-    }
-    /**
-     * find admin or user by email
-     */
-    findUserAdminByEmail(email: string): Promise<User | null> {
-        return this._userRepo.findOneBy({ email })
-    }
+  /**
+   * find admin by email
+   */
+  findAdminByEmail(email: string): Promise<User | null> {
+    return this._userRepo.findOne({
+      where: {
+        email,
+        role: Not(Role.USER),
+      },
+    });
+  }
+  /**
+   * find admin or user by email
+   */
+  findUserAdminByEmail(email: string): Promise<User | null> {
+    return this._userRepo.findOneBy({ email });
+  }
 
-    /**
-     * find user by id
-     */
-    findUserById(id: number): Promise<User | null> {
-        return this._userRepo.findOne({ 
-            where: {id, role: Role.USER},
-            relations: {
-                joinedEvents: {
-                    event: true
-                }
-            }
-        })
-    }
-    /**
-     * find admin by id
-     */
-    findAdminById(id: number): Promise<User | null> {
-        return this._userRepo.findOne({
-            where: { id, role: Not(Role.USER)}
-        })
-    }
-    /**
-     * find user or admin by id
-     */
-    findById(id:number): Promise<User | null> {
-        return this._userRepo.findOneBy({id})
-    }
+  /**
+   * find user by id
+   */
+  findUserById(id: number): Promise<User | null> {
+    return this._userRepo.findOne({
+      where: { id, role: Role.USER },
+      relations: {
+        joinedEvents: {
+          event: true,
+        },
+        createdEvents: true,
+      },
+    });
+  }
+  /**
+   * find admin by id
+   */
+  findAdminById(id: number): Promise<User | null> {
+    return this._userRepo.findOne({
+      where: { id, role: Not(Role.USER) },
+    });
+  }
+  /**
+   * find user or admin by id
+   */
+  findById(id: number): Promise<User | null> {
+    return this._userRepo.findOneBy({ id });
+  }
 
-    /**
-     * get all users
-     */
+  /**
+   * get all users
+   */
 
-    findAllUsers(): Promise<User[]> {
-        return this._userRepo.find()
-    }
+  async findUsers({
+    page = 1,
+    perPage = 10,
+  }: SearchUserDto): Promise<PaginatedResult<User>> {
+    const skip = (page - 1) * perPage;
+    const [users, total] = await this._userRepo.findAndCount({
+      skip,
+      take: perPage,
+    });
+    return {
+      data: users,
+      meta: {
+        total,
+        page,
+        perPage,
+      },
+    };
+  }
 
-
-    /**
-     * Remove user
-     * @param id 
-     * @returns 
-     */
-    async removeUser(id: number): Promise<{user: User, message:string}> {
-        const user = await this.findById(id)
-        if (!user) {
-            throw new NotFoundException('User Not Found')
-        }
-        const removedUser = await this._userRepo.remove(user)
-        return {
-            message: 'User has been deleted successfully',
-            user: removedUser
-        }
+  /**
+   * Remove user
+   * @param id
+   * @returns
+   */
+  async removeUser(id: number): Promise<{ user: User; message: string }> {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new NotFoundException('User Not Found');
     }
-    /**
-     * Approve admin
-     * @param adminId 
-     * @returns 
-     */
-    async approveAdmin(adminId: number): Promise<{user: User, message:string}> {
-        const admin = await this.findAdminById(adminId);
-        if (!admin) throw new NotFoundException('Admin not found');
-        admin.status = Status.APPROVED;
-        const approvedUser = await this.saveUser(admin);
-        return {
-            message: 'Admin has been approved successfully',
-            user: approvedUser
-        }
-    }
+    const removedUser = await this._userRepo.remove(user);
+    return {
+      message: 'User has been deleted successfully',
+      user: removedUser,
+    };
+  }
+  /**
+   * Approve admin
+   * @param adminId
+   * @returns
+   */
+  async approveAdmin(
+    adminId: number,
+  ): Promise<{ user: User; message: string }> {
+    const admin = await this.findAdminById(adminId);
+    if (!admin) throw new NotFoundException('Admin not found');
+    admin.status = Status.APPROVED;
+    const approvedUser = await this.saveUser(admin);
+    return {
+      message: 'Admin has been approved successfully',
+      user: approvedUser,
+    };
+  }
 }

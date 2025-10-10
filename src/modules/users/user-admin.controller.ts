@@ -6,6 +6,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -17,6 +18,8 @@ import { AuthGuard } from '@nestjs/passport';
 import Serialize from 'src/decorators/serialize.decorator';
 import { UserDto } from './dto/response/user.dto';
 import { UserResponseDto } from './dto/response/user-response.dto';
+import SearchUserDto from './dto/request/search-user.dto';
+import { PaginatedUsersDto } from './dto/response/paginated-users.dto';
 @UseGuards(AuthGuard('jwt'))
 @Controller('admin/users')
 export class UserAdminController {
@@ -34,12 +37,13 @@ export class UserAdminController {
   // * To do
   //  apply pagination serialize dto and pagination logic inside
 
+  @Serialize(PaginatedUsersDto)
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   @Get()
-  findAll() {
+  findAll(@Query() query:SearchUserDto ) {
     // Logic to fetch all users
-    return this._userService.findAllUsers();
+    return this._userService.findUsers(query);
   }
 
   @Serialize(UserDto)
