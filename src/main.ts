@@ -12,10 +12,12 @@ async function bootstrap() {
   app.use('/uploads', express.static(staticFilesPath));
 
   // Configure Swagger Doc
-    const config = new DocumentBuilder()
-    .setTitle('Evento API')
+  const config = new DocumentBuilder()
+    .setTitle('Evento APIs')
     .setDescription('This is the main documentation for eveto api')
     .setVersion('1.0')
+    .addBearerAuth() // optional
+
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);

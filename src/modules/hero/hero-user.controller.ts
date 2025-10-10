@@ -7,20 +7,23 @@ import Serialize from 'src/decorators/serialize.decorator';
 import { HeroResponseDto } from './dto/response/hero-response.dto';
 import { HeroDto } from './dto/response/hero.dto';
 import { PaginatedHerosDto } from './dto/response/paginated-heros.dto';
+import { ApiOperation } from '@nestjs/swagger';
 
 // @UseGuards(AuthGuard('jwt'))
 @Controller('heros')
 export class HeroUserController {
-    constructor(private _heroService: HeroService) { }
-    @Serialize(HeroDto)
-    @Get('activeHero')
-    findActiveHero() {
-        return this._heroService.getActiveHero()
-    }
-    @Serialize(PaginatedHerosDto)
-    @Get()
-    findAllHeros() {
-        return this._heroService.getAllHeros();
-    }
-
+  constructor(private _heroService: HeroService) {}
+  @Serialize(HeroDto)
+  @Get('activeHero')
+  @ApiOperation({ summary: 'Get Active hero' })
+  findActiveHero() {
+    return this._heroService.getActiveHero();
+  }
+  
+  @Serialize(PaginatedHerosDto)
+  @Get()
+  @ApiOperation({ summary: 'Get All heros' })
+  findAllHeros() {
+    return this._heroService.getAllHeros();
+  }
 }

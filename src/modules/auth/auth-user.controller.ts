@@ -5,28 +5,32 @@ import { AuthService } from './auth.service';
 import Serialize from 'src/decorators/serialize.decorator';
 import { GuestGuard } from './guards/guest.guard';
 import { AuthResponseDto } from './dto/response/auth-response.dto';
-
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import GoogleLoginDto from './dto/request/google-login.dto';
 
 @Serialize(AuthResponseDto)
 @UseGuards(GuestGuard)
 @Controller('auth')
 export class AuthUserController {
-    constructor(private _authService:AuthService) {}
-    
-    @Post('loginRegister')
-    async createOrLogin(@Body() body:CreateLoginDto) {
-        // Logic to create a new user
-        return this._authService.registerLoginUser(body)
-    }
+  constructor(private _authService: AuthService) {}
 
-    @Post('verify')
-    async verifyUser(@Body() {email, otp}: VerifyUserDto) {
-        const res = await this._authService.verifyUser(email, otp)
-        return res
-    }
+  @Post('loginRegister')
+  @ApiOperation({ summary: 'Register a new user or login' })
+  async createOrLogin(@Body() body: CreateLoginDto) {
+    // Logic to create a new user
+    return this._authService.registerLoginUser(body);
+  }
 
-    @Post('google-login')
-    async googleLogin(@Body('token') token: string) {
-        return this._authService.loginWithGoogle(token);
-    }
+  @Post('verify')
+  @ApiOperation({ summary: 'Verify user by 2fa' })
+  async verifyUser(@Body() { email, otp }: VerifyUserDto) {
+    const res = await this._authService.verifyUser(email, otp);
+    return res;
+  }
+
+  @Post('google-login')
+  @ApiOperation({ summary: 'Login with google' })
+  async googleLogin(@Body('token') { token }: GoogleLoginDto) {
+    return this._authService.loginWithGoogle(token);
+  }
 }

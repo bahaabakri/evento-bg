@@ -1,6 +1,11 @@
-import { IsBoolean } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean } from 'class-validator';
 
 export class ApproveEventDto {
-    @IsBoolean()
-    approved: boolean;
+  @ApiProperty({
+    example: true,
+    description: 'Your desired status ',
+  })
+  @IsBoolean()
+  approved: boolean;
 }

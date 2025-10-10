@@ -20,6 +20,7 @@ import { UserDto } from './dto/response/user.dto';
 import { UserResponseDto } from './dto/response/user-response.dto';
 import SearchUserDto from './dto/request/search-user.dto';
 import { PaginatedUsersDto } from './dto/response/paginated-users.dto';
+import { ApiOperation, ApiParam } from '@nestjs/swagger';
 @UseGuards(AuthGuard('jwt'))
 @Controller('admin/users')
 export class UserAdminController {
@@ -30,17 +31,16 @@ export class UserAdminController {
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   @Get('me')
+  @ApiOperation({ summary: 'Get Current Admin', description: 'This Api get the logged in admin'})
   getCurrentAdmin(@CurrentUser() admin: User) {
     return admin;
   }
-
-  // * To do
-  //  apply pagination serialize dto and pagination logic inside
 
   @Serialize(PaginatedUsersDto)
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   @Get()
+  @ApiOperation({ summary: 'Get Users'})
   findAll(@Query() query:SearchUserDto ) {
     // Logic to fetch all users
     return this._userService.findUsers(query);
@@ -50,6 +50,8 @@ export class UserAdminController {
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   @Get(':id')
+  @ApiOperation({ summary: 'Get User by id'})
+  @ApiParam({ name: 'id', type: Number, example: 42, description: 'User ID' })
   findOne(@Param('id') id: string) {
     // Logic to fetch a user by ID
     return this._userService.findUserById(parseInt(id));
@@ -59,6 +61,8 @@ export class UserAdminController {
   @UseGuards(RolesGuard)
   @Roles(Role.SUPER_ADMIN)
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete User'})
+  @ApiParam({ name: 'id', type: Number, example: 42, description: 'User ID' })
   removeUser(@Param('id') id: string) {
     return this._userService.removeUser(parseInt(id));
   }
@@ -67,6 +71,8 @@ export class UserAdminController {
   @UseGuards(RolesGuard)
   @Roles(Role.SUPER_ADMIN)
   @Post(':id/approve')
+  @ApiOperation({ summary: 'Approve Admin'})
+  @ApiParam({ name: 'id', type: Number, example: 42, description: 'Admin ID' })
   approveAdmin(@Param('id') id: string) {
     return this._userService.approveAdmin(parseInt(id));
   }
