@@ -30,7 +30,7 @@ export class AuthUserController {
 
   @Post('google-login')
   @ApiOperation({ summary: 'Login with google' })
-  async googleLogin(@Body('token') { token }: GoogleLoginDto) {
+  async googleLogin(@Body() { token }: GoogleLoginDto) {
     return this._authService.loginWithGoogle(token);
   }
 }

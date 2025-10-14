@@ -43,3 +43,11 @@ Content-Type: application/json
     "email": "test@gmail.com",
     "otp": "276591"
 }
+
+
+POST http://localhost:3000/auth/google-login
+Content-Type: application/json
+
+{
+    "token": "xxx",
+}
