@@ -3,7 +3,7 @@ POST http://localhost:3000/auth/loginRegister
 Content-Type: application/json
 
 {
-    "email": "testtbbb@innovationfactory.biz"
+    "email": "testuser@gmail.com"
 }
 
 ### verify user
@@ -11,8 +11,8 @@ POST http://localhost:3000/auth/verify
 Content-Type: application/json
 
 {
-    "email": "testrrr@innovationfactory.biz",  
-    "otp": "654681"
+    "email": "testuser@gmail.com",  
+    "otp": "978506"
 }
 
 
@@ -41,7 +41,7 @@ Content-Type: application/json
 
 {
     "email": "test@gmail.com",
-    "otp": "276591"
+    "otp": "648395"
 }
 
 

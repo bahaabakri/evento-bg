@@ -1,4 +1,4 @@
-import { ImageObject } from "src/types/types";
+import { ImageObject } from "@/types/types";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('heros')

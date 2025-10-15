@@ -7,7 +7,7 @@ import { NotFoundException } from "@nestjs/common"
 import { getRepositoryToken } from "@nestjs/typeorm"
 import { Status } from "./status.enum"
 let mockUser: User = {
-    id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps: [], events: [], firstname: 'Test', lastname: 'User', phone: '111111', status: Status.APPROVED
+    id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps: [], joinedEvents: [], createdEvents:[], firstname: 'Test', lastname: 'User', phone: '111111', status: Status.APPROVED
 }
 describe('UserService', () => {
     let userService: UserService;
@@ -208,7 +208,7 @@ describe('UserService', () => {
     describe('findAllUsers', () => {
         it('should find all users in case find return users', async () => {
             (fakeUserRepo.find as jest.Mock).mockResolvedValue([mockUser]);
-            const res = await userService.findAllUsers();
+            const res = await userService.findUsers({page: 1, perPage: 10, query: ''});
             expect(fakeUserRepo.find).toHaveBeenCalledTimes(1);
             expect(fakeUserRepo.find).toHaveBeenCalledWith();
             expect(res).toBeDefined();
@@ -216,11 +216,11 @@ describe('UserService', () => {
         })
         it('should return empty array if find not found any user', async () => {
             (fakeUserRepo.find as jest.Mock).mockResolvedValue([]);
-            const res = await userService.findAllUsers();
+            const res = await userService.findUsers({page: 1, perPage: 10, query: ''});
             expect(fakeUserRepo.find).toHaveBeenCalledTimes(1);
             expect(fakeUserRepo.find).toHaveBeenCalledWith();
             expect(res).toBeDefined();
-            expect(res.length).toBe(0);
+            expect(res.data.length).toBe(0);
         })
     })
     describe('removeUser', () => {
@@ -254,7 +254,7 @@ describe('UserService', () => {
             expect(fakeUserRepo.save).toHaveBeenCalledTimes(1);
             expect(fakeUserRepo.save).toHaveBeenCalledWith(approvedAdmin);
             expect(res).toBeDefined();
-            expect(res.status).toBe(Status.APPROVED);
+            expect(res.user.status).toBe(Status.APPROVED);
         })
         it('should throw NotFoundException if admin not found', async () => {
             (fakeUserRepo.findOne as jest.Mock).mockResolvedValue(null);

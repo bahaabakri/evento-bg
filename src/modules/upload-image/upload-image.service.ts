@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UploadImage } from "./upload-image.entity";
 import { UploadIntent } from "./upload-intent.entity";
 import { Repository } from "typeorm";
-import { deleteFileAsync } from "src/util";
+import { deleteFileAsync } from "@/util";
 
 @Injectable()
 export class UploadImageService {

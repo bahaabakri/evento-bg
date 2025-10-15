@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventEntity } from './event.entity';
-import { UploadImageService } from 'src/modules/upload-image/upload-image.service';
-import { UploadImage } from 'src/modules/upload-image/upload-image.entity';
-import { UploadIntent } from 'src/modules/upload-image/upload-intent.entity';
+import { UploadImageService } from '@/modules/upload-image/upload-image.service';
+import { UploadImage } from '@/modules/upload-image/upload-image.entity';
+import { UploadIntent } from '@/modules/upload-image/upload-intent.entity';
 import { EventsUserController } from './events-user.controller';
 import { EventsAdminController } from './events-admin.controller';
 

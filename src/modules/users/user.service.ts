@@ -8,10 +8,10 @@ import { User } from './user.entity';
 import { Not, Repository } from 'typeorm';
 import { Role } from './roles.enum';
 import { CreateLoginDto } from '../auth/dto/request/create-login.dto';
-import { CreateAdminDto } from 'src/modules/auth/dto/request/create-admin.dto';
+import { CreateAdminDto } from '@/modules/auth/dto/request/create-admin.dto';
 import { Status } from './status.enum';
 import SearchUserDto from './dto/request/search-user.dto';
-import { PaginatedResult } from 'src/types/types';
+import { PaginatedResult } from '@/types/types';
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(User) private _userRepo: Repository<User>) {}

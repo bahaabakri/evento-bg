@@ -3,7 +3,7 @@ import { CreateHeroDto } from './dto/request/create-hero.dto';
 import { HeroService } from './hero.service';
 import { Hero } from './hero.entity';
 import { MakeDefaultDto } from './dto/request/make-default.dto';
-import Serialize from 'src/decorators/serialize.decorator';
+import Serialize from '@/decorators/serialize.decorator';
 import { HeroResponseDto } from './dto/response/hero-response.dto';
 import { HeroDto } from './dto/response/hero.dto';
 import { PaginatedHerosDto } from './dto/response/paginated-heros.dto';

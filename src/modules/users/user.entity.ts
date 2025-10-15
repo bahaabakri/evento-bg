@@ -3,9 +3,9 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from './roles.enum';
 import { EventEntity } from '../events/event.entity';
 import { Status } from './status.enum';
-import { UserEvent } from '../user-events/user-events.entity';
+import { EventTicket } from '../ticket/ticket.entity';
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -39,6 +39,6 @@ export class User {
   })
   createdEvents: EventEntity[];
 
-  @OneToMany(() => UserEvent, (userEvent) => userEvent.user)
-  joinedEvents: UserEvent[];
+  @OneToMany(() => EventTicket, (ticket) => ticket.user)
+  joinedEvents: EventTicket[];
 }

@@ -1,6 +1,6 @@
 import { Expose, Type } from "class-transformer";
 import { EventDto } from "./event.dto";
-import { PaginationDto } from "src/shared-dto/pagination.dto";
+import { PaginationDto } from "@/shared-dto/pagination.dto";
 
 export class PaginatedEventsDto {
   @Expose()

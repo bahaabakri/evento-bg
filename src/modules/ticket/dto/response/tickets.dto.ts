@@ -5,7 +5,7 @@ import { ImageObject } from 'src/types/types';
 import { Type } from 'class-transformer';
 import { EventDto } from 'src/modules/events/dto/response/event.dto';
 
-export class UserEventsDto {
+export class TicketsDto {
   @Expose()
   @Type(() => UserDto)
   user: UserDto;

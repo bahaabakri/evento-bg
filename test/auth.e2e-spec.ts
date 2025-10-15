@@ -12,7 +12,7 @@ import { Repository } from 'typeorm';
 import { Status } from 'src/modules/users/status.enum';
 
 let mockUser: User = {
-    id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps: [], events: [], firstname: 'Test', lastname: 'User', phone: '111111', status: Status.APPROVED
+    id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps: [], joinedEvents: [], createdEvents:[], firstname: 'Test', lastname: 'User', phone: '111111', status: Status.APPROVED
 }
 let mockOtpCode:string = '123456';
 describe('AuthController (e2e)', () => {
