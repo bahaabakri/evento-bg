@@ -9,15 +9,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiParam } from '@nestjs/swagger';
 @UseGuards(AuthGuard('jwt'))
 @Controller('ticket')
-export class TicketController {
+export class TicketUserController {
   constructor(private readonly ticketService: TicketService) {}
-  /////////////////// public apis for get events and event by id apis /////////////////
-  // @Serialize(PaginatedEventsDto)
-  // @Get()
-  // async getEvents(@Query() query:SearchEventDto) {
-  //     const events = await this.eventsService.getEvents(query);
-  //     return events;
-  // }
+  /////////////////// public apis for request join event /////////////////
 
   @Serialize(TicketsResponseDto)
   @Post(':id/join')

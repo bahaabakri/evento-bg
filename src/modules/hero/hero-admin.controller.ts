@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { CreateHeroDto } from './dto/request/create-hero.dto';
 import { HeroService } from './hero.service';
 import { Hero } from './hero.entity';
@@ -8,6 +8,9 @@ import { HeroResponseDto } from './dto/response/hero-response.dto';
 import { HeroDto } from './dto/response/hero.dto';
 import { PaginatedHerosDto } from './dto/response/paginated-heros.dto';
 import { ApiOperation, ApiParam } from '@nestjs/swagger';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../users/decorators/roles.decorator';
+import { Role } from '../users/roles.enum';
 
 // @UseGuards(AuthGuard('jwt'))
 @Controller('admin/heros')
@@ -36,8 +39,8 @@ export class HeroAdminController {
         return this._heroService.getHero(id)
     }
 
-    // @UseGuards(RolesGuard)
-    // @Roles(Role.MODERATOR)
+    @UseGuards(RolesGuard)
+    @Roles(Role.MODERATOR)
     @Serialize(HeroResponseDto)
     @Post()
   @ApiOperation({ summary: 'Create Hero' })
@@ -46,8 +49,8 @@ export class HeroAdminController {
         return this._heroService.createHero(body)
     }
 
-    // @UseGuards(RolesGuard)
-    // @Roles(Role.MODERATOR)
+    @UseGuards(RolesGuard)
+    @Roles(Role.MODERATOR)
     @Serialize(HeroResponseDto)
     @Patch('makeItActive/:id')
   @ApiOperation({ summary: 'Activate Hero' })

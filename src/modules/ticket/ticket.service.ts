@@ -11,13 +11,16 @@ import { User } from '../users/user.entity';
 import { EventTicket } from './ticket.entity';
 import { CreateTicketDto } from './dto/request/create-ticket.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { TicketStatus } from './ticket-status.enum';
+import { TicketStatus } from './enums/ticket-status.enum';
+import SearchTicketDto from './dto/request/search-ticket.dto';
+import { PaginatedResult } from '@/types/types';
+import { TicketFilters } from './ticket.type';
 
 @Injectable()
 export class TicketService {
   constructor(
     @InjectRepository(EventTicket)
-    private readonly userEventRepo: Repository<EventTicket>,
+    private readonly ticketRepo: Repository<EventTicket>,
     @InjectRepository(EventEntity)
     private readonly eventRepo: Repository<EventEntity>,
     private readonly dataSource: DataSource,
@@ -93,13 +96,45 @@ export class TicketService {
     });
   }
 
-  /**
-   * get all events joined by user
-   */
-  async getUserJointEvents(user: User) {
-    return this.userEventRepo.find({
-      where: { user: { id: user.id } },
-      relations: ['event'],
+
+/** Generic function to fetch tickets with optional filters */
+  async getTickets(
+    filters: TicketFilters & SearchTicketDto,
+  ): Promise<PaginatedResult<EventTicket>> {
+    const { page = 1, perPage = 10, userId, eventId } = filters;
+    const skip = (page - 1) * perPage;
+
+    const where: any = {};
+    if (userId) where.user = { id: userId };
+    if (eventId) where.event = { id: eventId };
+
+    const [tickets, total] = await this.ticketRepo.findAndCount({
+      where,
+      skip,
+      take: perPage,
+      order: { createdAt: 'DESC' },
+      relations: ['event', 'user'],
     });
+
+    return {
+      data: tickets,
+      meta: { total, page, perPage },
+    };
+  }
+
+
+  /** Get ticket by ticket id */
+  async getTicketById(id: number): Promise<EventTicket> {
+    if (!id) {
+      throw new NotFoundException('Ticket Not Found');
+    }
+    const ticket = await this.ticketRepo.findOne({
+      where: { id },
+      relations: ['event', 'user'],
+    });
+    if (!ticket) {
+      throw new NotFoundException('Ticket Not Found');
+    }
+    return ticket;
   }
 }

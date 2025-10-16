@@ -6,6 +6,37 @@ import { Type } from 'class-transformer';
 import { EventDto } from 'src/modules/events/dto/response/event.dto';
 
 export class TicketsDto {
+
+  @Expose()
+  id: number;
+  
+  @Expose()
+  status: string;
+
+  @Expose()
+  createdAt: Date;
+
+  @Expose()
+  updatedAt: Date;
+  
+  @Expose()
+  price: number;
+
+  @Expose()
+  ticketType: string;
+
+  @Expose()
+  currency: string;
+
+  @Expose()
+  qrCodeUrl: string;
+
+  @Expose()
+  purchasedAt: Date;
+
+  @Expose()
+  checkedInAt: Date;
+
   @Expose()
   @Type(() => UserDto)
   user: UserDto;

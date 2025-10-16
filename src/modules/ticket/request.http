@@ -1,0 +1,16 @@
+### Get all tickets
+GET http://localhost:3000/admin/tickets/?page=1&perPage=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJpc1ZlcmlmaWVkIjp0cnVlLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJpYXQiOjE3NjA1MzQ5NjgsImV4cCI6MTc2MTEzOTc2OH0.1FKq0QgIGnETS054IucUvt3_gFNXrB-nt-OssgQ_ZuQ
+
+### Get user tickets
+GET http://localhost:3000/admin/tickets/user/3/?page=1&perPage=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJpc1ZlcmlmaWVkIjp0cnVlLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJpYXQiOjE3NjA1MzQ5NjgsImV4cCI6MTc2MTEzOTc2OH0.1FKq0QgIGnETS054IucUvt3_gFNXrB-nt-OssgQ_ZuQ
+
+### Get event tickets
+GET http://localhost:3000/admin/tickets/event/3/?page=1&perPage=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJpc1ZlcmlmaWVkIjp0cnVlLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJpYXQiOjE3NjA1MzQ5NjgsImV4cCI6MTc2MTEzOTc2OH0.1FKq0QgIGnETS054IucUvt3_gFNXrB-nt-OssgQ_ZuQ
+
+
+### Get ticket by id
+GET http://localhost:3000/admin/tickets/5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJpc1ZlcmlmaWVkIjp0cnVlLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJpYXQiOjE3NjA1MzQ5NjgsImV4cCI6MTc2MTEzOTc2OH0.1FKq0QgIGnETS054IucUvt3_gFNXrB-nt-OssgQ_ZuQ

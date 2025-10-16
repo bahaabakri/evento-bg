@@ -3,8 +3,8 @@ import { IsInt, Min, IsOptional, IsNumber, IsString } from 'class-validator';
 
 export class CreateTicketDto {
   @ApiProperty({
-    example: '3',
-    description: 'Number of tickets',
+    example: 3,
+    description: 'Number of tickets sdsdf',
   })
   @IsInt()
   @Min(1)
@@ -19,7 +19,7 @@ export class CreateTicketDto {
   ticketType?: string;
 
   @ApiProperty({
-    example: '32.34',
+    example: 32.34,
     description: 'Ticket price',
   })
   @IsOptional()

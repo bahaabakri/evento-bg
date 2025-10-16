@@ -14,14 +14,14 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJpc1ZlcmlmaWVkIjp0cnVlLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJpYXQiOjE3NjA1MzQ5NjgsImV4cCI6MTc2MTEzOTc2OH0.1FKq0QgIGnETS054IucUvt3_gFNXrB-nt-OssgQ_ZuQ
 
 {
-    "name": "test with images 40",
+    "name": "test with images 3",
     "description": "This is a sample item.",
     "date": "2026-10-01T00:00:00Z",
     "location": "Sample Location",
     "lat": 40.7128,
     "lng": -74.0060,
     "imagesIds": ["1"],
-    "capacity": 100
+    "capacity": 3
 }
 
 ###
@@ -42,7 +42,7 @@ Content-Type: application/json
 
 
 ### Patch request to approve an event
-PATCH http://localhost:3000/admin/events/2/approve
+PATCH http://localhost:3000/admin/events/3/approve
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJpc1ZlcmlmaWVkIjp0cnVlLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJpYXQiOjE3NjA1MzQ5NjgsImV4cCI6MTc2MTEzOTc2OH0.1FKq0QgIGnETS054IucUvt3_gFNXrB-nt-OssgQ_ZuQ
 
@@ -51,9 +51,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsI
 }
 
 ### join event
-POST http://localhost:3000/ticket/2/join
+POST http://localhost:3000/ticket/3/join
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoidGVzdHVzZXJAZ21haWwuY29tIiwiaXNWZXJpZmllZCI6dHJ1ZSwicm9sZSI6InVzZXIiLCJpYXQiOjE3NjA1MzU3MzAsImV4cCI6MTc2MTE0MDUzMH0.O4VuomVrxKWuUW8MadMCR0Fx2qyXuTjMMXtNtU-1zJs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoidGVzdHVzZXIyQGdtYWlsLmNvbSIsImlzVmVyaWZpZWQiOnRydWUsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzYwNjE1NzEwLCJleHAiOjE3NjEyMjA1MTB9.VLajrZjQfWHDelDyTmkOFKn33bvjBRcUggOXRNjB-ws
 
 {
     "quantity": 2,

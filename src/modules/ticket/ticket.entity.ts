@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { User } from '../users/user.entity';
 import { EventEntity } from '../events/event.entity';
-import { TicketStatus } from './ticket-status.enum';
+import { TicketStatus } from './enums/ticket-status.enum';
 
 @Entity('tickets')
 export class EventTicket {
