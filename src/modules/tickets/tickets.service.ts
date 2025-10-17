@@ -17,6 +17,7 @@ import { PaginatedResult } from '@/types/types';
 import { TicketFilters } from './tickets.type';
 import { JoinEventDto } from './dto/request/join-event.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { PlansService } from '../plans/plans.service';
 const TIME_TO_FREE_UP_RESERVED_TICKET_IN_MIN = 15; // 15 minutes
 @Injectable()
 export class TicketsService {
@@ -25,8 +26,8 @@ export class TicketsService {
     @InjectRepository(EventTicket)
     private readonly ticketRepo: Repository<EventTicket>,
     @InjectRepository(EventEntity)
-    private readonly eventRepo: Repository<EventEntity>,
     private readonly dataSource: DataSource,
+    private readonly plansService: PlansService,
   ) {}
 
   /**
@@ -70,7 +71,8 @@ export class TicketsService {
             `Not enough tickets available for plan ${plan.name}`,
           );
         }
-
+        // update plan soldSeats
+        this.plansService.updatePlanCapacity(plan.id, soldCount + quantity);
         // Create multiple tickets
         for (let i = 0; i < quantity; i++) {
           const ticket = manager.create(EventTicket, {
@@ -155,6 +157,10 @@ export class TicketsService {
     );
 
     if (result.affected && result.affected > 0) {
+      for (const ticket of expiredTickets) {
+        // update plan soldSeats
+        this.plansService.updatePlanCapacity(ticket.plan.id, ticket.plan.soldSeats - 1);      
+      }
       this.logger.log(`CRON JOB: Cancelled ${result.affected} expired reservations`);
     }
   }

@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { PlanEntity } from './plan.entity';
 import { CreatePlanDto } from './dto/request/create-plan.dto';
 import { EventsService } from '../events/events.service';
@@ -11,7 +15,8 @@ import { PaginatedResult } from '@/types/types';
 export class PlansService {
   constructor(
     @InjectRepository(PlanEntity) private _planRepo: Repository<PlanEntity>,
-    private _eventService: EventsService,
+    private _eventsService: EventsService,
+    private readonly dataSource: DataSource,
   ) {}
 
   /* 
@@ -21,7 +26,7 @@ export class PlansService {
     planDate: CreatePlanDto,
   ): Promise<{ message: string; plan: PlanEntity }> {
     // 1️⃣ Find the event
-    const event = await this._eventService.getEventById(planDate.eventId);
+    const event = await this._eventsService.getEventById(planDate.eventId);
     if (!event) {
       throw new Error('Event not found');
     }
@@ -74,14 +79,39 @@ export class PlansService {
       relations: {
         event: {
           createdBy: true,
-          joinedUsers: true
+          joinedUsers: true,
         },
-        tickets: true
+        tickets: true,
       },
     });
     if (!plan) {
       throw new NotFoundException('Plan Not Found');
     }
     return plan;
+  }
+
+  /**
+   * Update plan capacity
+   */
+  async updatePlanCapacity(planId: number, updatedSoldSeats: number) {
+    await this.dataSource.transaction(async (manager) => {
+      const plan = await manager.findOne(PlanEntity, { where: { id: planId } });
+
+      if (!plan) throw new NotFoundException('Plan not found');
+
+      if (updatedSoldSeats > plan.capacity) {
+        throw new BadRequestException('Not enough seats available');
+      }
+      // Atomic update with QueryBuilder
+      await manager
+        .createQueryBuilder()
+        .update(PlanEntity)
+        .set({
+          soldSeats: updatedSoldSeats,
+          availableSeats: () => `capacity - ${updatedSoldSeats}`,
+        })
+        .where('id = :id', { id: planId })
+        .execute();
+    });
   }
 }

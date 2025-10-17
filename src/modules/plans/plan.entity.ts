@@ -26,6 +26,12 @@ export class PlanEntity {
   @Column('int')
   capacity: number;
 
+  @Column('int', { default: 0 })
+  availableSeats: number;
+
+  @Column('int', { default: 0 })
+  soldSeats: number;
+
   @Column({default: null})
   currency: string;
 
