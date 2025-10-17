@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, CreateDateColumn, Up
 import { User } from '../users/user.entity';
 import { EventEntity } from '../events/event.entity';
 import { TicketStatus } from './enums/ticket-status.enum';
+import { PlanEntity } from '../plans/plan.entity';
 
 @Entity('tickets')
 export class EventTicket {
@@ -28,21 +29,13 @@ export class EventTicket {
   })
   status: TicketStatus;
 
-  /** Price paid for this ticket (nullable for free tickets) */
-  @Column({ type: 'float', nullable: true })
-  price: number | null;
-
-  /** Currency code for the price (e.g. USD, EUR) */
-  @Column({ type: 'varchar', length: 8, nullable: true })
-  currency: string | null;
-
-  /** Optional ticket category/type (VIP, General, etc.) */
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  ticketType: string | null;
-
   /** Optional QR code data URL or link to the generated QR image */
   @Column({ type: 'text', nullable: true })
   qrCodeUrl: string | null;
+
+  /** when the reservation ends up */
+  @Column({ type: 'datetime', nullable: true })
+  reservationExpiresAt: Date | null;
 
   /** When the ticket was paid/purchased */
   @Column({ type: 'datetime', nullable: true })
@@ -57,4 +50,7 @@ export class EventTicket {
 
   @UpdateDateColumn({ type: 'datetime' })
   updatedAt: Date;
+
+  @ManyToOne(() => PlanEntity, (plan) => plan.tickets)
+  plan: PlanEntity;
 }

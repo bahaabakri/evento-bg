@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { TicketService } from './ticket.service';
+import { TicketsService } from './tickets.service';
 import { TicketsResponseDto } from './dto/response/tickets-response.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -15,8 +15,8 @@ import { TicketsDto } from './dto/response/tickets.dto';
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(Role.ADMIN)
 @Controller('admin/tickets')
-export class TicketAdminController {
-  constructor(private readonly ticketService: TicketService) {}
+export class TicketsAdminController {
+  constructor(private readonly ticketService: TicketsService) {}
 
   /** Get all tickets */
   @Get()

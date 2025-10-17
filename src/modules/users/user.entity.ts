@@ -3,7 +3,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from './roles.enum';
 import { EventEntity } from '../events/event.entity';
 import { Status } from './status.enum';
-import { EventTicket } from '../ticket/ticket.entity';
+import { EventTicket } from '../tickets/ticket.entity';
 
 @Entity('users')
 export class User {

@@ -18,15 +18,6 @@ export class TicketsDto {
 
   @Expose()
   updatedAt: Date;
-  
-  @Expose()
-  price: number;
-
-  @Expose()
-  ticketType: string;
-
-  @Expose()
-  currency: string;
 
   @Expose()
   qrCodeUrl: string;

@@ -1,4 +1,10 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod, ValidationPipe } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventsModule } from './modules/events/events.module';
@@ -20,15 +26,20 @@ import { APP_PIPE } from '@nestjs/core';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Hero } from './modules/hero/hero.entity';
-import { TicketModule } from './modules/ticket/ticket.module';
-import { EventTicket } from './modules/ticket/ticket.entity';
+import { TicketsModule } from './modules/tickets/tickets.module';
+import { EventTicket } from './modules/tickets/ticket.entity';
+import { PlanEntity } from './modules/plans/plan.entity';
+import { PlansModule } from './modules/plans/plans.module';
+import { ScheduleModule } from '@nestjs/schedule';
 const isProduction = process.env.NODE_ENV === 'production';
 @Module({
   imports: [
     EventsModule,
-    TicketModule,
+    TicketsModule,
     UserModule,
+    PlansModule,
     UploadImageModule,
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true, // Make the configuration globally available
       envFilePath: `.env.${process.env.NODE_ENV}`, // Load environment variables from .env file
@@ -38,9 +49,18 @@ const isProduction = process.env.NODE_ENV === 'production';
       useFactory: (configService: ConfigService) => ({
         type: 'sqlite',
         database: configService.get<string>('DB_NAME'),
-        entities: [EventEntity, EventTicket, UploadIntent, UploadImage, User, Otp, Hero],
-        synchronize: true
-      })
+        entities: [
+          EventEntity,
+          EventTicket,
+          UploadIntent,
+          UploadImage,
+          User,
+          Otp,
+          Hero,
+          PlanEntity,
+        ],
+        synchronize: true,
+      }),
     }),
     TypeOrmModule.forFeature([User]),
     MailerModule.forRoot({
@@ -76,22 +96,24 @@ const isProduction = process.env.NODE_ENV === 'production';
     {
       provide: APP_PIPE,
       useValue: new ValidationPipe({
-        whitelist: true
-      })
-    }
+        whitelist: true,
+      }),
+    },
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-      // this middleware will be used in order to handle cors
-      // and allow requests from the frontend running on localhost:5173
-      const cors = require('cors');
-      const corsOptions: CorsOptions = {
-        origin: ['http://localhost:5172', 'http://localhost:5174', 'http://localhost:5173'],
-        credentials: true,
-      };
-      consumer
-        .apply(cors(corsOptions))
-        .forRoutes('*');
-    }
+    // this middleware will be used in order to handle cors
+    // and allow requests from the frontend running on localhost:5173
+    const cors = require('cors');
+    const corsOptions: CorsOptions = {
+      origin: [
+        'http://localhost:5172',
+        'http://localhost:5174',
+        'http://localhost:5173',
+      ],
+      credentials: true,
+    };
+    consumer.apply(cors(corsOptions)).forRoutes('*');
+  }
 }

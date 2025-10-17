@@ -54,13 +54,6 @@ export default class CreateEventDto {
   })
   @IsLatitude()
   lat: number;
-
-  @ApiProperty({
-    example: '200',
-    description: 'Event Capacity (Num of seats)',
-  })
-  @IsNumber()
-  capacity: number;
   
   @ApiProperty({
     type:String,

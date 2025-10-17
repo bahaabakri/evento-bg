@@ -1,7 +1,8 @@
 import { ImageObject } from 'src/types/types';
 import { User } from '../users/user.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
-import { EventTicket } from '../ticket/ticket.entity';
+import { EventTicket } from '../tickets/ticket.entity';
+import { PlanEntity } from '../plans/plan.entity';
 @Entity('events')
 export class EventEntity {
   @PrimaryGeneratedColumn()
@@ -18,9 +19,6 @@ export class EventEntity {
 
   @Column()
   location: string;
-
-  @Column({ type: 'int', nullable: true, default: null })
-  capacity: number | null;
 
   @Column({ type: 'float', nullable: true, default: null })
   lng: number;
@@ -49,4 +47,7 @@ export class EventEntity {
 
   @OneToMany(() => EventTicket, (ticket) => ticket.event)
   joinedUsers: EventTicket[];
+
+  @OneToMany(() => PlanEntity, (plan) => plan.event, { cascade: true })
+  plans: PlanEntity[];
 }

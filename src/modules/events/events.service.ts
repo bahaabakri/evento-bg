@@ -145,7 +145,8 @@ export class EventsService {
         createdBy: true,
         joinedUsers: {
           user: true
-        }  
+        },
+        plans: true
       },
     });
     if (!event) {
