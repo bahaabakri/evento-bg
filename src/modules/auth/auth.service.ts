@@ -104,7 +104,7 @@ export class AuthService {
     async loginAdmin(body: CreateLoginDto, role: Exclude<Role, Role.USER> = Role.ADMIN): Promise<{ user: User; message: string }> {
         const admin = await this._userService.findAdminByEmail(body.email);
         if (!admin) throw new NotFoundException('Admin with this email does not exist');
-        if (admin.status !== Status.APPROVED) throw new ForbiddenException('Your admin account is not approved yet');
+        // if (admin.status !== Status.APPROVED) throw new ForbiddenException('Your admin account is not approved yet');
         await this._sendOtpOrFail(admin);
         return this._buildResponse(admin, 'Admin Logged in Successfully, and Otp has been sent to your email address');
     }

@@ -25,5 +25,11 @@ export class UserDto {
     isVerified: boolean;
 
     @Expose()
+    createdAt: Date;
+
+    @Expose()
+    updatedAt: Date;
+
+    @Expose()
     role: Role;
 }

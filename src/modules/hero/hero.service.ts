@@ -11,32 +11,37 @@ export class HeroService {
   constructor(
     @InjectRepository(Hero) private _heroRepo: Repository<Hero>,
     private _uploadImageService: UploadImageService,
-  ) { }
-
+  ) {}
 
   /**
    * create hero
    */
 
-  async createHero(heroData: CreateHeroDto): Promise<{ message: string, hero: Hero }> {
-    const images: ImageObject[] = [];
-    heroData.imagesIds.forEach(async (id: string) => {
-      const image = await this._uploadImageService.getImageById(+id)
-      images.push({
-        id: image.id.toString(),
-        name: image.name,
-        url: image.imagePath,
-      });
-    })
+  async createHero(
+    heroData: CreateHeroDto,
+  ): Promise<{ message: string; hero: Hero }> {
+    const images: ImageObject[] = await Promise.all(
+      heroData.imagesIds.map(async (id: string) => {
+        const image = await this._uploadImageService.getImageById(+id);
+        return {
+          id: image.id.toString(),
+          name: image.name,
+          url: image.imagePath,
+        };
+      }),
+    );
+
     const hero = this._heroRepo.create({
       isActive: false,
-      images
-    })
-    const createdSavedHero = await this._heroRepo.save(hero)
+      images,
+    });
+
+    const createdSavedHero = await this._heroRepo.save(hero);
+
     return {
       message: 'Hero created successfully',
-      hero: createdSavedHero
-    }
+      hero: createdSavedHero,
+    };
   }
 
   /**
@@ -44,12 +49,11 @@ export class HeroService {
    */
 
   async getAllHeros(): Promise<PaginatedResult<Hero>> {
-    const heros = await this._heroRepo.find()
+    const heros = await this._heroRepo.find();
     return {
       data: heros,
-    }
+    };
   }
-
 
   /**
    * get hero by id
@@ -57,7 +61,7 @@ export class HeroService {
 
   async getHero(id: number): Promise<Hero> {
     if (!id) {
-      throw new NotFoundException('Hero Not Found')
+      throw new NotFoundException('Hero Not Found');
     }
     const hero = await this._heroRepo.findOneBy({ id });
     if (!hero) {
@@ -67,8 +71,8 @@ export class HeroService {
   }
 
   /*
-    * get active hero
-  */
+   * get active hero
+   */
 
   async getActiveHero(): Promise<Hero> {
     const activeHero = await this._heroRepo.findOneBy({ isActive: true });
@@ -78,12 +82,14 @@ export class HeroService {
     return activeHero;
   }
 
-
   /**
    * make hero active
    */
 
-  async makeItActive(id: number, isActive: boolean): Promise<{ message: string, hero: Hero }> {
+  async makeItActive(
+    id: number,
+    isActive: boolean,
+  ): Promise<{ message: string; hero: Hero }> {
     const savedHero = await this.getHero(id);
 
     // Only proceed if there is actually a change

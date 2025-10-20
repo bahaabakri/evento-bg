@@ -1,5 +1,12 @@
 import { Otp } from '../otp/otp.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Role } from './roles.enum';
 import { EventEntity } from '../events/event.entity';
 import { Status } from './status.enum';
@@ -41,4 +48,10 @@ export class User {
 
   @OneToMany(() => EventTicket, (ticket) => ticket.user)
   joinedEvents: EventTicket[];
+
+  @CreateDateColumn({default: () => 'CURRENT_TIMESTAMP'})
+  createdAt: Date;
+
+  @UpdateDateColumn({default: () => 'CURRENT_TIMESTAMP'})
+  updatedAt: Date;
 }

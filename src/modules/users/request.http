@@ -5,8 +5,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE3LCJlbWFpb
 
 ### get current user
 GET http://localhost:3000/admin/users/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIwLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaXNWZXJpZmllZCI6dHJ1ZSwicm9sZSI6InN1cGVyX2FkbWluIiwiaWF0IjoxNzYwMDE3NTUxLCJleHAiOjE3NjA2MjIzNTF9.2iPnMquqTGOtBTro9Uty0wrhBs5DenTL4wZ4m_0XqJQ
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJpc1ZlcmlmaWVkIjp0cnVlLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJpYXQiOjE3NjA5NDUzNTcsImV4cCI6MTc2MTU1MDE1N30.SlmbnBzbrj6IG8PuXsTKHDIsXjrBTQidLlCZ_UDUoWM
 
 ### get all users
 GET http://localhost:3000/admin/users?page=2&perPage=5
