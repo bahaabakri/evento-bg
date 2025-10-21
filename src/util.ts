@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Role } from './modules/users/roles.enum';
+import { UserType } from './modules/users/user-type.enum';
 
 export async function deleteFileAsync(filename: string, directory = 'uploads'):Promise<string> {
     const filePath = path.join(process.cwd(), directory, filename);
@@ -15,6 +15,6 @@ export async function deleteFileAsync(filename: string, directory = 'uploads'):P
     })
   }
 
-export function isAdminPanelRole(role: Role): boolean {
-  return role !== Role.USER;
+export function isAdminPanelRole(userType: UserType): boolean {
+  return userType !== UserType.USER;
 }

@@ -3,8 +3,8 @@ import { User } from '@/modules/users/user.entity';
 import { ImageObject } from '@/types/types';
 import { Type } from 'class-transformer';
 import { UserDto } from '@/modules/users/dto/response/user.dto';
-import { TicketsDto } from '@/modules/tickets/dto/response/tickets.dto';
 import { PlanDto } from '@/modules/plans/dto/response/plan.dto';
+import { TicketDto } from '@/modules/tickets/dto/response/tickets.dto';
 
 export class EventDto {
   @Expose()
@@ -48,8 +48,8 @@ export class EventDto {
   createdBy: UserDto;
 
   @Expose()
-  @Type(() => TicketsDto)
-  joinedUsers: TicketsDto[];
+  @Type(() => TicketDto)
+  joinedUsers: TicketDto[];
 
   @Expose()
   @Type(() => PlanDto)

@@ -6,12 +6,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Not, Repository } from 'typeorm';
-import { Role } from './roles.enum';
 import { CreateLoginDto } from '../auth/dto/request/create-login.dto';
 import { CreateAdminDto } from '@/modules/auth/dto/request/create-admin.dto';
-import { Status } from './status.enum';
 import SearchUserDto from './dto/request/search-user.dto';
 import { PaginatedResult } from '@/types/types';
+import { UserType } from './user-type.enum';
+import { UserStatus } from './user-status.enum';
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(User) private _userRepo: Repository<User>) {}
@@ -19,13 +19,12 @@ export class UserService {
   /////////////////////// Private Helper Functions ///////////////////////
   private async _createWithRole<T extends Partial<User>>(
     body: T,
-    role: Role,
+    userType: UserType,
   ): Promise<User> {
     const user = this._userRepo.create({
       ...body,
       isVerified: false,
-      status: role === Role.ADMIN ? Status.PENDING : Status.APPROVED, // set status based on role
-      role,
+      status: userType === UserType.ADMIN ? UserStatus.PENDING : UserStatus.APPROVED, // set status based on role
     });
     return this.saveUser(user);
   }
@@ -35,7 +34,7 @@ export class UserService {
    * @returns
    */
   async createUser(body: CreateLoginDto): Promise<User> {
-    return this._createWithRole(body, Role.USER);
+    return this._createWithRole(body, UserType.USER);
   }
 
   /**
@@ -44,7 +43,7 @@ export class UserService {
    * @returns
    */
   async createAdmin(body: CreateAdminDto): Promise<User> {
-    return this._createWithRole(body, Role.ADMIN);
+    return this._createWithRole(body, UserType.ADMIN);
   }
 
   saveUser(user: User): Promise<User> {
@@ -54,7 +53,7 @@ export class UserService {
    * find user by email
    */
   findUserByEmail(email: string): Promise<User | null> {
-    return this._userRepo.findOneBy({ email, role: Role.USER });
+    return this._userRepo.findOneBy({ email, userType: UserType.USER });
   }
 
   /**
@@ -64,7 +63,7 @@ export class UserService {
     return this._userRepo.findOne({
       where: {
         email,
-        role: Not(Role.USER),
+        userType: Not(UserType.USER),
       },
     });
   }
@@ -80,7 +79,7 @@ export class UserService {
    */
   findUserById(id: number): Promise<User | null> {
     return this._userRepo.findOne({
-      where: { id, role: Role.USER },
+      where: { id, userType: UserType.USER },
       relations: {
         joinedEvents: {
           event: true,
@@ -94,7 +93,7 @@ export class UserService {
    */
   findAdminById(id: number): Promise<User | null> {
     return this._userRepo.findOne({
-      where: { id, role: Not(Role.USER) },
+      where: { id, userType: Not(UserType.USER) },
     });
   }
   /**
@@ -153,7 +152,7 @@ export class UserService {
   ): Promise<{ user: User; message: string }> {
     const admin = await this.findAdminById(adminId);
     if (!admin) throw new NotFoundException('Admin not found');
-    admin.status = Status.APPROVED;
+    admin.status = UserStatus.APPROVED;
     const approvedUser = await this.saveUser(admin);
     return {
       message: 'Admin has been approved successfully',

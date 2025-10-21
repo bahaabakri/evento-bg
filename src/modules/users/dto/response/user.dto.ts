@@ -1,7 +1,4 @@
-import { Expose, Type } from "class-transformer";
-import { IsBoolean, IsEmail, IsNumber, IsString } from "class-validator";
-import { Role } from "src/modules/users/roles.enum";
-
+import { Expose } from "class-transformer";
 export class UserDto {
     @Expose()
     id: number;
@@ -30,6 +27,7 @@ export class UserDto {
     @Expose()
     updatedAt: Date;
 
-    @Expose()
-    role: Role;
+    // @Expose()
+    // @Type(() => RoleDto)
+    // roles: Role[];
 }

@@ -7,8 +7,8 @@ import { AppModule } from '@/app.module';
 import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { User } from '@/modules/users/user.entity';
-import { Role } from '@/modules/users/roles.enum';
-import { Status } from '@/modules/users/status.enum';
+import { UserStatus } from './modules/users/user-status.enum';
+import { UserType } from './modules/users/user-type.enum';
 
 async function bootstrap() {
   // create NestJS application context (no HTTP server)
@@ -36,8 +36,8 @@ async function bootstrap() {
       email: 'test@gmail.com',
       phone: '0000000000',
       isVerified: true,
-      role: Role.SUPER_ADMIN,
-      status: Status.APPROVED,
+      status: UserStatus.APPROVED,
+      userType: UserType.ADMIN,
     });
 
     await repo.save(user);

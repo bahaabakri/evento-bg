@@ -9,7 +9,7 @@ import { OtpService } from 'src/modules/otp/otp.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Otp } from 'src/modules/otp/otp.entity';
 import { Repository } from 'typeorm';
-import { Status } from 'src/modules/users/status.enum';
+import { Status } from '@/modules/users/user-status.enum';
 
 let mockUser: User = {
     id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps: [], joinedEvents: [], createdEvents:[], firstname: 'Test', lastname: 'User', phone: '111111', status: Status.APPROVED

@@ -31,6 +31,8 @@ import { EventTicket } from './modules/tickets/ticket.entity';
 import { PlanEntity } from './modules/plans/plan.entity';
 import { PlansModule } from './modules/plans/plans.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { Permission } from './modules/permissions/permission.entity';
+import { Role } from './modules/roles/role.entity';
 const isProduction = process.env.NODE_ENV === 'production';
 @Module({
   imports: [
@@ -58,6 +60,8 @@ const isProduction = process.env.NODE_ENV === 'production';
           Otp,
           Hero,
           PlanEntity,
+          Permission,
+          Role
         ],
         synchronize: true,
       }),

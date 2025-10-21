@@ -16,35 +16,34 @@ import { HeroResponseDto } from './dto/response/hero-response.dto';
 import { HeroDto } from './dto/response/hero.dto';
 import { PaginatedHerosDto } from './dto/response/paginated-heros.dto';
 import { ApiOperation, ApiParam } from '@nestjs/swagger';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../users/decorators/roles.decorator';
-import { Role } from '../users/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
-
-// @UseGuards(AuthGuard('jwt'))
+import { GuestGuard } from '../auth/guards/guest.guard';
+import { PermissionsGuard } from '../permissions/guards/permissions.guard';
+import { Permissions } from '../permissions/decorators/permissions.decorator';
 @Controller('admin/heros')
 export class HeroAdminController {
   constructor(private _heroService: HeroService) {}
 
   @Serialize(HeroDto)
+  @UseGuards(GuestGuard)
   @ApiOperation({ summary: 'Get Active hero (No Auth)' })
   @Get('activeHero')
   findActiveHero() {
     return this._heroService.getActiveHero();
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.MODERATOR)
   @Serialize(PaginatedHerosDto)
+  @UseGuards(AuthGuard('jwt'), PermissionsGuard)
+  @Permissions('view_hero')
   @Get()
   @ApiOperation({ summary: 'Get All heros' })
   findAllHeros() {
     return this._heroService.getAllHeros();
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.MODERATOR)
   @Serialize(HeroDto)
+  @UseGuards(AuthGuard('jwt'), PermissionsGuard)
+  @Permissions('view_hero')
   @ApiOperation({ summary: 'Get Hero by id' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Hero ID' })
   @Get(':id')
@@ -52,18 +51,18 @@ export class HeroAdminController {
     return this._heroService.getHero(id);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.MODERATOR)
   @Serialize(HeroResponseDto)
+  @UseGuards(AuthGuard('jwt'), PermissionsGuard)
+  @Permissions('create_hero')
   @Post()
   @ApiOperation({ summary: 'Create Hero' })
   createHero(@Body() body: CreateHeroDto) {
     return this._heroService.createHero(body);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.MODERATOR)
   @Serialize(HeroResponseDto)
+  @UseGuards(AuthGuard('jwt'), PermissionsGuard)
+  @Permissions('activate_hero')
   @Patch('makeItActive/:id')
   @ApiOperation({ summary: 'Activate Hero' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Hero ID' })

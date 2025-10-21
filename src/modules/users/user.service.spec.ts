@@ -5,7 +5,7 @@ import { UserService } from "./user.service"
 import { Role } from "./roles.enum"
 import { NotFoundException } from "@nestjs/common"
 import { getRepositoryToken } from "@nestjs/typeorm"
-import { Status } from "./status.enum"
+import { Status } from "./user-status.enum"
 let mockUser: User = {
     id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps: [], joinedEvents: [], createdEvents:[], firstname: 'Test', lastname: 'User', phone: '111111', status: Status.APPROVED
 }

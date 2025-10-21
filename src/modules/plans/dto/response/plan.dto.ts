@@ -1,7 +1,7 @@
 import { Expose } from 'class-transformer';
 import { Type } from 'class-transformer';
-import { EventTicket } from '@/modules/tickets/ticket.entity';
 import { EventDto } from '@/modules/events/dto/response/event.dto';
+import { TicketDto } from '@/modules/tickets/dto/response/tickets.dto';
 
 export class PlanDto {
   @Expose()
@@ -18,7 +18,7 @@ export class PlanDto {
 
   @Expose()
   currency: string;
-  
+
   @Expose()
   capacity: number;
 
@@ -27,6 +27,6 @@ export class PlanDto {
   event: EventDto;
 
   @Expose()
-  @Type(() => EventTicket)
-  tickets: EventTicket[];
+  @Type(() => TicketDto)
+  tickets: TicketDto[];
 }

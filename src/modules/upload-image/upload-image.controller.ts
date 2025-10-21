@@ -6,6 +6,7 @@ import {
   Post,
   UploadedFile,
   UploadedFiles,
+  UseGuards,
 } from '@nestjs/common';
 import { UploadImageService } from './upload-image.service';
 import { UploadIntent } from './upload-intent.entity';
@@ -13,7 +14,10 @@ import { UploadImage } from './upload-image.entity';
 import FilesUpload from '../../decorators/file-upload.decorator';
 import { ApiBody, ApiConsumes, ApiOperation, ApiParam } from '@nestjs/swagger';
 import UploadImagesDto from './dto/request/uplaod-images.dto';
-
+import { AuthGuard } from '@nestjs/passport';
+import { PermissionsGuard } from '../permissions/guards/permissions.guard';
+import { Permissions } from '../permissions/decorators/permissions.decorator';
+@UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @Controller('upload-image')
 export class UploadImageController {
   constructor(private _uploadImageService: UploadImageService) {}
@@ -21,6 +25,7 @@ export class UploadImageController {
   /**
    * Create upload intent
    */
+  @Permissions('create_intent')
   @Post('/intent')
   @ApiOperation({
     summary: 'Create Intent for upload images',
@@ -34,6 +39,7 @@ export class UploadImageController {
   /**
    * Create upload images
    */
+  @Permissions('upload_images')
   @Post('/images')
   @FilesUpload()
   @ApiOperation({
@@ -72,6 +78,7 @@ export class UploadImageController {
   /**
    * Delete image
    */
+  @Permissions('delete_images')
   @Delete('/image/:id')
   @ApiOperation({
     summary: 'Delete Image',

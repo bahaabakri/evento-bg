@@ -1,10 +1,11 @@
 import { Expose, Type } from "class-transformer";
 import { PaginationDto } from "@/shared-dto/pagination.dto";
-import { TicketDto } from "./tickets.dto";
-export class PaginatedTicketsDto {
+import { PermissionDto } from "./permission.dto";
+
+export class PaginatedPermissionsDto {
   @Expose()
-  @Type(() => TicketDto)
-  data: TicketDto[];
+  @Type(() => PermissionDto)
+  data: PermissionDto[];
 
   @Expose()
   @Type(() => PaginationDto)

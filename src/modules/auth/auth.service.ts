@@ -4,14 +4,13 @@ import { User } from '../users/user.entity';
 import { UserService } from '../users/user.service';
 import { OtpService } from '../otp/otp.service';
 import { CreateLoginDto } from './dto/request/create-login.dto';
-import { Role } from '../users/roles.enum';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { CreateAdminDto } from './dto/request/create-admin.dto';
-import { Status } from '../users/status.enum';
+import { UserType } from '../users/user-type.enum';
 
 @Injectable()
 export class AuthService {
@@ -50,7 +49,7 @@ export class AuthService {
             sub: updatedUser.id,
             email: updatedUser.email,
             isVerified: updatedUser.isVerified,
-            role: updatedUser.role,
+            UserType: updatedUser.userType
         };
 
         return {
@@ -85,7 +84,7 @@ export class AuthService {
      * @param role 
      * @returns 
      */
-    async registerAdmin(body: CreateAdminDto, role: Exclude<Role, Role.USER> = Role.ADMIN): Promise<{ user: User; message: string }> {
+    async registerAdmin(body: CreateAdminDto): Promise<{ user: User; message: string }> {
         const existing = await this._userService.findAdminByEmail(body.email);
         if (existing) throw new BadRequestException('Admin with this email already exists');
 
@@ -101,7 +100,7 @@ export class AuthService {
      * @param role 
      * @returns 
      */
-    async loginAdmin(body: CreateLoginDto, role: Exclude<Role, Role.USER> = Role.ADMIN): Promise<{ user: User; message: string }> {
+    async loginAdmin(body: CreateLoginDto): Promise<{ user: User; message: string }> {
         const admin = await this._userService.findAdminByEmail(body.email);
         if (!admin) throw new NotFoundException('Admin with this email does not exist');
         // if (admin.status !== Status.APPROVED) throw new ForbiddenException('Your admin account is not approved yet');

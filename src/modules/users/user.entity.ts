@@ -3,14 +3,17 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Role } from './roles.enum';
 import { EventEntity } from '../events/event.entity';
-import { Status } from './status.enum';
+import { UserStatus } from './user-status.enum';
 import { EventTicket } from '../tickets/ticket.entity';
+import { Role } from '../roles/role.entity';
+import { UserType } from './user-type.enum';
 
 @Entity('users')
 export class User {
@@ -32,11 +35,8 @@ export class User {
   @Column({ default: false })
   isVerified: boolean;
 
-  @Column({ default: Role.USER })
-  role: Role;
-
-  @Column({ default: Status.PENDING })
-  status: Status;
+  @Column({ default: UserStatus.PENDING })
+  status: UserStatus;
 
   @OneToMany(() => Otp, (otp) => otp.user, { cascade: true })
   otps: Otp[];
@@ -46,6 +46,9 @@ export class User {
   })
   createdEvents: EventEntity[];
 
+  @Column({ default: UserType.USER })
+  userType: UserType;
+
   @OneToMany(() => EventTicket, (ticket) => ticket.user)
   joinedEvents: EventTicket[];
 
@@ -54,4 +57,12 @@ export class User {
 
   @UpdateDateColumn({default: () => 'CURRENT_TIMESTAMP'})
   updatedAt: Date;
+
+  @ManyToMany(() => Role, (role) => role.users, { eager: true })
+  @JoinTable({
+    name: 'user_roles',
+    joinColumn: { name: 'user_id' },
+    inverseJoinColumn: { name: 'role_id' },
+  })
+  roles: Role[];
 }

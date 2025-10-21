@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { Otp } from '../otp/otp.entity';
-import { Status } from '../users/status.enum';
+import { Status } from '../users/user-status.enum';
 let mockUser: User = {
     id: 1, email: 'test@gmail.com', role: Role.USER, isVerified: false, otps: [], createdEvents: [],joinedEvents:[], firstname: 'Test', lastname: 'User', phone: '111111', status: Status.APPROVED
 }

@@ -15,9 +15,6 @@ import { EventsService } from './events.service';
 import CreateEventDto from './dto/request/create-event.dto';
 import UpdateEventDto from './dto/request/update-event-dto';
 import { User } from '@/modules/users/user.entity';
-import { RolesGuard } from '@/modules/auth/guards/roles.guard';
-import { Roles } from '@/modules/users/decorators/roles.decorator';
-import { Role } from '@/modules/users/roles.enum';
 import { EventDto } from './dto/response/event.dto';
 import Serialize from '@/decorators/serialize.decorator';
 import { ApproveEventDto } from './dto/request/approve-event.dto';
@@ -27,15 +24,16 @@ import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 import { PaginatedEventsDto } from './dto/response/paginated-events.dto';
 import { ApiOperation, ApiParam } from '@nestjs/swagger';
+import { PermissionsGuard } from '../permissions/guards/permissions.guard';
+import { Permissions } from '../permissions/decorators/permissions.decorator';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @Controller('admin/events')
 export class EventsAdminController {
   constructor(private readonly eventsService: EventsService) {}
   ////////////////// get apis for admin //////////////////
   @Serialize(PaginatedEventsDto)
-  @UseGuards(RolesGuard)
-  // @Roles(Role.ADMIN)
+  @Permissions('view_events')
   @Get()
   @ApiOperation({ summary: 'Get Events' })
   async getEvents(@Query() query: SearchEventDto) {
@@ -43,8 +41,7 @@ export class EventsAdminController {
     return events;
   }
   @Serialize(EventDto)
-  @UseGuards(RolesGuard)
-  // @Roles(Role.ADMIN)
+  @Permissions('view_events')
   @Get(':id')
   @ApiOperation({ summary: 'Get Event by id' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Event ID' })
@@ -53,10 +50,8 @@ export class EventsAdminController {
     return event;
   }
 
-  ///////////////////// post apis for moderator ///////////
   @Serialize(EventResponseDto)
-  @UseGuards(RolesGuard)
-  @Roles(Role.MODERATOR)
+  @Permissions('create_events')
   @Post()
   @ApiOperation({ summary: 'Create new Event' })
   async createEvent(
@@ -67,8 +62,7 @@ export class EventsAdminController {
     return event;
   }
   @Serialize(EventResponseDto)
-  // @UseGuards(RolesGuard)
-  // @Roles(Role.MODERATOR)
+  @Permissions('update_events')
   @Patch(':id')
   @ApiOperation({ summary: 'Update Event' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Event ID' })
@@ -80,10 +74,8 @@ export class EventsAdminController {
     return event;
   }
 
-  ///////////////////// post apis for super admin ///////////
   @Serialize(EventResponseDto)
-  // @UseGuards(RolesGuard)
-  // @Roles(Role.SUPER_ADMIN)
+  @Permissions('delete_events')
   @Delete(':id')
   @ApiOperation({ summary: 'Delete Event' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Event ID' })
@@ -93,8 +85,7 @@ export class EventsAdminController {
   }
 
   @Serialize(EventResponseDto)
-  // @UseGuards(RolesGuard)
-  // @Roles(Role.SUPER_ADMIN)
+  @Permissions('approve_events')
   @Patch(':id/approve')
   @ApiOperation({ summary: 'Approve Event' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Event ID' })
