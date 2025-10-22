@@ -1,3 +1,4 @@
+import { RoleDto } from "@/modules/roles/dto/response/role.dto";
 import { Expose, Type } from "class-transformer";
 
 export class PermissionDto {
@@ -13,7 +14,7 @@ export class PermissionDto {
     @Expose()
     slug: string;
 
-    // @Expose()
-    // @Type(() => RoleDto)
-    // roles: RoleDto[]
+    @Expose()
+    @Type(() => RoleDto)
+    roles: RoleDto[]
 }

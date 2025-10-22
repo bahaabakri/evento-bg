@@ -1,0 +1,3 @@
+### GET role by id
+GET http://localhost:3000/admin/roles/1
+Authorization:  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJpc1ZlcmlmaWVkIjp0cnVlLCJVc2VyVHlwZSI6InN1cGVyX2FkbWluIiwiaWF0IjoxNzYxMTI0MDYxLCJleHAiOjE3NjE3Mjg4NjF9.MVNc949H27RbbDC2qXJs2wb5CRgp5vW6cZs3YVeKE7I

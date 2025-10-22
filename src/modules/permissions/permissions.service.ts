@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permission } from './permission.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreatePermissionDto } from './dto/request/create-permission.dto';
 import { SearchPermissionDto } from './dto/request/search-permission.dto';
 import { PaginatedResult } from '@/types/types';
@@ -41,7 +41,7 @@ export class PermissionsService {
   }
 
   /**
-   * Get permissions
+   * Get permissions pagination
    */
   async getPermissions({
     page = 1,
@@ -59,6 +59,13 @@ export class PermissionsService {
     };
   }
 
+  /**
+   * get all permissions
+   */
+  getAllPermissions(): Promise<Permission[]> {
+    return this._permissionRepo.find()
+  }
+
   /** Get permission by id */
   async getPermissionById(id: number): Promise<Permission> {
     if (!id) {
@@ -74,6 +81,19 @@ export class PermissionsService {
       throw new NotFoundException('Permission Not Found');
     }
     return permission;
+  }
+
+  /**
+   * Get permissions by ids
+   */
+  async getPermissionsByIds(ids: number[]): Promise<Permission[]> {
+    if (!ids || ids.length === 0) {
+      return [];
+    }
+    const permissions = await this._permissionRepo.find({
+      where: {id: In(ids.map(id => Number(id)))}
+    });
+    return permissions;
   }
 
   /**

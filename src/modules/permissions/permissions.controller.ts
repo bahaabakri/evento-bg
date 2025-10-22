@@ -14,13 +14,13 @@ import { PermissionsService } from './permissions.service';
 import { PaginatedPermissionsDto } from './dto/response/paginated-permissions.dto';
 import { SearchPermissionDto } from './dto/request/search-permission.dto';
 import { PermissionDto } from './dto/response/permission.dto';
-import { PermissionResponseDto } from './dto/response/permissions-response.dto';
+import { PermissionResponseDto } from './dto/response/permission-response.dto';
 import { CreatePermissionDto } from './dto/request/create-permission.dto';
 import Serialize from '@/decorators/serialize.decorator';
 import { ApiOperation, ApiParam } from '@nestjs/swagger';
 import { Permissions } from './decorators/permissions.decorator';
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-@Controller('permissions')
+@Controller('admin/permissions')
 export class PermissionsController {
   constructor(private _permissionsService: PermissionsService) {}
   ////////////////// get apis for permissions //////////////////

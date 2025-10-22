@@ -1,7 +1,7 @@
 // role.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
-import { Permission } from '../permissions/permission.entity';
 import { User } from '../users/user.entity';
+import { Permission } from '../permissions/permission.entity';
 
 @Entity('roles')
 export class Role {
@@ -23,5 +23,5 @@ export class Role {
   permissions: Permission[];
 
   @ManyToMany(() => User, (user) => user.roles)
-  users: User[];
+  admins: User[];
 }

@@ -2,9 +2,9 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsNumber, IsOptional, IsString, Length } from "class-validator";
 
-export class SearchPermissionDto {
+export class SearchRoleDto {
       @ApiPropertyOptional({
-        example: 'My Permission',
+        example: 'My Role',
         description: 'Query for search should be between 3 to 255 characters',
       })
       @IsOptional()
@@ -23,7 +23,7 @@ export class SearchPermissionDto {
     
       @ApiPropertyOptional({
         example: '10',
-        description: 'Number of permissions in one page',
+        description: 'Number of roles in one page',
       })
       @IsOptional()
       @Type(() => Number)

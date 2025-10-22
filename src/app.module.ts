@@ -21,7 +21,6 @@ import { Otp } from './modules/otp/otp.entity';
 import { User } from './modules/users/user.entity';
 import { HeroModule } from './modules/hero/hero.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { UserService } from './modules/users/user.service';
 import { APP_PIPE } from '@nestjs/core';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -31,8 +30,13 @@ import { EventTicket } from './modules/tickets/ticket.entity';
 import { PlanEntity } from './modules/plans/plan.entity';
 import { PlansModule } from './modules/plans/plans.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { Permission } from './modules/permissions/permission.entity';
 import { Role } from './modules/roles/role.entity';
+import { Permission } from './modules/permissions/permission.entity';
+import { SeedModule } from './seeders/seed.module';
+import { DataSourceModule } from './modules/datasource/datasource.module';
+import { PermissionsModule } from './modules/permissions/permissions.module';
+import { RolesService } from './modules/roles/roles.service';
+import { RolesModule } from './modules/roles/roles.module';
 const isProduction = process.env.NODE_ENV === 'production';
 @Module({
   imports: [
@@ -42,31 +46,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     PlansModule,
     UploadImageModule,
     ScheduleModule.forRoot(),
-    ConfigModule.forRoot({
-      isGlobal: true, // Make the configuration globally available
-      envFilePath: `.env.${process.env.NODE_ENV}`, // Load environment variables from .env file
-    }),
-    TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'sqlite',
-        database: configService.get<string>('DB_NAME'),
-        entities: [
-          EventEntity,
-          EventTicket,
-          UploadIntent,
-          UploadImage,
-          User,
-          Otp,
-          Hero,
-          PlanEntity,
-          Permission,
-          Role
-        ],
-        synchronize: true,
-      }),
-    }),
-    TypeOrmModule.forFeature([User]),
+    DataSourceModule,
     MailerModule.forRoot({
       transport: {
         host: 'sandbox.smtp.mailtrap.io',
@@ -92,11 +72,13 @@ const isProduction = process.env.NODE_ENV === 'production';
     }),
     HeroModule,
     AuthModule,
+    SeedModule,
+    PermissionsModule,
+    RolesModule
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    UserService,
     {
       provide: APP_PIPE,
       useValue: new ValidationPipe({

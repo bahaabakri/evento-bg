@@ -58,7 +58,7 @@ export class User {
   @UpdateDateColumn({default: () => 'CURRENT_TIMESTAMP'})
   updatedAt: Date;
 
-  @ManyToMany(() => Role, (role) => role.users, { eager: true })
+  @ManyToMany(() => Role, (role) => role.admins, { eager: true })
   @JoinTable({
     name: 'user_roles',
     joinColumn: { name: 'user_id' },

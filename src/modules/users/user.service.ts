@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { CreateLoginDto } from '../auth/dto/request/create-login.dto';
 import { CreateAdminDto } from '@/modules/auth/dto/request/create-admin.dto';
 import SearchUserDto from './dto/request/search-user.dto';
@@ -24,7 +24,9 @@ export class UserService {
     const user = this._userRepo.create({
       ...body,
       isVerified: false,
-      status: userType === UserType.ADMIN ? UserStatus.PENDING : UserStatus.APPROVED, // set status based on role
+      userType,
+      status:
+        userType === UserType.ADMIN ? UserStatus.PENDING : UserStatus.APPROVED, // set status based on role
     });
     return this.saveUser(user);
   }
@@ -44,6 +46,44 @@ export class UserService {
    */
   async createAdmin(body: CreateAdminDto): Promise<User> {
     return this._createWithRole(body, UserType.ADMIN);
+  }
+
+  /**
+   * Create user by admin with response
+   * @param body
+   * @returns
+   */
+  async createUserByAdmin(
+    body: CreateLoginDto,
+  ): Promise<{ user: User; message: string }> {
+    let user = await this.findUserByEmail(body.email);
+    if (user) {
+      throw new BadRequestException('User with this email already exists');
+    }
+    const createdUser = await this.createUser(body);
+    return {
+      message: 'User has been created successfully',
+      user: createdUser,
+    };
+  }
+
+  /**
+   * Create admin by admin with response
+   * @param body
+   * @returns
+   */
+  async createAdminByAdmin(
+    body: CreateAdminDto,
+  ): Promise<{ user: User; message: string }> {
+    let admin = await this.findAdminByEmail(body.email);
+    if (admin) {
+      throw new BadRequestException('Admin with this email already exists');
+    }
+    const createdAdmin = await this.createAdmin(body);
+    return {
+      message: 'Admin has been created successfully',
+      user: createdAdmin,
+    };
   }
 
   saveUser(user: User): Promise<User> {
@@ -75,7 +115,7 @@ export class UserService {
   }
 
   /**
-   * find user by id
+   * find user by id (with joined events relation)
    */
   findUserById(id: number): Promise<User | null> {
     return this._userRepo.findOne({
@@ -84,16 +124,19 @@ export class UserService {
         joinedEvents: {
           event: true,
         },
-        createdEvents: true,
       },
     });
   }
   /**
-   * find admin by id
+   * find admin by id (with created events and roles relation)
    */
   findAdminById(id: number): Promise<User | null> {
     return this._userRepo.findOne({
-      where: { id, userType: Not(UserType.USER) },
+      where: { id, userType: UserType.ADMIN },
+      relations: {
+        createdEvents: true,
+        roles: true,
+      },
     });
   }
   /**
@@ -102,19 +145,31 @@ export class UserService {
   findById(id: number): Promise<User | null> {
     return this._userRepo.findOneBy({ id });
   }
-
   /**
-   * get all users
+   * Get admins by ids
+   */
+  async findAdminsByIds(ids: number[]): Promise<User[]> {
+    if (!ids || ids.length === 0) {
+      return [];
+    }
+    const admins = await this._userRepo.find({
+      where: {id: In(ids.map(id => Number(id)))}
+    });
+    return admins;
+  }
+  /**
+   * get users or admins with pagination
    */
 
-  async findUsers({
-    page = 1,
-    perPage = 10,
-  }: SearchUserDto): Promise<PaginatedResult<User>> {
+  async findUsers(
+    { page = 1, perPage = 10 }: SearchUserDto,
+    userType: UserType,
+  ): Promise<PaginatedResult<User>> {
     const skip = (page - 1) * perPage;
     const [users, total] = await this._userRepo.findAndCount({
       skip,
       take: perPage,
+      where: { userType },
     });
     return {
       data: users,
@@ -127,18 +182,22 @@ export class UserService {
   }
 
   /**
-   * Remove user
+   * Remove user or admin
    * @param id
    * @returns
    */
-  async removeUser(id: number): Promise<{ user: User; message: string }> {
+  async removeUser(
+    id: number,
+    userType: UserType,
+  ): Promise<{ user: User; message: string }> {
     const user = await this.findById(id);
+    const userTypeStr = userType === UserType.ADMIN ? 'Admin' : 'User';
     if (!user) {
-      throw new NotFoundException('User Not Found');
+      throw new NotFoundException(`${userTypeStr} Not Found`);
     }
     const removedUser = await this._userRepo.remove(user);
     return {
-      message: 'User has been deleted successfully',
+      message: `${userTypeStr} has been deleted successfully`,
       user: removedUser,
     };
   }
@@ -158,5 +217,30 @@ export class UserService {
       message: 'Admin has been approved successfully',
       user: approvedUser,
     };
+  }
+
+  /**
+   * Create super admin for seeder
+   */
+  async createSuperAdmin() {
+    const existing = await this._userRepo.findOne({
+      where: { email: 'test@gmail.com' },
+    });
+
+    if (existing) {
+      console.log('⚠️ Super admin already exists');
+      return;
+    }
+    const user = this._userRepo.create({
+      firstname: 'Super Admin',
+      lastname: 'Seeder',
+      email: 'test@gmail.com',
+      phone: '0000000000',
+      isVerified: true,
+      status: UserStatus.APPROVED,
+      userType: UserType.ADMIN,
+    });
+
+    await this._userRepo.save(user);
   }
 }
