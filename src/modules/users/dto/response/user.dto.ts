@@ -1,4 +1,9 @@
-import { Expose } from "class-transformer";
+import { EventDto } from "@/modules/events/dto/response/event.dto";
+import { EventEntity } from "@/modules/events/event.entity";
+import { RoleDto } from "@/modules/roles/dto/response/role.dto";
+import { Role } from "@/modules/roles/role.entity";
+import { TicketDto } from "@/modules/tickets/dto/response/tickets.dto";
+import { Expose, Type } from "class-transformer";
 export class UserDto {
     @Expose()
     id: number;
@@ -27,7 +32,15 @@ export class UserDto {
     @Expose()
     updatedAt: Date;
 
-    // @Expose()
-    // @Type(() => RoleDto)
-    // roles: Role[];
+    @Expose()
+    @Type(() => EventDto)
+    createdEvents: EventDto[];
+
+    @Expose()
+    @Type(() => TicketDto)
+    joinedEvents: TicketDto[];
+
+    @Expose()
+    @Type(() => RoleDto)
+    roles: Role[];
 }

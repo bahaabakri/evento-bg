@@ -14,7 +14,9 @@ import { UserType } from './user-type.enum';
 import { UserStatus } from './user-status.enum';
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private _userRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private _userRepo: Repository<User>,
+  ) {}
 
   /////////////////////// Private Helper Functions ///////////////////////
   private async _createWithRole<T extends Partial<User>>(
@@ -153,7 +155,7 @@ export class UserService {
       return [];
     }
     const admins = await this._userRepo.find({
-      where: {id: In(ids.map(id => Number(id)))}
+      where: { id: In(ids.map((id) => Number(id))) },
     });
     return admins;
   }
@@ -226,10 +228,9 @@ export class UserService {
     const existing = await this._userRepo.findOne({
       where: { email: 'test@gmail.com' },
     });
-
     if (existing) {
-      console.log('⚠️ Super admin already exists');
-      return;
+      const errMessage: string = '⚠️ Super admin already exists';
+      throw new BadRequestException(errMessage);
     }
     const user = this._userRepo.create({
       firstname: 'Super Admin',
@@ -240,7 +241,6 @@ export class UserService {
       status: UserStatus.APPROVED,
       userType: UserType.ADMIN,
     });
-
-    await this._userRepo.save(user);
+    return this._userRepo.save(user);
   }
 }

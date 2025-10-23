@@ -1,5 +1,5 @@
 import { Permission } from '@/modules/permissions/permission.entity';
-import { PERMISSIONS_MAP } from '@/modules/permissions/permissions-map';
+import { ODD_PERMISSIONS, PERMISSIONS_MAP } from '@/modules/permissions/permissions-map';
 import { CreatePermissionDto } from '@/modules/permissions/dto/request/create-permission.dto';
 import { PermissionsService } from '@/modules/permissions/permissions.service';
 
@@ -26,6 +26,24 @@ export async function permissionSeeder(permissionsService: PermissionsService) {
       }
     }
   }
-
+  // ✅ Seed odd permissions
+  for (const {moduleName, actionName, description, slug} of ODD_PERMISSIONS) {
+    const dto: CreatePermissionDto = {
+      moduleName,
+      actionName,
+      description,
+      slug
+    };
+    try {
+      await permissionsService.createPermission(dto);
+      console.log(`✅ Created odd permission: ${slug}`);
+    } catch (err) {
+      if (err.message.includes('UNIQUE constraint failed')) {
+        console.log(`⚪ Skipped existing odd permission: ${slug}`);
+      } else {
+        console.error(`❌ Failed to create odd permission ${slug}:`, err.message);
+      }
+    }
+  }
   console.log('✅ Permissions seeding complete');
 }

@@ -22,13 +22,13 @@ export class PermissionsService {
     permissionData: CreatePermissionDto,
   ): Promise<{ message: string; permission: Permission }> {
     // Implementation for creating a permission
-    const { moduleName, actionName } = permissionData;
-    const slug = `${actionName}_${moduleName}`.toLowerCase();
+    const { slug, moduleName, actionName } = permissionData;
+    const generatedSlug = slug || `${actionName}_${moduleName}`.toLowerCase();
     const name = `${actionName} ${moduleName}`.toLowerCase();
 
     const permission = this._permissionRepo.create({
       name,
-      slug,
+      slug: generatedSlug,
       module: moduleName,
       action: actionName,
       description: permissionData.description,
@@ -63,7 +63,7 @@ export class PermissionsService {
    * get all permissions
    */
   getAllPermissions(): Promise<Permission[]> {
-    return this._permissionRepo.find()
+    return this._permissionRepo.find();
   }
 
   /** Get permission by id */
@@ -83,6 +83,19 @@ export class PermissionsService {
     return permission;
   }
 
+  async getPermissionBySlug(slug: string) {
+    if (!slug) {
+      throw new NotFoundException('Slug is empty');
+    }
+    const permission = await this._permissionRepo.findOne({
+      where: { slug }
+    });
+    if (!permission) {
+      throw new NotFoundException('Permission with this slug Not Found');
+    }
+    return permission;
+  }
+
   /**
    * Get permissions by ids
    */
@@ -91,7 +104,7 @@ export class PermissionsService {
       return [];
     }
     const permissions = await this._permissionRepo.find({
-      where: {id: In(ids.map(id => Number(id)))}
+      where: { id: In(ids.map((id) => Number(id))) },
     });
     return permissions;
   }

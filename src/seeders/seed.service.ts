@@ -16,8 +16,12 @@ export class SeedService {
   async runAll() {
     console.log('🚀 Running seeders...');
     await permissionSeeder(this.permissionsService);
-    await userSeeder(this.userService);
-    await roleSeeder(this.rolesService, this.permissionsService)
+    const createdRole = await roleSeeder(this.rolesService, this.permissionsService)
+    if(createdRole) {
+      await userSeeder(this.userService, this.rolesService, createdRole);
+    } else {
+      console.error('⚠️ Assigning role to super admin NOT completed because no role has been created');
+    }
     console.log('✅ All seeders completed successfully');
   }
 }

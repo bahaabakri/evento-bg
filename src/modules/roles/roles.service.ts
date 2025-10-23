@@ -11,6 +11,8 @@ import { PermissionsService } from '../permissions/permissions.service';
 import { AssignPermissionsToRoleDto } from './dto/request/assign-permissions.dto';
 import { AssignAdminsToRoleDto } from './dto/request/assign-admins.dto';
 import { UserService } from '../users/user.service';
+import { SearchRoleDto } from './dto/request/search-role.dto';
+import { PaginatedResult } from '@/types/types';
 
 @Injectable()
 export class RolesService {
@@ -28,6 +30,13 @@ export class RolesService {
     roleData: CreateRoleDto,
   ): Promise<{ message: string; role: Role }> {
     const { name, description, permissionsIds } = roleData;
+    const existing = await this._roleRepo.findOne({
+        where: {name}
+    })    
+    if (existing) {
+        const errMessage:string = 'Role with this name already exists'
+        throw new BadRequestException(errMessage)
+    }
     const permissions =
       await this.permissionsService.getPermissionsByIds(permissionsIds);
     const role = this._roleRepo.create({
@@ -102,5 +111,59 @@ export class RolesService {
       throw new NotFoundException('Role Not Found');
     }
     return role;
+  }
+
+  /**
+   * Get roles with pagination
+   */
+    async getRoles({
+      page = 1,
+      perPage = 10,
+    }: SearchRoleDto): Promise<PaginatedResult<Role>> {
+      const skip = (page - 1) * perPage;
+      const [roles, total] = await this._roleRepo.findAndCount({
+        skip,
+        take: perPage,
+        order: { id: 'DESC' },
+      });
+      return {
+        data: roles,
+        meta: { total, page, perPage },
+      };
+    }
+
+    /**
+     * Get all roles
+     */
+    getAllRoles():Promise<Role[]> {
+        return this._roleRepo.find()
+    }
+
+
+    /**
+     * Delete role by id
+     */
+    async deleteRole(id:number):Promise<{message:string, role:Role}> {
+        const role = await this.getRoleById(id);
+        const deletedRole = await this._roleRepo.remove(role);
+        return {
+            message: 'Role deleted successfully',
+            role: deletedRole
+        }
+    }
+
+  /**
+   * assign super admin role to super admin
+   * @param superAdminId
+   */
+  async assignSuperAdminRoleToSuperAdmin(
+    superAdminId: number,
+    superAdminRoleId: number,
+  ) {
+    // assign super_admin role to super_admin user
+    return this.assignAdminsToRole(
+      { adminsIds: [superAdminId] },
+      superAdminRoleId,
+    );
   }
 }

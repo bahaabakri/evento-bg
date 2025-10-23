@@ -23,4 +23,12 @@ export class CreatePermissionDto {
   @IsOptional()
   @IsString()
   description: string;
+
+  @ApiPropertyOptional({
+    example: 'create_users',
+    description: 'permission slug (optional)',
+  })
+  @IsOptional()
+  @IsString()
+  slug?: string;
 }

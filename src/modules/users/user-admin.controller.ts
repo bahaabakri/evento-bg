@@ -38,7 +38,7 @@ export class UserAdminController {
   }
 
   @Serialize(UserResponseDto)
-  // @Permissions('create_users')
+  @Permissions('create_users')
   @Post('users')
   @ApiOperation({ summary: 'Create User'})
   createUser(@Body() body: CreateLoginDto) {
@@ -46,7 +46,7 @@ export class UserAdminController {
   }
 
   @Serialize(UserResponseDto)
-  // @Permissions('create_admins')
+  @Permissions('create_admins')
   @Post('admins')
   @ApiOperation({ summary: 'Create Admin'})
   createAdmin(@Body() body: CreateAdminDto) {

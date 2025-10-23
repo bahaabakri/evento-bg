@@ -21,7 +21,7 @@ import { Otp } from './modules/otp/otp.entity';
 import { User } from './modules/users/user.entity';
 import { HeroModule } from './modules/hero/hero.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Hero } from './modules/hero/hero.entity';
@@ -37,9 +37,12 @@ import { DataSourceModule } from './modules/datasource/datasource.module';
 import { PermissionsModule } from './modules/permissions/permissions.module';
 import { RolesService } from './modules/roles/roles.service';
 import { RolesModule } from './modules/roles/roles.module';
+import { PermissionsGuard } from './modules/permissions/guards/permissions.guard';
+import { PermissionsService } from './modules/permissions/permissions.service';
 const isProduction = process.env.NODE_ENV === 'production';
 @Module({
   imports: [
+    PermissionsModule,
     EventsModule,
     TicketsModule,
     UserModule,
@@ -73,8 +76,8 @@ const isProduction = process.env.NODE_ENV === 'production';
     HeroModule,
     AuthModule,
     SeedModule,
-    PermissionsModule,
-    RolesModule
+    RolesModule,
+    TypeOrmModule.forFeature([Permission]),
   ],
   controllers: [AppController],
   providers: [
@@ -85,6 +88,10 @@ const isProduction = process.env.NODE_ENV === 'production';
         whitelist: true,
       }),
     },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: PermissionsGuard,
+    // },
   ],
 })
 export class AppModule implements NestModule {
