@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventEntity } from '../events/event.entity';
@@ -11,7 +11,6 @@ import { EventTicket } from '../tickets/ticket.entity';
 import { UploadImage } from '../upload-image/upload-image.entity';
 import { UploadIntent } from '../upload-image/upload-intent.entity';
 import { User } from '../users/user.entity';
-
 @Module({
   imports: [
     ConfigModule.forRoot({

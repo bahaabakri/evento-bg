@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Hero } from './hero.entity';
 import { Not, Repository } from 'typeorm';
 import { UploadImageService } from '@/modules/upload-image/upload-image.service';
 import { CreateHeroDto } from './dto/request/create-hero.dto';
 import { ImageObject, PaginatedResult } from '@/types/types';
+import { validateId } from '@/util';
 
 @Injectable()
 export class HeroService {
@@ -21,8 +22,8 @@ export class HeroService {
     heroData: CreateHeroDto,
   ): Promise<{ message: string; hero: Hero }> {
     const images: ImageObject[] = await Promise.all(
-      heroData.imagesIds.map(async (id: string) => {
-        const image = await this._uploadImageService.getImageById(+id);
+      heroData.imagesIds.map(async (id: number) => {
+        const image = await this._uploadImageService.getImageById(id);
         return {
           id: image.id.toString(),
           name: image.name,
@@ -60,10 +61,7 @@ export class HeroService {
    */
 
   async getHero(id: number): Promise<Hero> {
-    if (!id) {
-      throw new NotFoundException('Hero Not Found');
-    }
-    const hero = await this._heroRepo.findOneBy({ id });
+    const hero = await this._heroRepo.findOneBy({ id: validateId(id) });
     if (!hero) {
       throw new NotFoundException('Hero Not Found');
     }

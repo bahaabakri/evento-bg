@@ -35,9 +35,9 @@ export class PlanEntity {
   @Column({default: null})
   currency: string;
 
-  @ManyToOne(() => EventEntity, (event) => event.plans, { onDelete: 'CASCADE' })
+  @ManyToOne(() => EventEntity, (event) => event.plans, { eager: false, onDelete: 'CASCADE' })
   event: EventEntity;
 
-  @OneToMany(() => EventTicket, (ticket) => ticket.plan)
+  @OneToMany(() => EventTicket, (ticket) => ticket.plan, {eager: false})
   tickets: EventTicket[];
 }

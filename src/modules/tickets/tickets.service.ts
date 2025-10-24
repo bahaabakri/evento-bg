@@ -18,6 +18,7 @@ import { TicketFilters } from './tickets.type';
 import { JoinEventDto } from './dto/request/join-event.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PlansService } from '../plans/plans.service';
+import { validateId } from '@/util';
 const TIME_TO_FREE_UP_RESERVED_TICKET_IN_MIN = 15; // 15 minutes
 @Injectable()
 export class TicketsService {
@@ -25,7 +26,6 @@ export class TicketsService {
   constructor(
     @InjectRepository(EventTicket)
     private readonly ticketRepo: Repository<EventTicket>,
-    @InjectRepository(EventEntity)
     private readonly dataSource: DataSource,
     private readonly plansService: PlansService,
   ) {}
@@ -61,7 +61,7 @@ export class TicketsService {
         // get the count of (sold / reserved) tickets for this plan in DB
         const soldCount = await manager.count(EventTicket, {
           where: [
-            { plan: { id: planId }, status: TicketStatus.RESERVED},
+            { plan: { id: planId }, status: TicketStatus.RESERVED },
             { plan: { id: planId }, status: TicketStatus.PAID },
           ],
         });
@@ -81,7 +81,9 @@ export class TicketsService {
             plan,
             code: `${plan.name}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
             status: TicketStatus.RESERVED,
-            reservationExpiresAt: new Date(Date.now() + TIME_TO_FREE_UP_RESERVED_TICKET_IN_MIN * 60 * 1000), // 15 minutes from now
+            reservationExpiresAt: new Date(
+              Date.now() + TIME_TO_FREE_UP_RESERVED_TICKET_IN_MIN * 60 * 1000,
+            ), // 15 minutes from now
           });
 
           createdTickets.push(await manager.save(EventTicket, ticket));
@@ -122,11 +124,8 @@ export class TicketsService {
 
   /** Get ticket by ticket id */
   async getTicketById(id: number): Promise<EventTicket> {
-    if (!id) {
-      throw new NotFoundException('Ticket Not Found');
-    }
     const ticket = await this.ticketRepo.findOne({
-      where: { id },
+      where: { id: validateId(id) },
       relations: ['event', 'user'],
     });
     if (!ticket) {
@@ -159,9 +158,14 @@ export class TicketsService {
     if (result.affected && result.affected > 0) {
       for (const ticket of expiredTickets) {
         // update plan soldSeats
-        this.plansService.updatePlanCapacity(ticket.plan.id, ticket.plan.soldSeats - 1);      
+        this.plansService.updatePlanCapacity(
+          ticket.plan.id,
+          ticket.plan.soldSeats - 1,
+        );
       }
-      this.logger.log(`CRON JOB: Cancelled ${result.affected} expired reservations`);
+      this.logger.log(
+        `CRON JOB: Cancelled ${result.affected} expired reservations`,
+      );
     }
   }
 }

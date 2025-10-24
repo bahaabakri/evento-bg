@@ -18,7 +18,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { PermissionsGuard } from '../permissions/guards/permissions.guard';
 import { Permissions } from '../permissions/decorators/permissions.decorator';
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
-@Controller('upload-image')
+@Controller('admin/upload-image')
 export class UploadImageController {
   constructor(private _uploadImageService: UploadImageService) {}
 

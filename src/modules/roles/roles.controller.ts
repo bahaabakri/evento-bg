@@ -50,7 +50,7 @@ export class RolesController {
   }
 
   @Serialize(RoleResponseDto)
-//   @Permissions('create_roles')
+  @Permissions('create_roles')
   @Post()
   @ApiOperation({ summary: 'Create new Role' })
   async createPermission(@Body() roleData: CreateRoleDto) {

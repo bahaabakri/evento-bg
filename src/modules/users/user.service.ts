@@ -12,11 +12,10 @@ import SearchUserDto from './dto/request/search-user.dto';
 import { PaginatedResult } from '@/types/types';
 import { UserType } from './user-type.enum';
 import { UserStatus } from './user-status.enum';
+import { validateId } from '@/util';
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(User) private _userRepo: Repository<User>,
-  ) {}
+  constructor(@InjectRepository(User) private _userRepo: Repository<User>) {}
 
   /////////////////////// Private Helper Functions ///////////////////////
   private async _createWithRole<T extends Partial<User>>(
@@ -94,66 +93,93 @@ export class UserService {
   /**
    * find user by email
    */
-  findUserByEmail(email: string): Promise<User | null> {
-    return this._userRepo.findOneBy({ email, userType: UserType.USER });
+  async findUserByEmail(email: string): Promise<User | null> {
+    if (!email) {
+      throw new BadRequestException('Email should not be empty');
+    }
+    const user = await this._userRepo.findOneBy({
+      email,
+      userType: UserType.USER,
+    });
+    return user;
   }
 
   /**
    * find admin by email
    */
-  findAdminByEmail(email: string): Promise<User | null> {
-    return this._userRepo.findOne({
+  async findAdminByEmail(email: string): Promise<User | null> {
+    if (!email) {
+      throw new BadRequestException('Email should not be empty');
+    }
+    const admin = await this._userRepo.findOne({
       where: {
         email,
         userType: Not(UserType.USER),
       },
     });
+    return admin;
   }
   /**
    * find admin or user by email
    */
-  findUserAdminByEmail(email: string): Promise<User | null> {
-    return this._userRepo.findOneBy({ email });
+  async findUserAdminByEmail(email: string): Promise<User | null> {
+    if (!email) {
+      throw new BadRequestException('Email should not be empty');
+    }
+    const user = await this._userRepo.findOneBy({ email });
+    return user;
   }
 
   /**
    * find user by id (with joined events relation)
    */
-  findUserById(id: number): Promise<User | null> {
-    return this._userRepo.findOne({
-      where: { id, userType: UserType.USER },
+  async findUserById(id: number): Promise<User> {
+    const user = await this._userRepo.findOne({
+      where: { id: validateId(id), userType: UserType.USER },
       relations: {
-        joinedEvents: {
-          event: true,
+        tickets: {
+          event: true
         },
+        roles: false
       },
     });
+    if (!user) {
+      throw new NotFoundException('User Not Found');
+    }
+    return user;
   }
   /**
    * find admin by id (with created events and roles relation)
    */
-  findAdminById(id: number): Promise<User | null> {
-    return this._userRepo.findOne({
-      where: { id, userType: UserType.ADMIN },
+  async findAdminById(id: number): Promise<User> {
+    const admin = await this._userRepo.findOne({
+      where: { id: validateId(id), userType: UserType.ADMIN },
       relations: {
         createdEvents: true,
         roles: true,
       },
     });
+    if (!admin) {
+      throw new NotFoundException('Admin Not Found');
+    }
+    return admin;
   }
   /**
    * find user or admin by id
    */
-  findById(id: number): Promise<User | null> {
-    return this._userRepo.findOneBy({ id });
+  async findById(id: number): Promise<User | null> {
+    const user = await this._userRepo.findOneBy({ id: validateId(id) });
+    return user;
   }
   /**
    * Get admins by ids
    */
   async findAdminsByIds(ids: number[]): Promise<User[]> {
-    if (!ids || ids.length === 0) {
-      return [];
-    }
+  if (!ids.length) {
+    return [];
+  }
+  // This will throw automatically if any ID is invalid
+  ids.forEach(id => validateId(id));
     const admins = await this._userRepo.find({
       where: { id: In(ids.map((id) => Number(id))) },
     });
@@ -212,7 +238,6 @@ export class UserService {
     adminId: number,
   ): Promise<{ user: User; message: string }> {
     const admin = await this.findAdminById(adminId);
-    if (!admin) throw new NotFoundException('Admin not found');
     admin.status = UserStatus.APPROVED;
     const approvedUser = await this.saveUser(admin);
     return {
@@ -231,6 +256,8 @@ export class UserService {
     if (existing) {
       const errMessage: string = '⚠️ Super admin already exists';
       throw new BadRequestException(errMessage);
+      // console.log(errMessage);
+      
     }
     const user = this._userRepo.create({
       firstname: 'Super Admin',

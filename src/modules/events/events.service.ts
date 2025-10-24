@@ -8,6 +8,7 @@ import { UploadImageService } from '@/modules/upload-image/upload-image.service'
 import { User } from '@/modules/users/user.entity';
 import SearchEventDto from './dto/request/search-event.dto';
 import { ImageObject, PaginatedResult } from '@/types/types';
+import { validateId } from '@/util';
 
 @Injectable()
 export class EventsService {
@@ -28,14 +29,14 @@ export class EventsService {
     // Here you would typically save the event to a database
     // For this example, we'll just return the event data
     const images: ImageObject[] = [];
-    eventData.imagesIds.forEach(async (id: string) => {
+    for (const id of eventData.imagesIds) {
       const image = await this._uploadImageService.getImageById(+id);
       images.push({
         id: image.id.toString(),
         name: image.name,
         url: image.imagePath,
       });
-    });
+    }
     const event = this._eventRepo.create({
       ...eventData,
       isActive: true,
@@ -80,7 +81,6 @@ export class EventsService {
     const [events, total] = await this._eventRepo.findAndCount({
       skip,
       take: perPage,
-      relations: { createdBy: true },
       order: { date: 'DESC' },
     });
     return this.getEventsResponse(events, page, perPage, total);
@@ -93,8 +93,8 @@ export class EventsService {
     query: string,
     page: number,
     perPage: number,
-    skip: number, 
-  ): Promise<PaginatedResult<EventEntity>>{
+    skip: number,
+  ): Promise<PaginatedResult<EventEntity>> {
     const [events, total] = await this._eventRepo
       .createQueryBuilder('event')
       .leftJoinAndSelect('event.user', 'user')
@@ -135,18 +135,14 @@ export class EventsService {
 
   async getEventById(id: number): Promise<EventEntity> {
     // Here you would typically fetch an event from a database
-    // For this example, we'll just return an empty array
-    if (!id) {
-      throw new NotFoundException('Event Not Found');
-    }
     const event = await this._eventRepo.findOne({
-      where: { id },
+      where: { id: validateId(id) },
       relations: {
         createdBy: true,
-        joinedUsers: {
+        tickets: {
           user: true
         },
-        plans: true
+        plans: true,
       },
     });
     if (!event) {
@@ -171,14 +167,14 @@ export class EventsService {
     let updatedEvent = { ...savedEvent, ...eventData };
     if (eventData.imagesIds) {
       const images: ImageObject[] = [];
-      eventData.imagesIds.forEach(async (id: string) => {
-        const image = await this._uploadImageService.getImageById(+id);
+      for (const id of eventData.imagesIds) {
+        const image = await this._uploadImageService.getImageById(id);
         images.push({
           id: image.id.toString(),
           name: image.name,
           url: image.imagePath,
         });
-      });
+      }
       updatedEvent = { ...updatedEvent, images };
     }
     const updatedSavedEvent = await this._eventRepo.save(updatedEvent);

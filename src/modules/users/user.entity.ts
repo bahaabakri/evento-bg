@@ -43,6 +43,7 @@ export class User {
 
   @OneToMany(() => EventEntity, (eventEntity) => eventEntity.createdBy, {
     cascade: true,
+    eager: false
   })
   createdEvents: EventEntity[];
 
@@ -50,7 +51,7 @@ export class User {
   userType: UserType;
 
   @OneToMany(() => EventTicket, (ticket) => ticket.user)
-  joinedEvents: EventTicket[];
+  tickets: EventTicket[];
 
   @CreateDateColumn({default: () => 'CURRENT_TIMESTAMP'})
   createdAt: Date;

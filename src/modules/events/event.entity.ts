@@ -42,12 +42,12 @@ export class EventEntity {
   })
   images: ImageObject[];
 
-  @ManyToOne(() => User, (user) => user.createdEvents, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.createdEvents, {eager: false, onDelete: 'CASCADE' })
   createdBy: User;
 
-  @OneToMany(() => EventTicket, (ticket) => ticket.event)
-  joinedUsers: EventTicket[];
+  @OneToMany(() => EventTicket, (ticket) => ticket.event,{eager: false})
+  tickets: EventTicket[];
 
-  @OneToMany(() => PlanEntity, (plan) => plan.event, { cascade: true })
+  @OneToMany(() => PlanEntity, (plan) => plan.event, { cascade: true, eager:false })
   plans: PlanEntity[];
 }

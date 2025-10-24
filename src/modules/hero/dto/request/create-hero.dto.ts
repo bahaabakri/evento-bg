@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateHeroDto {
   @ApiProperty({
-    type: String,
+    type: Number,
     isArray: true,
-    example: ['1', '2', '3'],
+    example: [1, 2, 3],
     description: 'Event images Ids',
   })
-  @IsString({ each: true })
-  imagesIds: string[];
+  @IsNumber({}, { each: true })
+  imagesIds: number[];
 }

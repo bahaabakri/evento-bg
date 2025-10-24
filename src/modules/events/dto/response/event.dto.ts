@@ -49,7 +49,7 @@ export class EventDto {
 
   @Expose()
   @Type(() => TicketDto)
-  joinedUsers: TicketDto[];
+  tickets: TicketDto[];
 
   @Expose()
   @Type(() => PlanDto)

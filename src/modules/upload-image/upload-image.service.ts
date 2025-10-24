@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UploadImage } from "./upload-image.entity";
 import { UploadIntent } from "./upload-intent.entity";
 import { Repository } from "typeorm";
-import { deleteFileAsync } from "@/util";
+import { deleteFileAsync, validateId } from "@/util";
 
 @Injectable()
 export class UploadImageService {
@@ -28,12 +28,9 @@ export class UploadImageService {
      */
 
     async getImageById(id:number):Promise<UploadImage> {
-        if(!id) {
-            throw new NotFoundException('Image Not Found')
-        }
-        const image = await this._uploadImageRepo.findOneBy({id})
+        const image = await this._uploadImageRepo.findOneBy({id: validateId(id)})
         if (!image) {
-            throw new NotFoundException('Image Not Found');
+            throw new NotFoundException(`Image with id ${id} Not Found`);
         }
         return image;
     

@@ -64,12 +64,12 @@ export default class UpdateEventDto {
   lat: number;
 
   @ApiPropertyOptional({
-    type:String,
+    type:Number,
     isArray: true,
-    example: ['1', '2', '3'],
+    example: [1, 2, 3],
     description: 'Event images Ids'
   })
   @IsOptional()
-  @IsString({ each: true })
-  imagesIds: string[];
+  @IsNumber({}, { each: true })
+  imagesIds: number[];
 }

@@ -1,10 +1,16 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permission } from './permission.entity';
 import { In, Repository } from 'typeorm';
 import { CreatePermissionDto } from './dto/request/create-permission.dto';
 import { SearchPermissionDto } from './dto/request/search-permission.dto';
 import { PaginatedResult } from '@/types/types';
+import { validateId } from '@/util';
 
 @Injectable()
 export class PermissionsService {
@@ -68,30 +74,27 @@ export class PermissionsService {
 
   /** Get permission by id */
   async getPermissionById(id: number): Promise<Permission> {
-    if (!id) {
-      throw new NotFoundException('Permission Not Found');
-    }
     const permission = await this._permissionRepo.findOne({
-      where: { id },
+      where: { id: validateId(id) },
       relations: {
         roles: true,
       },
     });
     if (!permission) {
-      throw new NotFoundException('Permission Not Found');
+      throw new NotFoundException(`Permission Not Found`);
     }
     return permission;
   }
 
   async getPermissionBySlug(slug: string) {
     if (!slug) {
-      throw new NotFoundException('Slug is empty');
+      throw new NotFoundException('Slug should not be empty');
     }
     const permission = await this._permissionRepo.findOne({
-      where: { slug }
+      where: { slug },
     });
     if (!permission) {
-      throw new NotFoundException('Permission with this slug Not Found');
+      throw new NotFoundException(`Permission with slug ${slug} Not Found`);
     }
     return permission;
   }
@@ -100,9 +103,11 @@ export class PermissionsService {
    * Get permissions by ids
    */
   async getPermissionsByIds(ids: number[]): Promise<Permission[]> {
-    if (!ids || ids.length === 0) {
+    if (!ids.length) {
       return [];
     }
+    // This will throw automatically if any ID is invalid
+    ids.forEach((id) => validateId(id));
     const permissions = await this._permissionRepo.find({
       where: { id: In(ids.map((id) => Number(id))) },
     });

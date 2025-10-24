@@ -9,10 +9,10 @@ export class EventTicket {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.joinedEvents, { eager: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.tickets, { eager: false, onDelete: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => EventEntity, (event) => event.joinedUsers, { onDelete: 'CASCADE' })
+  @ManyToOne(() => EventEntity, (event) => event.tickets, {eager: false, onDelete: 'CASCADE' })
   event: EventEntity;
 
   /**
@@ -51,6 +51,6 @@ export class EventTicket {
   @UpdateDateColumn({ type: 'datetime' })
   updatedAt: Date;
 
-  @ManyToOne(() => PlanEntity, (plan) => plan.tickets)
+  @ManyToOne(() => PlanEntity, (plan) => plan.tickets, {eager:false})
   plan: PlanEntity;
 }

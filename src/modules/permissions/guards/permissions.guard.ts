@@ -44,14 +44,10 @@ export class PermissionsGuard implements CanActivate {
         );
       const { module, action } = missingPermission;
       throw new ForbiddenException(
-        `${capitalize(action)} action on ${capitalize(module)} not allowed`,
+        `You are not allowed to perform the ${action} action on ${module}`,
       );
     }
 
     return true;
   }
-}
-
-function capitalize(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
 }

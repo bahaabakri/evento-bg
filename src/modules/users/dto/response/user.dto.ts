@@ -3,6 +3,7 @@ import { EventEntity } from "@/modules/events/event.entity";
 import { RoleDto } from "@/modules/roles/dto/response/role.dto";
 import { Role } from "@/modules/roles/role.entity";
 import { TicketDto } from "@/modules/tickets/dto/response/tickets.dto";
+import { EventTicket } from "@/modules/tickets/ticket.entity";
 import { Expose, Type } from "class-transformer";
 export class UserDto {
     @Expose()
@@ -38,7 +39,7 @@ export class UserDto {
 
     @Expose()
     @Type(() => TicketDto)
-    joinedEvents: TicketDto[];
+    tickets: TicketDto[];
 
     @Expose()
     @Type(() => RoleDto)

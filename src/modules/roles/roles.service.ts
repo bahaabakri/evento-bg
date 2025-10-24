@@ -13,6 +13,8 @@ import { AssignAdminsToRoleDto } from './dto/request/assign-admins.dto';
 import { UserService } from '../users/user.service';
 import { SearchRoleDto } from './dto/request/search-role.dto';
 import { PaginatedResult } from '@/types/types';
+import { validateId } from '@/util';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class RolesService {
@@ -39,6 +41,9 @@ export class RolesService {
     }
     const permissions =
       await this.permissionsService.getPermissionsByIds(permissionsIds);
+    if (permissions.length !== permissionsIds.length) {
+      throw new BadRequestException('Some permissions were not found');
+    }
     const role = this._roleRepo.create({
       name,
       description,
@@ -97,11 +102,8 @@ export class RolesService {
    * get role by id
    */
   async getRoleById(roleId: number): Promise<Role> {
-    if (!roleId) {
-      throw new NotFoundException('Role Not Found');
-    }
     const role = await this._roleRepo.findOne({
-      where: { id: roleId },
+      where: { id: validateId(roleId) },
       relations: {
         permissions: true,
         admins: true,
@@ -162,8 +164,8 @@ export class RolesService {
   ) {
     // assign super_admin role to super_admin user
     return this.assignAdminsToRole(
-      { adminsIds: [superAdminId] },
-      superAdminRoleId,
+      { adminsIds: [validateId(superAdminId)] },
+      validateId(superAdminRoleId)
     );
   }
 }

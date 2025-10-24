@@ -10,6 +10,7 @@ import { CreatePlanDto } from './dto/request/create-plan.dto';
 import { EventsService } from '../events/events.service';
 import { SearchPlanDto } from './dto/request/search-plan.dto';
 import { PaginatedResult } from '@/types/types';
+import { validateId } from '@/util';
 
 @Injectable()
 export class PlansService {
@@ -71,15 +72,12 @@ export class PlansService {
    * Get plan by id
    */
   async getPlanById(id: number): Promise<PlanEntity> {
-    if (!id) {
-      throw new NotFoundException('Plan Not Found');
-    }
     const plan = await this._planRepo.findOne({
-      where: { id },
+      where: { id: validateId(id) },
       relations: {
         event: {
           createdBy: true,
-          joinedUsers: true,
+          tickets: true,
         },
         tickets: true,
       },
@@ -94,8 +92,8 @@ export class PlansService {
    * Update plan capacity
    */
   async updatePlanCapacity(planId: number, updatedSoldSeats: number) {
-    await this.dataSource.transaction(async (manager) => {
-      const plan = await manager.findOne(PlanEntity, { where: { id: planId } });
+    // await this.dataSource.transaction(async (manager) => {
+      const plan = await this._planRepo.findOne({ where: { id: validateId(planId) } });
 
       if (!plan) throw new NotFoundException('Plan not found');
 
@@ -103,7 +101,7 @@ export class PlansService {
         throw new BadRequestException('Not enough seats available');
       }
       // Atomic update with QueryBuilder
-      await manager
+      await this._planRepo
         .createQueryBuilder()
         .update(PlanEntity)
         .set({
@@ -112,6 +110,6 @@ export class PlansService {
         })
         .where('id = :id', { id: planId })
         .execute();
-    });
+    // });
   }
 }

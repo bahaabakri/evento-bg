@@ -11,9 +11,12 @@ import { PlanEntity } from '../plans/plan.entity';
 import { UploadImageService } from '../upload-image/upload-image.service';
 import { UploadImage } from '../upload-image/upload-image.entity';
 import { UploadIntent } from '../upload-image/upload-intent.entity';
+import { DataSourceModule } from '../datasource/datasource.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([EventTicket, EventEntity, PlanEntity, UploadImage, UploadIntent])],
+  imports: [
+    TypeOrmModule.forFeature([EventTicket, EventEntity, PlanEntity, UploadImage, UploadIntent])
+  ],
   controllers: [TicketsUserController, TicketsAdminController],
   providers: [TicketsService, PlansService, EventsService, UploadImageService]
 })
