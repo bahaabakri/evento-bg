@@ -7,6 +7,7 @@ import { AuthResponseDto } from './dto/response/auth-response.dto';
 import { GuestGuard } from './guards/guest.guard';
 import { CreateAdminDto } from './dto/request/create-admin.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ResendOtpDto } from './dto/request/resend-otp.dtp';
 
 @Serialize(AuthResponseDto)
 @UseGuards(GuestGuard)
@@ -32,6 +33,12 @@ export class AuthAdminController {
   @ApiOperation({ summary: 'Verify admin by 2fa' })
   async verifyAdmin(@Body() { email, otp }: VerifyUserDto) {
     const res = await this._authService.verifyAdmin(email, otp);
+    return res;
+  }
+  @Post('resend-otp')
+  @ApiOperation({ summary: 'Resend Otp' })
+  async resendOtp(@Body() { email }: ResendOtpDto) {
+    const res = await this._authService.resendAdminOtp(email);
     return res;
   }
 }

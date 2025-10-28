@@ -7,6 +7,7 @@ import { GuestGuard } from './guards/guest.guard';
 import { AuthResponseDto } from './dto/response/auth-response.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import GoogleLoginDto from './dto/request/google-login.dto';
+import { ResendOtpDto } from './dto/request/resend-otp.dtp';
 
 @Serialize(AuthResponseDto)
 @UseGuards(GuestGuard)
@@ -25,6 +26,13 @@ export class AuthUserController {
   @ApiOperation({ summary: 'Verify user by 2fa' })
   async verifyUser(@Body() { email, otp }: VerifyUserDto) {
     const res = await this._authService.verifyUser(email, otp);
+    return res;
+  }
+
+  @Post('resend-otp')
+  @ApiOperation({ summary: 'Resend Otp' })
+  async resendOtp(@Body() { email }: ResendOtpDto) {
+    const res = await this._authService.resendUserOtp(email);
     return res;
   }
 
