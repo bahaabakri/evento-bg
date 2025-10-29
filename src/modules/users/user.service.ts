@@ -6,13 +6,13 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { In, Not, Repository } from 'typeorm';
-import { CreateLoginDto } from '../auth/dto/request/create-login.dto';
-import { CreateAdminDto } from '@/modules/auth/dto/request/create-admin.dto';
 import SearchUserDto from './dto/request/search-user.dto';
 import { PaginatedResult } from '@/types/types';
 import { UserType } from './user-type.enum';
 import { UserStatus } from './user-status.enum';
 import { validateId } from '@/util';
+import { CreateUpdateUserDto } from './dto/request/create-update-user.dto';
+import { CreateUpdateAdminDto } from './dto/request/create-update-admin.dto';
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(User) private _userRepo: Repository<User>) {}
@@ -36,7 +36,7 @@ export class UserService {
    * @param body
    * @returns
    */
-  async createUser(body: CreateLoginDto): Promise<User> {
+  async createUser(body: CreateUpdateUserDto): Promise<User> {
     return this._createWithRole(body, UserType.USER);
   }
 
@@ -45,7 +45,7 @@ export class UserService {
    * @param body
    * @returns
    */
-  async createAdmin(body: CreateAdminDto): Promise<User> {
+  async createAdmin(body: CreateUpdateAdminDto): Promise<User> {
     return this._createWithRole(body, UserType.ADMIN);
   }
 
@@ -55,7 +55,7 @@ export class UserService {
    * @returns
    */
   async createUserByAdmin(
-    body: CreateLoginDto,
+    body: CreateUpdateUserDto,
   ): Promise<{ user: User; message: string }> {
     let user = await this.findUserByEmail(body.email);
     if (user) {
@@ -69,12 +69,40 @@ export class UserService {
   }
 
   /**
+   * Update user by admin
+   */
+  async updateUserByAdmin(
+    id: number,
+    body: CreateUpdateUserDto,
+  ): Promise<{ user: User; message: string }> {
+    const savedUser = await this.findUserById(validateId(id));
+    const updatedUser = {
+      ...savedUser,
+      ...body,
+    };
+    // in case body has email -> make is-verified false
+    if (body.email) {
+      // check if email already exists
+      let user = await this.findUserByEmail(body.email);
+      if (user && user.id !== validateId(id)) {
+        throw new BadRequestException('User with this email already exists');
+      }
+      updatedUser.isVerified = false;
+    }
+    await this._userRepo.save(updatedUser);
+    return {
+      message: 'User has been updated successfully',
+      user: updatedUser,
+    };
+  }
+
+  /**
    * Create admin by admin with response
    * @param body
    * @returns
    */
   async createAdminByAdmin(
-    body: CreateAdminDto,
+    body: CreateUpdateAdminDto,
   ): Promise<{ user: User; message: string }> {
     let admin = await this.findAdminByEmail(body.email);
     if (admin) {
@@ -84,6 +112,34 @@ export class UserService {
     return {
       message: 'Admin has been created successfully',
       user: createdAdmin,
+    };
+  }
+
+  /**
+   * Update admin by admin
+   */
+  async updateAdminByAdmin(
+    id: number,
+    body: CreateUpdateAdminDto,
+  ): Promise<{ user: User; message: string }> {
+    const savedAdmin = await this.findAdminById(validateId(id));
+    let updatedAdmin = {
+      ...savedAdmin,
+      ...body,
+    };
+    // in case body has email -> make is-verified false
+    if (body.email) {
+      // check if email already exists
+      let admin = await this.findAdminByEmail(body.email);
+      if (admin && admin.id !== validateId(id)) {
+        throw new BadRequestException('Admin with this email already exists');
+      }
+      updatedAdmin.isVerified = false;
+    }
+    await this._userRepo.save(updatedAdmin);
+    return {
+      message: 'User has been updated successfully',
+      user: updatedAdmin,
     };
   }
 
@@ -138,9 +194,9 @@ export class UserService {
       where: { id: validateId(id), userType: UserType.USER },
       relations: {
         tickets: {
-          event: true
+          event: true,
         },
-        roles: false
+        roles: false,
       },
     });
     if (!user) {
@@ -175,11 +231,11 @@ export class UserService {
    * Get admins by ids
    */
   async findAdminsByIds(ids: number[]): Promise<User[]> {
-  if (!ids.length) {
-    return [];
-  }
-  // This will throw automatically if any ID is invalid
-  ids.forEach(id => validateId(id));
+    if (!ids.length) {
+      return [];
+    }
+    // This will throw automatically if any ID is invalid
+    ids.forEach((id) => validateId(id));
     const admins = await this._userRepo.find({
       where: { id: In(ids.map((id) => Number(id))) },
     });
@@ -257,7 +313,6 @@ export class UserService {
       const errMessage: string = '⚠️ Super admin already exists';
       throw new BadRequestException(errMessage);
       // console.log(errMessage);
-      
     }
     const user = this._userRepo.create({
       firstname: 'Super Admin',

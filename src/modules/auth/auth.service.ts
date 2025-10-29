@@ -9,14 +9,14 @@ import { User } from '../users/user.entity';
 // Update the import path below if the actual file name or location is different
 import { UserService } from '../users/user.service';
 import { OtpService } from '../otp/otp.service';
-import { CreateLoginDto } from './dto/request/create-login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { CreateAdminDto } from './dto/request/create-admin.dto';
 import { UserType } from '../users/user-type.enum';
+import { LoginDto } from './dto/request/login.dto';
+import { CreateUpdateAdminDto } from '../users/dto/request/create-update-admin.dto';
 
 @Injectable()
 export class AuthService {
@@ -77,7 +77,7 @@ export class AuthService {
    * @returns
    **/
   async registerLoginUser(
-    body: CreateLoginDto,
+    body: LoginDto,
   ): Promise<{ user: User; message: string }> {
     let user = await this._userService.findUserByEmail(body.email);
     let message = user ? 'Logged in Successfully' : 'User Created Successfully';
@@ -132,7 +132,7 @@ export class AuthService {
    * @returns
    */
   async registerAdmin(
-    body: CreateAdminDto,
+    body: CreateUpdateAdminDto,
   ): Promise<{ user: User; message: string }> {
     const existing = await this._userService.findAdminByEmail(body.email);
     if (existing)
@@ -154,7 +154,7 @@ export class AuthService {
    * @returns
    */
   async loginAdmin(
-    body: CreateLoginDto,
+    body: LoginDto,
   ): Promise<{ user: User; message: string }> {
     const admin = await this._userService.findAdminByEmail(body.email);
     if (!admin)

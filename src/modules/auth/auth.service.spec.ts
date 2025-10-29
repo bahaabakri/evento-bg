@@ -1,7 +1,7 @@
 import { AuthService } from './auth.service';
 import { UserService } from '../users/user.service';
 import { OtpService } from '../otp/otp.service';
-import { CreateLoginDto } from './dto/request/create-login.dto';
+import { CreateLoginDto } from '../users/dto/request/create-user.dto';
 import { Role } from '../users/roles.enum';
 import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { User } from '../users/user.entity';

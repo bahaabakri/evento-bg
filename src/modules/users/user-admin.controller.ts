@@ -8,6 +8,7 @@ import {
   Req,
   Query,
   Body,
+  Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -22,8 +23,8 @@ import { ApiOperation, ApiParam } from '@nestjs/swagger';
 import { PermissionsGuard } from '../permissions/guards/permissions.guard';
 import { Permissions } from '../permissions/decorators/permissions.decorator';
 import { UserType } from './user-type.enum';
-import { CreateAdminDto } from '../auth/dto/request/create-admin.dto';
-import { CreateLoginDto } from '../auth/dto/request/create-login.dto';
+import { CreateUpdateUserDto } from './dto/request/create-update-user.dto';
+import { CreateUpdateAdminDto } from './dto/request/create-update-admin.dto';
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @Controller('admin/users')
 export class UserAdminController {
@@ -41,16 +42,40 @@ export class UserAdminController {
   @Permissions('create_users')
   @Post('users')
   @ApiOperation({ summary: 'Create User'})
-  createUser(@Body() body: CreateLoginDto) {
+  createUser(@Body() body: CreateUpdateUserDto) {
     return this._userService.createUserByAdmin(body);
   }
 
   @Serialize(UserResponseDto)
-  // @Permissions('create_admins')
+  @Permissions('update_users')
+  @Patch('users/:id')
+  @ApiOperation({ summary: 'Update User'})
+  @ApiParam({ name: 'id', type: Number, example: 42, description: 'User ID' })
+  updateUser(
+    @Body() body: CreateUpdateUserDto,
+    @Param('id') id: number
+  ) {
+    return this._userService.updateUserByAdmin(id, body);
+  }
+
+  @Serialize(UserResponseDto)
+  @Permissions('create_admins')
   @Post('admins')
   @ApiOperation({ summary: 'Create Admin'})
-  createAdmin(@Body() body: CreateAdminDto) {
+  createAdmin(@Body() body: CreateUpdateAdminDto) {
     return this._userService.createAdminByAdmin(body);
+  }
+
+  @Serialize(UserResponseDto)
+  @Permissions('update_admins')
+  @Patch('admins/:id')
+  @ApiOperation({ summary: 'Update Admin'})
+  @ApiParam({ name: 'id', type: Number, example: 42, description: 'Admin ID' })
+  updateAdmin(
+    @Body() body: CreateUpdateAdminDto,
+    @Param('id') id: number
+  ) {
+    return this._userService.updateAdminByAdmin(id, body);
   }
 
   @Serialize(PaginatedUsersDto)
@@ -76,9 +101,9 @@ export class UserAdminController {
   @Get('users/:id')
   @ApiOperation({ summary: 'Get User by id'})
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'User ID' })
-  findUser(@Param('id') id: string) {
+  findUser(@Param('id') id: number) {
     // Logic to fetch a user by ID
-    return this._userService.findUserById(parseInt(id));
+    return this._userService.findUserById(id);
   }
 
   @Serialize(UserDto)
@@ -86,9 +111,9 @@ export class UserAdminController {
   @Get('admins/:id')
   @ApiOperation({ summary: 'Get Admin by id'})
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Admin ID' })
-  findAdmin(@Param('id') id: string) {
+  findAdmin(@Param('id') id: number) {
     // Logic to fetch a user by ID
-    return this._userService.findAdminById(parseInt(id));
+    return this._userService.findAdminById(id);
   }
 
   @Serialize(UserResponseDto)

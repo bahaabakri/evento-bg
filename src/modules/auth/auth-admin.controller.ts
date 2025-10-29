@@ -1,13 +1,13 @@
 import { Body, Controller, Post, Session, UseGuards } from '@nestjs/common';
-import { CreateLoginDto } from '@/modules/auth/dto/request/create-login.dto';
 import { VerifyUserDto } from '@/modules/auth/dto/request/verfiy-user.dto';
 import { AuthService } from './auth.service';
 import Serialize from '@/decorators/serialize.decorator';
 import { AuthResponseDto } from './dto/response/auth-response.dto';
 import { GuestGuard } from './guards/guest.guard';
-import { CreateAdminDto } from './dto/request/create-admin.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ResendOtpDto } from './dto/request/resend-otp.dtp';
+import { LoginDto } from './dto/request/login.dto';
+import { CreateUpdateAdminDto } from '../users/dto/request/create-update-admin.dto';
 
 @Serialize(AuthResponseDto)
 @UseGuards(GuestGuard)
@@ -17,14 +17,14 @@ export class AuthAdminController {
 
   @Post('login')
   @ApiOperation({ summary: 'Login admin' })
-  async loginAdmin(@Body() body: CreateLoginDto) {
+  async loginAdmin(@Body() body: LoginDto) {
     // Logic to login as an admin
     return this._authService.loginAdmin(body);
   }
 
   @Post('register')
   @ApiOperation({ summary: 'Register new admin' })
-  async createAdmin(@Body() body: CreateAdminDto) {
+  async createAdmin(@Body() body: CreateUpdateAdminDto) {
     // Logic to create a new admin
     return this._authService.registerAdmin(body);
   }

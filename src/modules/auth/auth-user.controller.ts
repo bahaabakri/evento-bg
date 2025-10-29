@@ -1,5 +1,4 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { CreateLoginDto } from '@/modules/auth/dto/request/create-login.dto';
 import { VerifyUserDto } from '@/modules/auth/dto/request/verfiy-user.dto';
 import { AuthService } from './auth.service';
 import Serialize from '@/decorators/serialize.decorator';
@@ -8,6 +7,7 @@ import { AuthResponseDto } from './dto/response/auth-response.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import GoogleLoginDto from './dto/request/google-login.dto';
 import { ResendOtpDto } from './dto/request/resend-otp.dtp';
+import { LoginDto } from './dto/request/login.dto';
 
 @Serialize(AuthResponseDto)
 @UseGuards(GuestGuard)
@@ -17,7 +17,7 @@ export class AuthUserController {
 
   @Post('loginRegister')
   @ApiOperation({ summary: 'Register a new user or login' })
-  async createOrLogin(@Body() body: CreateLoginDto) {
+  async createOrLogin(@Body() body: LoginDto) {
     // Logic to create a new user
     return this._authService.registerLoginUser(body);
   }
