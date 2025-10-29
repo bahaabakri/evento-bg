@@ -1,5 +1,4 @@
-import { MinLengthIfNotEmpty } from '@/decorators/min-length-if-not-empty.decorator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsNotEmpty,
