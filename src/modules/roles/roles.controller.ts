@@ -19,9 +19,9 @@ import { Permissions } from '../permissions/decorators/permissions.decorator';
 import { PaginatedRolesDto } from './dto/response/paginated-roles.dto';
 import { SearchRoleDto } from './dto/request/search-role.dto';
 import { RoleResponseDto } from './dto/response/role-response.dto';
-import { CreateRoleDto } from './dto/request/create-role.dto';
 import { AssignPermissionsToRoleDto } from './dto/request/assign-permissions.dto';
 import { AssignAdminsToRoleDto } from './dto/request/assign-admins.dto';
+import { CreateUpdateRoleDto } from './dto/request/create-update-role.dto';
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @Controller('admin/roles')
 export class RolesController {
@@ -53,8 +53,24 @@ export class RolesController {
   @Permissions('create_roles')
   @Post()
   @ApiOperation({ summary: 'Create new Role' })
-  async createPermission(@Body() roleData: CreateRoleDto) {
+  async createRole(@Body() roleData: CreateUpdateRoleDto) {
     return this._rolesService.createRole(roleData);
+  }
+
+  @Serialize(RoleResponseDto)
+  @Permissions('update_roles')
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update Role' })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    example: 3,
+    description: 'Role ID'
+  })
+  async updateRole(
+    @Param('id') id:number,
+    @Body() roleData: CreateUpdateRoleDto) {
+    return this._rolesService.updateRole(id, roleData);
   }
 
   @Serialize(RoleResponseDto)

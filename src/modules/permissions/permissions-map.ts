@@ -10,7 +10,7 @@ export const PERMISSIONS_MAP = {
   images: ['upload', 'delete'],
   permissions: ['create', 'view', 'delete'],
   intent: ['create'],
-  roles: ['create', 'view', 'delete'],
+  roles: ['create', 'view', 'delete', 'update'],
 };
 
 export const ODD_PERMISSIONS: OddPermission[] = [

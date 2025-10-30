@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permission } from './permission.entity';
-import { In, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { CreatePermissionDto } from './dto/request/create-permission.dto';
 import { SearchPermissionDto } from './dto/request/search-permission.dto';
 import { PaginatedResult } from '@/types/types';
@@ -52,9 +52,17 @@ export class PermissionsService {
   async getPermissions({
     page = 1,
     perPage = 10,
+    query
   }: SearchPermissionDto): Promise<PaginatedResult<Permission>> {
     const skip = (page - 1) * perPage;
+      const where = query
+    ? [
+        { name: ILike(`%${query}%`) }, // PostgreSQL: case-insensitive LIKE
+        { description: ILike(`%${query}%`) }, // optional if you want to search description too
+      ]
+    : undefined;
     const [permissions, total] = await this._permissionRepo.findAndCount({
+      where,
       skip,
       take: perPage,
       order: { id: 'DESC' },

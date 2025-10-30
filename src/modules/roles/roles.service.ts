@@ -6,7 +6,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
 import { Repository } from 'typeorm';
-import { CreateRoleDto } from './dto/request/create-role.dto';
 import { PermissionsService } from '../permissions/permissions.service';
 import { AssignPermissionsToRoleDto } from './dto/request/assign-permissions.dto';
 import { AssignAdminsToRoleDto } from './dto/request/assign-admins.dto';
@@ -15,6 +14,7 @@ import { SearchRoleDto } from './dto/request/search-role.dto';
 import { PaginatedResult } from '@/types/types';
 import { validateId } from '@/util';
 import { validate } from 'class-validator';
+import { CreateUpdateRoleDto } from './dto/request/create-update-role.dto';
 
 @Injectable()
 export class RolesService {
@@ -22,22 +22,22 @@ export class RolesService {
   constructor(
     @InjectRepository(Role) private _roleRepo: Repository<Role>,
     private readonly permissionsService: PermissionsService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) {}
 
   /**
    * Create a new role
    */
   async createRole(
-    roleData: CreateRoleDto,
+    roleData: CreateUpdateRoleDto,
   ): Promise<{ message: string; role: Role }> {
     const { name, description, permissionsIds } = roleData;
     const existing = await this._roleRepo.findOne({
-        where: {name}
-    })    
+      where: { name },
+    });
     if (existing) {
-        const errMessage:string = 'Role with this name already exists'
-        throw new BadRequestException(errMessage)
+      const errMessage: string = 'Role with this name already exists';
+      throw new BadRequestException(errMessage);
     }
     const permissions =
       await this.permissionsService.getPermissionsByIds(permissionsIds);
@@ -55,7 +55,31 @@ export class RolesService {
       role: createdRole,
     };
   }
-
+  /**
+   * Update role
+   */
+  async updateRole(
+    id: number,
+    roleData: CreateUpdateRoleDto,
+  ): Promise<{ message: string; role: Role }> {
+    const { permissionsIds } = roleData;
+    const role = await this.getRoleById(id);
+    const permissions =
+      await this.permissionsService.getPermissionsByIds(permissionsIds);
+    if (permissions.length !== roleData.permissionsIds.length) {
+      throw new BadRequestException('Some permissions were not found');
+    }
+    const updatedRole = {
+      ...role,
+      ...roleData,
+      permissions,
+    };
+    await this._roleRepo.save(updatedRole);
+    return {
+      message: 'Role Updated successfully',
+      role: updatedRole,
+    };
+  }
   /*
    * Assign permissions to role
    */
@@ -86,8 +110,7 @@ export class RolesService {
   ): Promise<{ message: string; role: Role }> {
     const role = await this.getRoleById(roleId);
     const { adminsIds } = body;
-    const admins =
-      await this.userService.findAdminsByIds(adminsIds);
+    const admins = await this.userService.findAdminsByIds(adminsIds);
     if (admins.length !== adminsIds.length) {
       throw new BadRequestException('Some admins were not found');
     }
@@ -118,41 +141,40 @@ export class RolesService {
   /**
    * Get roles with pagination
    */
-    async getRoles({
-      page = 1,
-      perPage = 10,
-    }: SearchRoleDto): Promise<PaginatedResult<Role>> {
-      const skip = (page - 1) * perPage;
-      const [roles, total] = await this._roleRepo.findAndCount({
-        skip,
-        take: perPage,
-        order: { id: 'DESC' },
-      });
-      return {
-        data: roles,
-        meta: { total, page, perPage },
-      };
-    }
+  async getRoles({
+    page = 1,
+    perPage = 10,
+  }: SearchRoleDto): Promise<PaginatedResult<Role>> {
+    const skip = (page - 1) * perPage;
+    const [roles, total] = await this._roleRepo.findAndCount({
+      skip,
+      take: perPage,
+      order: { id: 'DESC' },
+    });
+    return {
+      data: roles,
+      meta: { total, page, perPage },
+    };
+  }
 
-    /**
-     * Get all roles
-     */
-    getAllRoles():Promise<Role[]> {
-        return this._roleRepo.find()
-    }
+  /**
+   * Get all roles
+   */
+  getAllRoles(): Promise<Role[]> {
+    return this._roleRepo.find();
+  }
 
-
-    /**
-     * Delete role by id
-     */
-    async deleteRole(id:number):Promise<{message:string, role:Role}> {
-        const role = await this.getRoleById(id);
-        const deletedRole = await this._roleRepo.remove(role);
-        return {
-            message: 'Role deleted successfully',
-            role: deletedRole
-        }
-    }
+  /**
+   * Delete role by id
+   */
+  async deleteRole(id: number): Promise<{ message: string; role: Role }> {
+    const role = await this.getRoleById(id);
+    const deletedRole = await this._roleRepo.remove(role);
+    return {
+      message: 'Role deleted successfully',
+      role: deletedRole,
+    };
+  }
 
   /**
    * assign super admin role to super admin
@@ -165,7 +187,7 @@ export class RolesService {
     // assign super_admin role to super_admin user
     return this.assignAdminsToRole(
       { adminsIds: [validateId(superAdminId)] },
-      validateId(superAdminRoleId)
+      validateId(superAdminRoleId),
     );
   }
 }
