@@ -32,7 +32,7 @@ export class EventsService {
     for (const id of eventData.imagesIds) {
       const image = await this._uploadImageService.getImageById(+id);
       images.push({
-        id: image.id.toString(),
+        id: image.id,
         name: image.name,
         url: image.imagePath,
       });
@@ -81,7 +81,7 @@ export class EventsService {
     const [events, total] = await this._eventRepo.findAndCount({
       skip,
       take: perPage,
-      order: { date: 'DESC' },
+      order: { date: 'ASC' },
     });
     return this.getEventsResponse(events, page, perPage, total);
   }
@@ -105,7 +105,7 @@ export class EventsService {
       .orWhere('LOWER(event.location) LIKE LOWER(:query)', {
         query: `%${query}%`,
       })
-      .orderBy('event.date', 'DESC')
+      .orderBy('event.date', 'ASC')
       .skip(skip)
       .take(perPage)
       .getManyAndCount();
@@ -170,7 +170,7 @@ export class EventsService {
       for (const id of eventData.imagesIds) {
         const image = await this._uploadImageService.getImageById(id);
         images.push({
-          id: image.id.toString(),
+          id: image.id,
           name: image.name,
           url: image.imagePath,
         });

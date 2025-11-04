@@ -15,6 +15,12 @@ export class PermissionDto {
     slug: string;
 
     @Expose()
+    module: string
+
+    @Expose()
+    action: string
+
+    @Expose()
     @Type(() => RoleDto)
     roles: RoleDto[]
 }

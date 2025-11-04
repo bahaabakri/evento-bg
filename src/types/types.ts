@@ -12,7 +12,7 @@ declare global {
 export type ClassType<T> = new (...args: any[]) => T;
 
 export type ImageObject = {
-  id: string;
+  id: number;
   name: string;
   url: string;
 };

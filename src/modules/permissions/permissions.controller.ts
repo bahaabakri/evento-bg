@@ -45,25 +45,25 @@ export class PermissionsController {
     return this._permissionsService.getPermissionById(id);
   }
 
-  @Serialize(PermissionResponseDto)
-  @Permissions('create_permissions')
-  @Post()
-  @ApiOperation({ summary: 'Create new Permission' })
-  async createPermission(@Body() permissionData: CreatePermissionDto) {
-    return this._permissionsService.createPermission(permissionData);
-  }
+  // @Serialize(PermissionResponseDto)
+  // @Permissions('create_permissions')
+  // @Post()
+  // @ApiOperation({ summary: 'Create new Permission' })
+  // async createPermission(@Body() permissionData: CreatePermissionDto) {
+  //   return this._permissionsService.createPermission(permissionData);
+  // }
 
-  @Serialize(PermissionResponseDto)
-  @Permissions('delete_permissions')
-  @Delete(':id')
-  @ApiOperation({ summary: 'Delete Permission' })
-  @ApiParam({
-    name: 'id',
-    type: Number,
-    example: 42,
-    description: 'Permission ID',
-  })
-  async deletePermission(@Param('id') id: number) {
-    return this._permissionsService.deletePermission(id);
-  }
+  // @Serialize(PermissionResponseDto)
+  // @Permissions('delete_permissions')
+  // @Delete(':id')
+  // @ApiOperation({ summary: 'Delete Permission' })
+  // @ApiParam({
+  //   name: 'id',
+  //   type: Number,
+  //   example: 42,
+  //   description: 'Permission ID',
+  // })
+  // async deletePermission(@Param('id') id: number) {
+  //   return this._permissionsService.deletePermission(id);
+  // }
 }

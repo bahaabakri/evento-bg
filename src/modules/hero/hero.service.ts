@@ -25,7 +25,7 @@ export class HeroService {
       heroData.imagesIds.map(async (id: number) => {
         const image = await this._uploadImageService.getImageById(id);
         return {
-          id: image.id.toString(),
+          id: image.id,
           name: image.name,
           url: image.imagePath,
         };

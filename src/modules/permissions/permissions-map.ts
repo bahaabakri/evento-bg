@@ -8,7 +8,7 @@ export const PERMISSIONS_MAP = {
   plans: ['create', 'view', 'update', 'delete'],
   hero: ['create', 'view', 'activate'],
   images: ['upload', 'delete'],
-  permissions: ['create', 'view', 'delete'],
+  permissions: ['view'],
   intent: ['create'],
   roles: ['create', 'view', 'delete', 'update'],
 };
