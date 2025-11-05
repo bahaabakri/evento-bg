@@ -44,4 +44,7 @@ export class UserDto {
     @Expose()
     @Type(() => RoleDto)
     roles: Role[];
+
+    @Expose()
+    rejectionReason?:string
 }
