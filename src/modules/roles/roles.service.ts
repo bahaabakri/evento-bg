@@ -137,6 +137,24 @@ export class RolesService {
     }
     return role;
   }
+  
+  /**
+   * get role by name
+   */
+  async getRoleByName(name: string): Promise<Role> {
+    const role = await this._roleRepo.findOne({
+      where: { name },
+      relations: {
+        permissions: true,
+        admins: true,
+      },
+    });
+    if (!role) {
+      throw new NotFoundException('Role Not Found');
+    }
+    return role;
+  }
+  
 
   /**
    * Get roles with pagination

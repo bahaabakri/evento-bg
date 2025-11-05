@@ -66,4 +66,7 @@ export class User {
     inverseJoinColumn: { name: 'role_id' },
   })
   roles: Role[];
+
+  @Column({ type: 'text', nullable: true })
+  rejectionReason?: string;
 }

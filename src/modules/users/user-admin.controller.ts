@@ -25,6 +25,7 @@ import { Permissions } from '../permissions/decorators/permissions.decorator';
 import { UserType } from './user-type.enum';
 import { CreateUpdateUserDto } from './dto/request/create-update-user.dto';
 import { CreateUpdateAdminDto } from './dto/request/create-update-admin.dto';
+import { rejectAdminDto } from './dto/request/reject-admin.dto';
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @Controller('admin/users')
 export class UserAdminController {
@@ -33,7 +34,10 @@ export class UserAdminController {
   ///////////////////////// Authenticated Routes /////////////////////////
   @Serialize(UserDto)
   @Get('me')
-  @ApiOperation({ summary: 'Get Current Admin', description: 'This Api get the logged in admin'})
+  @ApiOperation({
+    summary: 'Get Current Admin',
+    description: 'This Api get the logged in admin',
+  })
   getCurrentAdmin(@CurrentUser() admin: User) {
     return admin;
   }
@@ -41,7 +45,7 @@ export class UserAdminController {
   @Serialize(UserResponseDto)
   @Permissions('create_users')
   @Post('users')
-  @ApiOperation({ summary: 'Create User'})
+  @ApiOperation({ summary: 'Create User' })
   createUser(@Body() body: CreateUpdateUserDto) {
     return this._userService.createUserByAdmin(body);
   }
@@ -49,19 +53,16 @@ export class UserAdminController {
   @Serialize(UserResponseDto)
   @Permissions('update_users')
   @Patch('users/:id')
-  @ApiOperation({ summary: 'Update User'})
+  @ApiOperation({ summary: 'Update User' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'User ID' })
-  updateUser(
-    @Body() body: CreateUpdateUserDto,
-    @Param('id') id: number
-  ) {
+  updateUser(@Body() body: CreateUpdateUserDto, @Param('id') id: number) {
     return this._userService.updateUserByAdmin(id, body);
   }
 
   @Serialize(UserResponseDto)
   @Permissions('create_admins')
   @Post('admins')
-  @ApiOperation({ summary: 'Create Admin'})
+  @ApiOperation({ summary: 'Create Admin' })
   createAdmin(@Body() body: CreateUpdateAdminDto) {
     return this._userService.createAdminByAdmin(body);
   }
@@ -69,20 +70,17 @@ export class UserAdminController {
   @Serialize(UserResponseDto)
   @Permissions('update_admins')
   @Patch('admins/:id')
-  @ApiOperation({ summary: 'Update Admin'})
+  @ApiOperation({ summary: 'Update Admin' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Admin ID' })
-  updateAdmin(
-    @Body() body: CreateUpdateAdminDto,
-    @Param('id') id: number
-  ) {
+  updateAdmin(@Body() body: CreateUpdateAdminDto, @Param('id') id: number) {
     return this._userService.updateAdminByAdmin(id, body);
   }
 
   @Serialize(PaginatedUsersDto)
   @Permissions('view_users')
   @Get('users')
-  @ApiOperation({ summary: 'Get Users'})
-  findUsers(@Query() query:SearchUserDto ) {
+  @ApiOperation({ summary: 'Get Users' })
+  findUsers(@Query() query: SearchUserDto) {
     // Logic to fetch all users
     return this._userService.findUsers(query, UserType.USER);
   }
@@ -90,8 +88,8 @@ export class UserAdminController {
   @Serialize(PaginatedUsersDto)
   @Permissions('view_admins')
   @Get('admins')
-  @ApiOperation({ summary: 'Get Admins'})
-  findAdmins(@Query() query:SearchUserDto ) {
+  @ApiOperation({ summary: 'Get Admins' })
+  findAdmins(@Query() query: SearchUserDto) {
     // Logic to fetch all users
     return this._userService.findUsers(query, UserType.ADMIN);
   }
@@ -99,7 +97,7 @@ export class UserAdminController {
   @Serialize(UserDto)
   @Permissions('view_users')
   @Get('users/:id')
-  @ApiOperation({ summary: 'Get User by id'})
+  @ApiOperation({ summary: 'Get User by id' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'User ID' })
   findUser(@Param('id') id: number) {
     // Logic to fetch a user by ID
@@ -109,7 +107,7 @@ export class UserAdminController {
   @Serialize(UserDto)
   @Permissions('view_admins')
   @Get('admins/:id')
-  @ApiOperation({ summary: 'Get Admin by id'})
+  @ApiOperation({ summary: 'Get Admin by id' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Admin ID' })
   findAdmin(@Param('id') id: number) {
     // Logic to fetch a user by ID
@@ -119,28 +117,35 @@ export class UserAdminController {
   @Serialize(UserResponseDto)
   @Permissions('delete_users')
   @Delete('users/:id')
-  @ApiOperation({ summary: 'Delete User'})
+  @ApiOperation({ summary: 'Delete User' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'User ID' })
-  removeUser(@Param('id') id: string) {
-    return this._userService.removeUser(parseInt(id), UserType.USER);
+  removeUser(@Param('id') id: number) {
+    return this._userService.removeUser(id, UserType.USER);
   }
 
   @Serialize(UserResponseDto)
   @Permissions('delete_admins')
   @Delete('admins/:id')
-  @ApiOperation({ summary: 'Delete Admin'})
+  @ApiOperation({ summary: 'Delete Admin' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Admin ID' })
-  removeAdmin(@Param('id') id: string) {
-    return this._userService.removeUser(parseInt(id), UserType.ADMIN);
+  removeAdmin(@Param('id') id: number) {
+    return this._userService.removeUser(id, UserType.ADMIN);
   }
 
   @Serialize(UserResponseDto)
   @Permissions('approve_admins')
   @Post('admins/:id/approve')
-  @ApiOperation({ summary: 'Approve Admin'})
+  @ApiOperation({ summary: 'Approve Admin' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Admin ID' })
-  approveAdmin(@Param('id') id: string) {
-    return this._userService.approveAdmin(parseInt(id));
+  approveAdmin(@Param('id') id: number) {
+    return this._userService.approveAdmin(id);
   }
-
+  @Serialize(UserResponseDto)
+  @Permissions('reject_admins')
+  @Post('admins/:id/reject')
+  @ApiOperation({ summary: 'Reject Admin' })
+  @ApiParam({ name: 'id', type: Number, example: 42, description: 'Admin ID' })
+  rejectAdmin(@Param('id') id: number, @Body() body: rejectAdminDto) {
+    return this._userService.rejectAdmin(id, body.reason);
+  }
 }

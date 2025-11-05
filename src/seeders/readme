@@ -1,0 +1,12 @@
+## Seeding Initial Data
+
+The seeder sets up the initial system data:
+
+1. **Permissions**: All system permissions are created.
+2. **Roles**: The Super Admin role is created and assigned all permissions, but in case Super Admin role exists check if there is new permission and assign it to the Super Admin Role.
+3. **Users**: The Super Admin user is created and assigned the Super Admin role.
+
+**Command to run seeder:**
+
+```bash
+ts-node seed.ts
