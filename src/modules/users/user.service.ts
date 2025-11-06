@@ -49,6 +49,9 @@ export class UserService {
     return this._createWithRole(body, UserType.ADMIN);
   }
 
+  async save(admin:User) {
+    return this._userRepo.save(admin)
+  }
   /**
    * Create user by admin with response
    * @param body

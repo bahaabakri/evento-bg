@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { PermissionsService } from '../permissions/permissions.service';
 import { AssignPermissionsToRoleDto } from './dto/request/assign-permissions.dto';
 import { AssignAdminsToRoleDto } from './dto/request/assign-admins.dto';
@@ -15,6 +15,8 @@ import { PaginatedResult } from '@/types/types';
 import { validateId } from '@/util';
 import { validate } from 'class-validator';
 import { CreateUpdateRoleDto } from './dto/request/create-update-role.dto';
+import { AssignRolesToAdminDto } from '../users/dto/request/assign-roles.dto';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class RolesService {
@@ -121,6 +123,40 @@ export class RolesService {
       role: updatedRole,
     };
   }
+  /*
+   * Assign admins to role
+   */
+  async assignRolesToAdmin(
+    body: AssignRolesToAdminDto,
+    adminId: number,
+  ): Promise<{ message: string; user: User }> {
+    const admin = await this.userService.findAdminById(adminId);
+    const { rolesIds } = body;
+    const roles = await this.getRolesByIds(rolesIds);
+    if (roles.length !== rolesIds.length) {
+      throw new BadRequestException('Some roles were not found');
+    }
+    admin.roles = roles;
+    const updatedAdmins = await this.userService.save(admin);
+    return {
+      message: 'Roles assigned successfully',
+      user: updatedAdmins,
+    };
+  }
+  /**
+   * Get roles by ids
+   */
+  async getRolesByIds(ids: number[]): Promise<Role[]> {
+    if (!ids.length) {
+      return [];
+    }
+    // This will throw automatically if any ID is invalid
+    ids.forEach((id) => validateId(id));
+    const roles = await this._roleRepo.find({
+      where: { id: In(ids.map((id) => Number(id))) },
+    });
+    return roles;
+  }
   /**
    * get role by id
    */
@@ -137,7 +173,7 @@ export class RolesService {
     }
     return role;
   }
-  
+
   /**
    * get role by name
    */

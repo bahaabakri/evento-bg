@@ -25,11 +25,13 @@ import { Permissions } from '../permissions/decorators/permissions.decorator';
 import { UserType } from './user-type.enum';
 import { CreateUpdateUserDto } from './dto/request/create-update-user.dto';
 import { CreateUpdateAdminDto } from './dto/request/create-update-admin.dto';
-import { rejectAdminDto } from './dto/request/reject-admin.dto';
+import { RejectAdminDto } from './dto/request/reject-admin.dto';
+import { AssignRolesToAdminDto } from './dto/request/assign-roles.dto';
+import { RolesService } from '../roles/roles.service';
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @Controller('admin/users')
 export class UserAdminController {
-  constructor(private _userService: UserService) {}
+  constructor(private _userService: UserService, private _rolesService:RolesService) {}
 
   ///////////////////////// Authenticated Routes /////////////////////////
   @Serialize(UserDto)
@@ -145,7 +147,16 @@ export class UserAdminController {
   @Post('admins/:id/reject')
   @ApiOperation({ summary: 'Reject Admin' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Admin ID' })
-  rejectAdmin(@Param('id') id: number, @Body() body: rejectAdminDto) {
+  rejectAdmin(@Param('id') id: number, @Body() body: RejectAdminDto) {
     return this._userService.rejectAdmin(id, body.reason);
+  }
+
+  @Serialize(UserResponseDto)
+  // @Permissions('assign_roles_to_admin')
+  @Patch('admins/:id/assign-roles')
+  @ApiOperation({ summary: 'Assign Roles To Admin' })
+  @ApiParam({ name: 'id', type: Number, example: 42, description: 'Admin ID' })
+  assignRolesToAdmin(@Param('id') id: number, @Body() assignRolesToAdminData: AssignRolesToAdminDto) {
+    return this._rolesService.assignRolesToAdmin(assignRolesToAdminData, id);
   }
 }
