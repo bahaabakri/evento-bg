@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
-import { In, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { PermissionsService } from '../permissions/permissions.service';
 import { AssignPermissionsToRoleDto } from './dto/request/assign-permissions.dto';
 import { AssignAdminsToRoleDto } from './dto/request/assign-admins.dto';
@@ -198,15 +198,23 @@ export class RolesService {
   async getRoles({
     page = 1,
     perPage = 10,
+    query
   }: SearchRoleDto): Promise<PaginatedResult<Role>> {
     const skip = (page - 1) * perPage;
-    const [roles, total] = await this._roleRepo.findAndCount({
+      const where = query
+    ? [
+        { name: ILike(`%${query}%`) }, // PostgreSQL: case-insensitive LIKE
+        { description: ILike(`%${query}%`) }, // optional if you want to search description too
+      ]
+    : undefined;
+    const [permissions, total] = await this._roleRepo.findAndCount({
+      where,
       skip,
       take: perPage,
       order: { id: 'DESC' },
     });
     return {
-      data: roles,
+      data: permissions,
       meta: { total, page, perPage },
     };
   }
