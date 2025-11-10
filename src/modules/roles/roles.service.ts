@@ -17,6 +17,7 @@ import { validate } from 'class-validator';
 import { CreateUpdateRoleDto } from './dto/request/create-update-role.dto';
 import { AssignRolesToAdminDto } from '../users/dto/request/assign-roles.dto';
 import { User } from '../users/user.entity';
+import { UserStatus } from '../users/user-status.enum';
 
 @Injectable()
 export class RolesService {
@@ -135,6 +136,9 @@ export class RolesService {
     const roles = await this.getRolesByIds(rolesIds);
     if (roles.length !== rolesIds.length) {
       throw new BadRequestException('Some roles were not found');
+    }
+    if(admin.status !== UserStatus.APPROVED) {
+      throw new BadRequestException('Assign roles should be only for approved admins');
     }
     admin.roles = roles;
     const updatedAdmins = await this.userService.save(admin);

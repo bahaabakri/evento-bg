@@ -152,7 +152,7 @@ export class UserAdminController {
   }
 
   @Serialize(UserResponseDto)
-  // @Permissions('assign_roles_to_admin')
+  @Permissions('assign_roles_to_admin')
   @Patch('admins/:id/assign-roles')
   @ApiOperation({ summary: 'Assign Roles To Admin' })
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Admin ID' })

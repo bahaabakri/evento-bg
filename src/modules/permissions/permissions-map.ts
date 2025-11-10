@@ -23,7 +23,7 @@ export const ODD_PERMISSIONS: OddPermission[] = [
   {
     moduleName: 'roles',
     actionName: 'assign',
-    description: 'Allow to assign admins to role',
-    slug: 'assign_admins_to_role',
+    description: 'Allow to assign roles to admin',
+    slug: 'assign_roles_to_admin',
   },
 ];

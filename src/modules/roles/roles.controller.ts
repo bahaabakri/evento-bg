@@ -89,7 +89,7 @@ export class RolesController {
 
   @Serialize(RoleResponseDto)
   @Permissions('assign_permissions_to_role')
-  @Patch(':id/assign_permissions')
+  @Patch(':id/assign-permissions')
   @ApiOperation({summary: 'Assign Permissions To Role'})
   @ApiParam({
     name: 'id',
@@ -101,18 +101,18 @@ export class RolesController {
     return this._rolesService.assignPermissionsToRole(assignPermissionsToRoleData, id)
   }
 
-  @Serialize(RoleResponseDto)
-  @Permissions('assign_admins_to_role')
-  @Patch(':id/assign_admins')
-  @ApiOperation({summary: 'Assign Admins To Role'})
-  @ApiParam({
-    name: 'id',
-    type: Number,
-    example: 3,
-    description: 'Role ID'
-  })
-  async assignAdminsToRole(@Param('id') id: number, @Body() assignAdminsToRoleData: AssignAdminsToRoleDto) {
-    return this._rolesService.assignAdminsToRole(assignAdminsToRoleData, id)
-  }
+  // @Serialize(RoleResponseDto)
+  // @Permissions('assign_admins_to_role')
+  // @Patch(':id/assign_admins')
+  // @ApiOperation({summary: 'Assign Admins To Role'})
+  // @ApiParam({
+  //   name: 'id',
+  //   type: Number,
+  //   example: 3,
+  //   description: 'Role ID'
+  // })
+  // async assignAdminsToRole(@Param('id') id: number, @Body() assignAdminsToRoleData: AssignAdminsToRoleDto) {
+  //   return this._rolesService.assignAdminsToRole(assignAdminsToRoleData, id)
+  // }
 
 }
