@@ -84,7 +84,7 @@ export class UserAdminController {
   @ApiOperation({ summary: 'Get Users' })
   findUsers(@Query() query: SearchUserDto) {
     // Logic to fetch all users
-    return this._userService.findUsers(query, UserType.USER);
+    return this._userService.getUsers(query, UserType.USER);
   }
 
   @Serialize(PaginatedUsersDto)
@@ -93,7 +93,7 @@ export class UserAdminController {
   @ApiOperation({ summary: 'Get Admins' })
   findAdmins(@Query() query: SearchUserDto) {
     // Logic to fetch all users
-    return this._userService.findUsers(query, UserType.ADMIN);
+    return this._userService.getUsers(query, UserType.ADMIN);
   }
 
   @Serialize(UserDto)

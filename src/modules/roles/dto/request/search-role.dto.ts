@@ -17,7 +17,7 @@ export class SearchRoleDto {
   @IsOptional()
   @IsString()
   @Length(3, 255)
-  query: string;
+query: string;
 
   @ApiPropertyOptional({
     example: '1',

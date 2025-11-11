@@ -49,8 +49,8 @@ export class UserService {
     return this._createWithRole(body, UserType.ADMIN);
   }
 
-  async save(admin:User) {
-    return this._userRepo.save(admin)
+  async save(admin: User) {
+    return this._userRepo.save(admin);
   }
   /**
    * Create user by admin with response
@@ -248,23 +248,46 @@ export class UserService {
    * get users or admins with pagination
    */
 
-  async findUsers(
-    { page = 1, perPage = 10 }: SearchUserDto,
-    userType: UserType,
-  ): Promise<PaginatedResult<User>> {
+  /**
+   * Get paginated users with optional search and roleId filters
+   */
+  async getUsers({
+    page = 1,
+    perPage = 10,
+    query,
+    roleId,
+  }: SearchUserDto, userType:UserType): Promise<PaginatedResult<User>> {
     const skip = (page - 1) * perPage;
-    const [users, total] = await this._userRepo.findAndCount({
-      skip,
-      take: perPage,
-      where: { userType },
-    });
+
+    const qb = this._userRepo
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.roles', 'role')
+      .orderBy('user.id', 'DESC')
+      .skip(skip)
+      .take(perPage)
+      .where('user.userType = :userType', { userType});
+
+    // 🔍 search across multiple fields
+    if (query) {
+      qb.andWhere(
+        `(user.firstname LIKE :query 
+        OR user.lastname LIKE :query 
+        OR user.email LIKE :query 
+        OR user.phone LIKE :query)`,
+        { query: `%${query}%` },
+      );
+    }
+
+    // 🎯 filter by role
+    if (roleId) {
+      qb.andWhere('role.id = :roleId', { roleId });
+    }
+
+    const [users, total] = await qb.getManyAndCount();
+
     return {
       data: users,
-      meta: {
-        total,
-        page,
-        perPage,
-      },
+      meta: { total, page, perPage },
     };
   }
 
@@ -305,27 +328,27 @@ export class UserService {
     };
   }
 
-/**
- * Reject admin
- * @param adminId
- * @param reason
- * @returns
- */
-async rejectAdmin(
-  adminId: number,
-  reason: string,
-): Promise<{ user: User; message: string }> {
-  const admin = await this.findAdminById(adminId);
+  /**
+   * Reject admin
+   * @param adminId
+   * @param reason
+   * @returns
+   */
+  async rejectAdmin(
+    adminId: number,
+    reason: string,
+  ): Promise<{ user: User; message: string }> {
+    const admin = await this.findAdminById(adminId);
 
-  admin.status = UserStatus.REJECTED;
-  admin.rejectionReason = reason; // 🔹 Add this field in your User entity if not already present
+    admin.status = UserStatus.REJECTED;
+    admin.rejectionReason = reason; // 🔹 Add this field in your User entity if not already present
 
-  const rejectedUser = await this.saveUser(admin);
-  return {
-    message: 'Admin has been rejected successfully',
-    user: rejectedUser,
-  };
-}
+    const rejectedUser = await this.saveUser(admin);
+    return {
+      message: 'Admin has been rejected successfully',
+      user: rejectedUser,
+    };
+  }
 
   /**
    * Create super admin for seeder

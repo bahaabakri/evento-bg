@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString, Length } from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsString, Length } from 'class-validator';
 
 export default class SearchUserDto {
   @ApiPropertyOptional({
@@ -29,4 +29,13 @@ export default class SearchUserDto {
   @Type(() => Number)
   @IsNumber()
   perPage: number;
+
+  @ApiPropertyOptional({
+    example: 1,
+    description: 'Role Id',
+  })
+  @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  roleId?: number;
 }
