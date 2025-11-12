@@ -196,32 +196,55 @@ export class RolesService {
   }
   
 
-  /**
-   * Get roles with pagination
-   */
-  async getRoles({
-    page = 1,
-    perPage = 10,
-    query
-  }: SearchRoleDto): Promise<PaginatedResult<Role>> {
-    const skip = (page - 1) * perPage;
-      const where = query
-    ? [
-        { name: ILike(`%${query}%`) }, // PostgreSQL: case-insensitive LIKE
-        { description: ILike(`%${query}%`) }, // optional if you want to search description too
-      ]
-    : undefined;
-    const [permissions, total] = await this._roleRepo.findAndCount({
-      where,
-      skip,
-      take: perPage,
-      order: { id: 'DESC' },
-    });
-    return {
-      data: permissions,
-      meta: { total, page, perPage },
-    };
+/**
+ * Get paginated roles with optional search and permissionId filters
+ */
+async getRoles({
+  page = 1,
+  perPage = 10,
+  query,
+  permissionId,
+}: SearchRoleDto): Promise<PaginatedResult<Role>> {
+  const skip = (page - 1) * perPage;
+
+  const qb = this._roleRepo
+    .createQueryBuilder('role')
+    .leftJoinAndSelect('role.permissions', 'permission')
+    .orderBy('role.id', 'DESC')
+    .skip(skip)
+    .take(perPage);
+
+  // 🔍 search filter (by name or description)
+  if (query) {
+    qb.andWhere(
+      '(role.name LIKE :query OR role.description LIKE :query)',
+      { query: `%${query}%` },
+    );
   }
+
+  // 🎯 permission filter — keep all permissions inside roles
+  if (permissionId) {
+    qb.andWhere(qb2 => {
+      const subQuery = qb2
+        .subQuery()
+        .select('rp.role_id')
+        .from('role_permissions', 'rp')
+        .where('rp.permission_id = :permissionId')
+        .getQuery();
+      return 'role.id IN ' + subQuery;
+    })
+    .setParameter('permissionId', permissionId);
+  }
+
+  const [roles, total] = await qb.getManyAndCount();
+
+  return {
+    data: roles,
+    meta: { total, page, perPage },
+  };
+}
+
+
 
   /**
    * Get all roles

@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsInt,
   IsNumber,
   IsOptional,
   IsString,
@@ -17,7 +18,7 @@ export class SearchRoleDto {
   @IsOptional()
   @IsString()
   @Length(3, 255)
-query: string;
+  query: string;
 
   @ApiPropertyOptional({
     example: '1',
@@ -36,4 +37,13 @@ query: string;
   @Type(() => Number)
   @IsNumber()
   perPage: number;
+
+  @ApiPropertyOptional({
+    example: 1,
+    description: 'Permission Id',
+  })
+  @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  permissionId?: number;
 }
