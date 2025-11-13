@@ -79,6 +79,9 @@ export class EventsService {
     skip: number,
   ): Promise<PaginatedResult<EventEntity>> {
     const [events, total] = await this._eventRepo.findAndCount({
+      relations: {
+        plans: true
+      },
       skip,
       take: perPage,
       order: { date: 'ASC' },
@@ -98,6 +101,7 @@ export class EventsService {
     const [events, total] = await this._eventRepo
       .createQueryBuilder('event')
       .leftJoinAndSelect('event.user', 'user')
+      .leftJoinAndSelect('event.plans', 'plans') // ✅ include related plans
       .where('LOWER(event.name) LIKE LOWER(:query)', { query: `%${query}%` })
       .orWhere('LOWER(event.description) LIKE LOWER(:query)', {
         query: `%${query}%`,
@@ -140,7 +144,7 @@ export class EventsService {
       relations: {
         createdBy: true,
         tickets: {
-          user: true
+          user: true,
         },
         plans: true,
       },
