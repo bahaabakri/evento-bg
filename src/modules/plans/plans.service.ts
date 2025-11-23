@@ -6,11 +6,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { PlanEntity } from './plan.entity';
-import { CreatePlanDto } from './dto/request/create-plan.dto';
+import { CreateUpdatePlanDto } from './dto/request/create-update-plan.dto';
 import { EventsService } from '../events/events.service';
 import { SearchPlanDto } from './dto/request/search-plan.dto';
 import { PaginatedResult } from '@/types/types';
 import { validateId } from '@/util';
+import { EventEntity } from '../events/event.entity';
 
 @Injectable()
 export class PlansService {
@@ -24,7 +25,7 @@ export class PlansService {
     Create plan
     */
   async createPlan(
-    planDate: CreatePlanDto,
+    planDate: CreateUpdatePlanDto,
   ): Promise<{ message: string; plan: PlanEntity }> {
     // 1️⃣ Find the event
     const event = await this._eventsService.getEventById(planDate.eventId);
@@ -89,27 +90,58 @@ export class PlansService {
   }
 
   /**
+   * Update Plan
+   */
+  async updatePlan(
+    planId: number,
+    planData: Partial<CreateUpdatePlanDto>,
+  ): Promise<{ message: string; plan: PlanEntity }> {
+    const savedPlan = await this.getPlanById(planId);
+    let updatedPlan = { ...savedPlan, ...planData };
+    const updatedAndSavedPlan = await this._planRepo.save(updatedPlan);
+    return {
+      message: 'Plan updated successfully',
+      plan: updatedAndSavedPlan,
+    };
+  }
+  /**
    * Update plan capacity
    */
   async updatePlanCapacity(planId: number, updatedSoldSeats: number) {
     // await this.dataSource.transaction(async (manager) => {
-      const plan = await this._planRepo.findOne({ where: { id: validateId(planId) } });
+    const plan = await this._planRepo.findOne({
+      where: { id: validateId(planId) },
+    });
 
-      if (!plan) throw new NotFoundException('Plan not found');
+    if (!plan) throw new NotFoundException('Plan not found');
 
-      if (updatedSoldSeats > plan.capacity) {
-        throw new BadRequestException('Not enough seats available');
-      }
-      // Atomic update with QueryBuilder
-      await this._planRepo
-        .createQueryBuilder()
-        .update(PlanEntity)
-        .set({
-          soldSeats: updatedSoldSeats,
-          availableSeats: () => `capacity - ${updatedSoldSeats}`,
-        })
-        .where('id = :id', { id: planId })
-        .execute();
+    if (updatedSoldSeats > plan.capacity) {
+      throw new BadRequestException('Not enough seats available');
+    }
+    // Atomic update with QueryBuilder
+    await this._planRepo
+      .createQueryBuilder()
+      .update(PlanEntity)
+      .set({
+        soldSeats: updatedSoldSeats,
+        availableSeats: () => `capacity - ${updatedSoldSeats}`,
+      })
+      .where('id = :id', { id: planId })
+      .execute();
     // });
+  }
+
+  /**
+   * Remove plan
+   */
+  async deletePlan(id: number): Promise<{ message: string; plan: PlanEntity }> {
+    let plan = await this.getPlanById(id);
+    plan.event = null;
+    await this._planRepo.save(plan);
+    const deletedPlan = await this._planRepo.remove(plan);
+    return {
+      message: 'Plan deleted successfully',
+      plan: deletedPlan,
+    };
   }
 }

@@ -8,8 +8,8 @@ import {
   Length,
 } from 'class-validator';
 
-export default class CreateEventDto {
-  @ApiProperty({
+export default class CreateUpdateEvent {
+  @ApiProperty({ 
     example: 'My Event',
     description: 'Event name should be between 3 to 255 characters',
   })

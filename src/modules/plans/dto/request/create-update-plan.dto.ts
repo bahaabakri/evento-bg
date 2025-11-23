@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsNumber, IsString, Length } from 'class-validator';
 
-export class CreatePlanDto {
+export class CreateUpdatePlanDto {
   @ApiProperty({
     example: 'My Plan',
     description: 'Plan name should be between 3 to 255 characters',
