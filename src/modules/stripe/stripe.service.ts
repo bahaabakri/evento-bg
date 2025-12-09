@@ -1,15 +1,20 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 
 @Injectable()
 export class StripeService {
   private stripe: Stripe;
 
-  constructor() {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+  constructor(private configService: ConfigService) {
+    this.stripe = new Stripe(this.configService.get<string>('STRIPE_SECRET_KEY') || '');
   }
 
-  async createPaymentIntent(amount: number, currency: string, metadata: Record<string, any>) {
+  async createPaymentIntent(
+    amount: number,
+    currency: string,
+    metadata: Record<string, any>,
+  ) {
     return this.stripe.paymentIntents.create({
       amount,
       currency,
@@ -21,7 +26,7 @@ export class StripeService {
     return this.stripe.webhooks.constructEvent(
       payload,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET || '',
+      this.configService.get<string>('STRIPE_WEBHOOK_SECRET') || ''
     );
   }
 }

@@ -12,12 +12,15 @@ import { UploadImageService } from '../upload-image/upload-image.service';
 import { UploadImage } from '../upload-image/upload-image.entity';
 import { UploadIntent } from '../upload-image/upload-intent.entity';
 import { DataSourceModule } from '../datasource/datasource.module';
+import Stripe from 'stripe';
+import { StripeService } from '../stripe/stripe.service';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([EventTicket, EventEntity, PlanEntity, UploadImage, UploadIntent])
   ],
   controllers: [TicketsUserController, TicketsAdminController],
-  providers: [TicketsService, PlansService, EventsService, UploadImageService]
+  providers: [TicketsService, PlansService, EventsService, UploadImageService, StripeService, ConfigService]
 })
 export class TicketsModule {}

@@ -6,7 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource, LessThan } from 'typeorm';
+import { Repository, DataSource, LessThan, In } from 'typeorm';
 import { EventEntity } from '../events/event.entity';
 import { User } from '../users/user.entity';
 import { EventTicket } from './ticket.entity';
@@ -19,6 +19,8 @@ import { JoinEventDto } from './dto/request/join-event.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PlansService } from '../plans/plans.service';
 import { validateId } from '@/util';
+import { StripeService } from '../stripe/stripe.service';
+import { ConfigService } from '@nestjs/config';
 const TIME_TO_FREE_UP_RESERVED_TICKET_IN_MIN = 15; // 15 minutes
 @Injectable()
 export class TicketsService {
@@ -28,6 +30,8 @@ export class TicketsService {
     private readonly ticketRepo: Repository<EventTicket>,
     private readonly dataSource: DataSource,
     private readonly plansService: PlansService,
+    private readonly stripeService: StripeService,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -37,20 +41,18 @@ export class TicketsService {
    * @returns
    */
   async joinEvent(user: User, dto: JoinEventDto) {
-    // we use transaction dataSource to avoid race conditions
     return await this.dataSource.transaction(async (manager) => {
-      // get event with plans
       const event = await manager.findOne(EventEntity, {
         where: { id: dto.eventId },
         relations: ['plans'],
       });
-      // event not found
+
       if (!event) throw new NotFoundException('Event not found');
 
       const createdTickets: EventTicket[] = [];
-      // loop through plans
+      let totalAmount = 0; // in smallest currency unit (ex: cents)
+
       for (const { planId, quantity } of dto.plans) {
-        // in case any plan not exist in event throw error
         const plan = event.plans.find((p) => p.id === planId);
         if (!plan)
           throw new BadRequestException(
@@ -58,22 +60,23 @@ export class TicketsService {
           );
 
         // check capacity
-        // get the count of (sold / reserved) tickets for this plan in DB
         const soldCount = await manager.count(EventTicket, {
           where: [
             { plan: { id: planId }, status: TicketStatus.RESERVED },
             { plan: { id: planId }, status: TicketStatus.PAID },
           ],
         });
-        // in case sold tickets + requested quantity > plan capacity throw error
-        if (soldCount + quantity > plan.capacity) {
-          throw new BadRequestException(
-            `Not enough tickets available for plan ${plan.name}`,
-          );
-        }
-        // update plan soldSeats
+
+        if (soldCount + quantity > plan.capacity)
+          throw new BadRequestException(`Not enough tickets for ${plan.name}`);
+
+        // update soldSeats
         this.plansService.updatePlanCapacity(plan.id, soldCount + quantity);
-        // Create multiple tickets
+
+        // accumulate amount
+        totalAmount += plan.price * quantity * 100; // STRIPE REQUIRES CENTS
+
+        // create tickets
         for (let i = 0; i < quantity; i++) {
           const ticket = manager.create(EventTicket, {
             user,
@@ -81,17 +84,37 @@ export class TicketsService {
             plan,
             code: `${plan.name}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
             status: TicketStatus.RESERVED,
-            reservationExpiresAt: new Date(
-              Date.now() + TIME_TO_FREE_UP_RESERVED_TICKET_IN_MIN * 60 * 1000,
-            ), // 15 minutes from now
+            reservationExpiresAt: new Date(Date.now() + 15 * 60 * 1000),
           });
 
-          createdTickets.push(await manager.save(EventTicket, ticket));
+          createdTickets.push(await manager.save(ticket));
         }
       }
 
+      // ---- STRIPE PAYMENT INTENT ---- //
+      const paymentIntent = await this.stripeService.createPaymentIntent(
+        totalAmount,
+        this.configService.get<string>('CURRENCY') || 'usd',
+        {
+          tickets: createdTickets.map((t) => t.id).join(','),
+          eventId: dto.eventId.toString(),
+          userId: user.id.toString(),
+        },
+      );
+
+      // Save Intent ID + client secret in tickets
+      await manager.update(
+        EventTicket,
+        { id: In(createdTickets.map((t) => t.id)) },
+        {
+          stripePaymentIntentId: paymentIntent.id,
+          stripeClientSecret: paymentIntent.client_secret,
+        },
+      );
+
       return {
-        message: 'Tickets purchased successfully',
+        message: 'Tickets reserved. Complete your payment.',
+        clientSecret: paymentIntent.client_secret,
         tickets: createdTickets,
       };
     });
@@ -165,6 +188,28 @@ export class TicketsService {
       }
       this.logger.log(
         `CRON JOB: Cancelled ${result.affected} expired reservations`,
+      );
+    }
+  }
+  /** Mark tickets as paid after successful payment */
+  async markTicketsAsPaid(ids: number[]) {
+    await this.ticketRepo.update(
+      { id: In(ids) },
+      {
+        status: TicketStatus.PAID,
+        purchasedAt: new Date(),
+      },
+    );
+
+    const tickets = await this.ticketRepo.find({
+      where: { id: In(ids) },
+      relations: ['plan'],
+    });
+
+    for (const ticket of tickets) {
+      this.plansService.updatePlanCapacity(
+        ticket.plan.id,
+        ticket.plan.soldSeats + 1,
       );
     }
   }

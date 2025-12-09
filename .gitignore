@@ -5,8 +5,8 @@
 
 
 # env files
-# .env.dev
-# .env.test
+.env.dev
+.env.test
 
 # Logs
 logs

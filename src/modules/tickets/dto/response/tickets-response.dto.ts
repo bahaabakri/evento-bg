@@ -8,4 +8,7 @@ export class TicketsResponseDto {
   @Expose()
   @Type(() => TicketDto)
   tickets: TicketDto;
+
+  @Expose()
+  clientSecret: string | null;
 }

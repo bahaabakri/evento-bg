@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { User } from '../users/user.entity';
 import { EventEntity } from '../events/event.entity';
 import { TicketStatus } from './enums/ticket-status.enum';
@@ -9,10 +16,16 @@ export class EventTicket {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.tickets, { eager: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.tickets, {
+    eager: false,
+    onDelete: 'CASCADE',
+  })
   user: User;
 
-  @ManyToOne(() => EventEntity, (event) => event.tickets, {eager: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => EventEntity, (event) => event.tickets, {
+    eager: false,
+    onDelete: 'CASCADE',
+  })
   event: EventEntity;
 
   /**
@@ -25,7 +38,7 @@ export class EventTicket {
    * Ticket status
    */
   @Column({
-    default: TicketStatus.RESERVED
+    default: TicketStatus.RESERVED,
   })
   status: TicketStatus;
 
@@ -45,12 +58,18 @@ export class EventTicket {
   @Column({ type: 'datetime', nullable: true })
   checkedInAt: Date | null;
 
+  @Column({ type: 'text', nullable: true })
+  stripePaymentIntentId: string;
+
+  @Column({ type: 'text', nullable: true })
+  stripeClientSecret: string | null;
+
   @CreateDateColumn({ type: 'datetime' })
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'datetime' })
   updatedAt: Date;
 
-  @ManyToOne(() => PlanEntity, (plan) => plan.tickets, {eager:false})
+  @ManyToOne(() => PlanEntity, (plan) => plan.tickets, { eager: false })
   plan: PlanEntity;
 }
