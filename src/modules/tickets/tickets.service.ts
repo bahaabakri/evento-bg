@@ -169,7 +169,7 @@ export class TicketsService {
       },
     });
 
-    if (expiredTickets.length === 0) return;
+    if (expiredTickets.length === 0 || !expiredTickets) return;
     const result = await this.ticketRepo.update(
       {
         status: TicketStatus.RESERVED,
@@ -182,8 +182,8 @@ export class TicketsService {
       for (const ticket of expiredTickets) {
         // update plan soldSeats
         this.plansService.updatePlanCapacity(
-          ticket.plan.id,
-          ticket.plan.soldSeats - 1,
+          ticket.plan?.id,
+          ticket.plan?.soldSeats - 1,
         );
       }
       this.logger.log(
