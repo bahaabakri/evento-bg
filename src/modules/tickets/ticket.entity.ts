@@ -5,6 +5,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 import { User } from '../users/user.entity';
 import { EventEntity } from '../events/event.entity';
@@ -58,8 +59,9 @@ export class EventTicket {
   @Column({ type: 'datetime', nullable: true })
   checkedInAt: Date | null;
 
+  @Index()
   @Column({ type: 'text', nullable: true })
-  stripePaymentIntentId: string;
+  stripePaymentIntentId: string | null;
 
   @Column({ type: 'text', nullable: true })
   stripeClientSecret: string | null;

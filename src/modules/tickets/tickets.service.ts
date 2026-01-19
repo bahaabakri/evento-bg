@@ -115,11 +115,68 @@ export class TicketsService {
       return {
         message: 'Tickets reserved. Complete your payment.',
         clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
         tickets: createdTickets,
       };
     });
   }
 
+  async getCheckoutData(paymentIntentId: string) {
+    const tickets = await this.ticketRepo.find({
+      where: { stripePaymentIntentId: paymentIntentId },
+      relations: ['event', 'plan', 'user'],
+    });
+
+    if (!tickets.length) {
+      throw new NotFoundException('No tickets found for this payment intent');
+    }
+
+    const event = tickets[0].event;
+
+    // Group tickets by plan
+    const plans = tickets.reduce(
+      (acc, t) => {
+        const existing = acc.find((p) => p.planId === t.plan.id);
+        if (existing) {
+          existing.quantity += 1;
+        } else {
+          acc.push({
+            planId: t.plan.id,
+            name: t.plan.name,
+            price: t.plan.price,
+            quantity: 1,
+          });
+        }
+
+        return acc;
+      },
+      [] as {
+        planId: number;
+        name: string;
+        price: number;
+        quantity: number;
+      }[],
+    );
+
+    const total = plans.reduce((sum, p) => sum + p.price * p.quantity, 0);
+
+    return {
+      event: {
+        id: event.id,
+        name: event.name,
+        date: event.date,
+        location: event.location,
+      },
+      plans,
+      total,
+      tickets: tickets.map((t) => ({
+        id: t.id,
+        status: t.status,
+        purchasedAt: t.purchasedAt,
+        reservationExpiresAt: t.reservationExpiresAt,
+      })),
+    };
+  }
   /** Generic function to fetch tickets with optional filters */
   async getTickets(
     filters: TicketFilters & SearchTicketDto,

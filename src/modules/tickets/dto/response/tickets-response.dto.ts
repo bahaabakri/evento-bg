@@ -11,4 +11,7 @@ export class TicketsResponseDto {
 
   @Expose()
   clientSecret: string | null;
+
+  @Expose()
+  paymentIntentId: string | null;
 }

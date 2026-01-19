@@ -7,6 +7,7 @@ import { User } from '../users/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiParam } from '@nestjs/swagger';
 import { JoinEventDto } from './dto/request/join-event.dto';
+import { CheckoutDto } from './dto/response/checkout.dto';
 @UseGuards(AuthGuard('jwt'))
 @Controller('ticket')
 export class TicketsUserController {
@@ -21,5 +22,12 @@ export class TicketsUserController {
     @CurrentUser() user: User,
   ) {
     return await this.ticketService.joinEvent(user, body);
+  }
+
+  @Serialize(CheckoutDto)
+  @Get('checkout/:paymentIntentId')
+  @ApiParam({ name: 'paymentIntentId', required: true })
+  async getCheckoutData(@Param('paymentIntentId') paymentIntentId: string) {
+    return await this.ticketService.getCheckoutData(paymentIntentId);
   }
 }

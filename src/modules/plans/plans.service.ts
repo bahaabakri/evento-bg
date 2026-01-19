@@ -73,6 +73,8 @@ export class PlansService {
    * Get plan by id
    */
   async getPlanById(id: number): Promise<PlanEntity> {
+    console.log('Getting plan by id:', id);
+    
     const plan = await this._planRepo.findOne({
       where: { id: validateId(id) },
       relations: {
