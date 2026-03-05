@@ -6,10 +6,10 @@ export class PaginatedHerosDto {
   @Type(() => HeroDto)
   data: HeroDto[];
 
-  // @Expose()
-  // meta: {
-  //   total: number;
-  //   page: number;
-  //   perPage: number;
-  // };
+  @Expose()
+  meta: {
+    total: number;
+    page: number;
+    perPage: number;
+  };
 }

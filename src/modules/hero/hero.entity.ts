@@ -18,4 +18,13 @@ export class Hero {
     },
   })
   images: ImageObject[];
+
+  @Column({type: 'varchar', length: 255, nullable: true})
+  name: string;
+  
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  title: string;
+
+  @Column({ type: 'text', nullable: true })
+  description: string;
 }

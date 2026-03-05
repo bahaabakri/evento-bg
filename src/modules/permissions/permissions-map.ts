@@ -6,7 +6,7 @@ export const PERMISSIONS_MAP = {
   events: ['create', 'view', 'update', 'delete', 'approve'],
   tickets: ['create', 'view', 'update', 'delete'],
   plans: ['create', 'view', 'update', 'delete'],
-  hero: ['create', 'view', 'activate'],
+  hero: ['create', 'view', 'update', 'activate', 'delete'],
   images: ['upload', 'delete'],
   permissions: ['view'],
   intent: ['create'],

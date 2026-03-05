@@ -5,8 +5,17 @@ export class HeroDto {
     id: number;
 
     @Expose()
+    name: string;
+    
+    @Expose()
     isActive: boolean;
 
     @Expose()
     images: ImageObject[];
+
+    @Expose()
+    title: string;
+
+    @Expose()
+    description: string;
 }

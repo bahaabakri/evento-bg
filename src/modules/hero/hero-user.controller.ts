@@ -1,5 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { CreateHeroDto } from './dto/request/create-hero.dto';
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { HeroService } from './hero.service';
 import { Hero } from './hero.entity';
 import { MakeDefaultDto } from './dto/request/make-default.dto';
@@ -9,8 +8,9 @@ import { HeroDto } from './dto/response/hero.dto';
 import { PaginatedHerosDto } from './dto/response/paginated-heros.dto';
 import { ApiOperation } from '@nestjs/swagger';
 import { GuestGuard } from '../auth/guards/guest.guard';
+import SearchHeroDto from './dto/request/search-hero.dto';
 @UseGuards(GuestGuard)
-@Controller('heros')
+@Controller('heroes')
 export class HeroUserController {
   constructor(private _heroService: HeroService) {}
   @Serialize(HeroDto)
@@ -22,8 +22,8 @@ export class HeroUserController {
   
   @Serialize(PaginatedHerosDto)
   @Get()
-  @ApiOperation({ summary: 'Get All heros' })
-  findAllHeros() {
-    return this._heroService.getAllHeros();
+  @ApiOperation({ summary: 'Get All heroes' })
+  findAllHeroes(@Query() query: SearchHeroDto) {
+    return this._heroService.getAllHeroes(query);
   }
 }

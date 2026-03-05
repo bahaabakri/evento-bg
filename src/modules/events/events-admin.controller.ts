@@ -25,7 +25,7 @@ import { PaginatedEventsDto } from './dto/response/paginated-events.dto';
 import { ApiOperation, ApiParam } from '@nestjs/swagger';
 import { PermissionsGuard } from '../permissions/guards/permissions.guard';
 import { Permissions } from '../permissions/decorators/permissions.decorator';
-import CreateUpdateEvent from './dto/request/create-update-event.dto';
+import CreateUpdateEventDto from './dto/request/create-update-event.dto';
 
 @UseGuards(AuthGuard('jwt'), PermissionsGuard)
 @Controller('admin/events')
@@ -55,7 +55,7 @@ export class EventsAdminController {
   @Post()
   @ApiOperation({ summary: 'Create new Event' })
   async createEvent(
-    @Body() eventData: CreateUpdateEvent,
+    @Body() eventData: CreateUpdateEventDto,
     @CurrentUser() admin: User,
   ) {
     const event = await this.eventsService.createEvent(eventData, admin);
@@ -68,7 +68,7 @@ export class EventsAdminController {
   @ApiParam({ name: 'id', type: Number, example: 42, description: 'Event ID' })
   async updateEvent(
     @Param('id') id: number,
-    @Body() eventData: CreateUpdateEvent,
+    @Body() eventData: CreateUpdateEventDto,
   ) {
     const event = await this.eventsService.updateEvent(id, eventData);
     return event;

@@ -1,11 +1,16 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Hero } from './hero.entity';
-import { Not, Repository } from 'typeorm';
+import { Like, Not, Repository } from 'typeorm';
 import { UploadImageService } from '@/modules/upload-image/upload-image.service';
-import { CreateHeroDto } from './dto/request/create-hero.dto';
 import { ImageObject, PaginatedResult } from '@/types/types';
 import { validateId } from '@/util';
+import { CreateUpdateHeroDto } from './dto/request/create-update-hero.dto';
+import { HeroDto } from './dto/response/hero.dto';
 
 @Injectable()
 export class HeroService {
@@ -19,7 +24,7 @@ export class HeroService {
    */
 
   async createHero(
-    heroData: CreateHeroDto,
+    heroData: CreateUpdateHeroDto,
   ): Promise<{ message: string; hero: Hero }> {
     const images: ImageObject[] = await Promise.all(
       heroData.imagesIds.map(async (id: number) => {
@@ -35,10 +40,16 @@ export class HeroService {
     const hero = this._heroRepo.create({
       isActive: false,
       images,
+      name: heroData.name,
+      title: heroData.title,
+      description: heroData.description,
     });
 
     const createdSavedHero = await this._heroRepo.save(hero);
 
+    if (heroData.isActive) {
+      await this.makeItActive(createdSavedHero.id, true);
+    }
     return {
       message: 'Hero created successfully',
       hero: createdSavedHero,
@@ -46,13 +57,59 @@ export class HeroService {
   }
 
   /**
+   * Update hero by ID
+   * @param id
+   * @param heroData
+   * @returns
+   */
+  async updateHero(
+    id: number,
+    heroData: CreateUpdateHeroDto,
+  ): Promise<{ message: string; event: Hero }> {
+    // Here you would typically update hero in a database
+    // For this example, we'll just return the updated hero data
+    const savedHero = await this.getHero(id);
+    let updatedHero = { ...savedHero, ...heroData };
+    if (heroData.imagesIds) {
+      const images: ImageObject[] = [];
+      for (const id of heroData.imagesIds) {
+        const image = await this._uploadImageService.getImageById(id);
+        images.push({
+          id: image.id,
+          name: image.name,
+          url: image.imagePath,
+        });
+      }
+      updatedHero = { ...updatedHero, images };
+    }
+    const updatedSavedHero = await this._heroRepo.save(updatedHero);
+    return {
+      message: 'Hero updated successfully',
+      event: updatedSavedHero,
+    };
+  }
+
+  /**
    * get all heros
    */
 
-  async getAllHeros(): Promise<PaginatedResult<Hero>> {
-    const heros = await this._heroRepo.find();
+  async getAllHeroes({
+    page = 1,
+    perPage = 10,
+    query,
+  }): Promise<PaginatedResult<Hero>> {
+    const [heroes, total] = await this._heroRepo.findAndCount({
+      where: query ? { title: Like(`%${query}%`) } : {},
+      take: perPage,
+      skip: (page - 1) * perPage,
+    });
     return {
-      data: heros,
+      data: heroes,
+      meta: {
+        total,
+        page,
+        perPage,
+      },
     };
   }
 
@@ -128,6 +185,34 @@ export class HeroService {
     return {
       message: 'Hero updated successfully',
       hero: updatedHero,
+    };
+  }
+
+  /**
+   * delete hero
+   */
+
+  async deleteHero(id: number): Promise<{ message: string; hero: Hero }> {
+    const hero = await this.getHero(id);
+    if (!hero) {
+      throw new NotFoundException('Hero Not Found');
+    }
+    const removedHero = await this._heroRepo.remove(hero);
+    // If the deleted hero was active, we should activate another one
+    if (removedHero.isActive) {
+      const otherHero = await this._heroRepo.findOne({
+        where: { id: Not(id) },
+        order: { id: 'ASC' },
+      });
+
+      if (otherHero) {
+        otherHero.isActive = true;
+        await this._heroRepo.save(otherHero);
+      }
+    }
+    return {
+      message: 'Hero deleted successfully',
+      hero: removedHero,
     };
   }
 }

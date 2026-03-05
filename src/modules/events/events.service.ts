@@ -2,13 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEntity } from './event.entity';
-import CreateEventDto from './dto/request/create-update-event.dto';
 import { UploadImageService } from '@/modules/upload-image/upload-image.service';
 import { User } from '@/modules/users/user.entity';
 import SearchEventDto from './dto/request/search-event.dto';
 import { ImageObject, PaginatedResult } from '@/types/types';
 import { validateId } from '@/util';
 import CreateUpdateEvent from './dto/request/create-update-event.dto';
+import CreateUpdateEventDto from './dto/request/create-update-event.dto';
 
 @Injectable()
 export class EventsService {
@@ -23,7 +23,7 @@ export class EventsService {
    * @returns
    */
   async createEvent(
-    eventData: CreateEventDto,
+    eventData: CreateUpdateEventDto,
     admin: User,
   ): Promise<{ message: string; event: EventEntity }> {
     // Here you would typically save the event to a database
