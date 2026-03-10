@@ -6,7 +6,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { EventEntity } from '../events/event.entity';
+import { EventEntity } from '../events/entities/event.entity';
 import { EventTicket } from '../tickets/ticket.entity';
 
 @Entity('plans')

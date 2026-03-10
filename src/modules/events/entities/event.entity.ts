@@ -1,8 +1,15 @@
 import { ImageObject } from 'src/types/types';
-import { User } from '../users/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
-import { EventTicket } from '../tickets/ticket.entity';
-import { PlanEntity } from '../plans/plan.entity';
+import { User } from '../../users/user.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
+import { EventTicket } from '../../tickets/ticket.entity';
+import { PlanEntity } from '../../plans/plan.entity';
+import { FavoriteEventEntity } from './favorite-event.entity';
 @Entity('events')
 export class EventEntity {
   @PrimaryGeneratedColumn()
@@ -42,12 +49,21 @@ export class EventEntity {
   })
   images: ImageObject[];
 
-  @ManyToOne(() => User, (user) => user.createdEvents, {eager: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.createdEvents, {
+    eager: false,
+    onDelete: 'CASCADE',
+  })
   createdBy: User;
 
-  @OneToMany(() => EventTicket, (ticket) => ticket.event,{eager: false})
+  @OneToMany(() => EventTicket, (ticket) => ticket.event, { eager: false })
   tickets: EventTicket[];
 
-  @OneToMany(() => PlanEntity, (plan) => plan.event, { cascade: true, eager:false })
+  @OneToMany(() => PlanEntity, (plan) => plan.event, {
+    cascade: true,
+    eager: false,
+  })
   plans: PlanEntity[];
+
+  @OneToMany(() => FavoriteEventEntity, (favorite) => favorite.event)
+  favoritedBy: FavoriteEventEntity[];
 }

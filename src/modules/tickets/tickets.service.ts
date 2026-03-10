@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource, LessThan, In } from 'typeorm';
-import { EventEntity } from '../events/event.entity';
+import { EventEntity } from '../events/entities/event.entity';
 import { User } from '../users/user.entity';
 import { EventTicket } from './ticket.entity';
 import { v4 as uuidv4 } from 'uuid';

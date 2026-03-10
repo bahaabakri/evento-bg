@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EventEntity } from '../events/event.entity';
+import { EventEntity } from '../events/entities/event.entity';
 import { Hero } from '../hero/hero.entity';
 import { Otp } from '../otp/otp.entity';
 import { Permission } from '../permissions/permission.entity';
@@ -11,6 +11,7 @@ import { EventTicket } from '../tickets/ticket.entity';
 import { UploadImage } from '../upload-image/upload-image.entity';
 import { UploadIntent } from '../upload-image/upload-intent.entity';
 import { User } from '../users/user.entity';
+import { FavoriteEventEntity } from '../events/entities/favorite-event.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -33,6 +34,7 @@ import { User } from '../users/user.entity';
           PlanEntity,
           Permission,
           Role,
+          FavoriteEventEntity
         ],
         synchronize: true,
       }),

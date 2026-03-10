@@ -8,7 +8,7 @@ import {
   Index,
 } from 'typeorm';
 import { User } from '../users/user.entity';
-import { EventEntity } from '../events/event.entity';
+import { EventEntity } from '../events/entities/event.entity';
 import { TicketStatus } from './enums/ticket-status.enum';
 import { PlanEntity } from '../plans/plan.entity';
 

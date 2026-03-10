@@ -11,7 +11,7 @@ import { EventsService } from '../events/events.service';
 import { SearchPlanDto } from './dto/request/search-plan.dto';
 import { PaginatedResult } from '@/types/types';
 import { validateId } from '@/util';
-import { EventEntity } from '../events/event.entity';
+import { EventEntity } from '../events/entities/event.entity';
 
 @Injectable()
 export class PlansService {

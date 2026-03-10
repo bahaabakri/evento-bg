@@ -9,7 +9,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventsModule } from './modules/events/events.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EventEntity } from './modules/events/event.entity';
+import { EventEntity } from './modules/events/entities/event.entity';
 import { UploadIntent } from './modules/upload-image/upload-intent.entity';
 import { UploadImage } from './modules/upload-image/upload-image.entity';
 import { UploadImageModule } from './modules/upload-image/upload-image.module';

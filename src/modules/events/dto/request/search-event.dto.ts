@@ -1,6 +1,13 @@
+import { ToBoolean } from '@/decorators/to-boolean.decorator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsString, Length, IsOptional, IsNumber } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsString,
+  Length,
+  IsOptional,
+  IsNumber,
+  IsBoolean,
+} from 'class-validator';
 
 export default class SearchEventDto {
   @ApiPropertyOptional({
@@ -29,4 +36,13 @@ export default class SearchEventDto {
   @Type(() => Number)
   @IsNumber()
   perPage: number;
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Whether the event is a favorite',
+  })
+  @IsOptional()
+  @ToBoolean()
+  @IsBoolean()
+  favorite?: boolean;
 }

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EventEntity } from '../events/event.entity';
+import { EventEntity } from '../events/entities/event.entity';
 import { EventTicket } from './ticket.entity';
 import { TicketsService } from './tickets.service';
 import { TicketsUserController } from './tickets-user.controller';
@@ -15,10 +15,12 @@ import { DataSourceModule } from '../datasource/datasource.module';
 import Stripe from 'stripe';
 import { StripeService } from '../stripe/stripe.service';
 import { ConfigService } from '@nestjs/config';
+import { User } from '../users/user.entity';
+import { FavoriteEventEntity } from '../events/entities/favorite-event.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([EventTicket, EventEntity, PlanEntity, UploadImage, UploadIntent])
+    TypeOrmModule.forFeature([EventTicket, EventEntity, PlanEntity, UploadImage, UploadIntent, User, FavoriteEventEntity])
   ],
   controllers: [TicketsUserController, TicketsAdminController],
   providers: [TicketsService, PlansService, EventsService, UploadImageService, StripeService, ConfigService]

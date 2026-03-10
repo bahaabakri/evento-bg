@@ -9,11 +9,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EventEntity } from '../events/event.entity';
+import { EventEntity } from '../events/entities/event.entity';
 import { UserStatus } from './user-status.enum';
 import { EventTicket } from '../tickets/ticket.entity';
 import { Role } from '../roles/role.entity';
 import { UserType } from './user-type.enum';
+import { FavoriteEventEntity } from '../events/entities/favorite-event.entity';
 
 @Entity('users')
 export class User {
@@ -43,7 +44,7 @@ export class User {
 
   @OneToMany(() => EventEntity, (eventEntity) => eventEntity.createdBy, {
     cascade: true,
-    eager: false
+    eager: false,
   })
   createdEvents: EventEntity[];
 
@@ -53,10 +54,10 @@ export class User {
   @OneToMany(() => EventTicket, (ticket) => ticket.user)
   tickets: EventTicket[];
 
-  @CreateDateColumn({default: () => 'CURRENT_TIMESTAMP'})
+  @CreateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @UpdateDateColumn({default: () => 'CURRENT_TIMESTAMP'})
+  @UpdateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
   @ManyToMany(() => Role, (role) => role.admins, { eager: true })
@@ -69,4 +70,7 @@ export class User {
 
   @Column({ type: 'text', nullable: true })
   rejectionReason?: string;
+
+  @OneToMany(() => FavoriteEventEntity, (favorite) => favorite.user)
+  favoriteEvents: FavoriteEventEntity[];
 }

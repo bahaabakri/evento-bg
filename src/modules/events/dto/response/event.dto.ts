@@ -54,4 +54,7 @@ export class EventDto {
   @Expose()
   @Type(() => PlanDto)
   plans: PlanDto[];
+
+  @Expose()
+  isFavorite?: boolean;
 }

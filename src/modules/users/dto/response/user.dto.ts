@@ -1,5 +1,5 @@
 import { EventDto } from "@/modules/events/dto/response/event.dto";
-import { EventEntity } from "@/modules/events/event.entity";
+import { EventEntity } from "@/modules/events/entities/event.entity";
 import { RoleDto } from "@/modules/roles/dto/response/role.dto";
 import { Role } from "@/modules/roles/role.entity";
 import { TicketDto } from "@/modules/tickets/dto/response/tickets.dto";

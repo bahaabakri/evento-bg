@@ -1,7 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { EventEntity } from './event.entity';
+import { Brackets, Repository } from 'typeorm';
+import { EventEntity } from './entities/event.entity';
 import { UploadImageService } from '@/modules/upload-image/upload-image.service';
 import { User } from '@/modules/users/user.entity';
 import SearchEventDto from './dto/request/search-event.dto';
@@ -9,11 +13,15 @@ import { ImageObject, PaginatedResult } from '@/types/types';
 import { validateId } from '@/util';
 import CreateUpdateEvent from './dto/request/create-update-event.dto';
 import CreateUpdateEventDto from './dto/request/create-update-event.dto';
+import { FavoriteEventEntity } from './entities/favorite-event.entity';
 
 @Injectable()
 export class EventsService {
   constructor(
     @InjectRepository(EventEntity) private _eventRepo: Repository<EventEntity>,
+    @InjectRepository(User) private _userRepo: Repository<User>,
+    @InjectRepository(FavoriteEventEntity)
+    private _favoriteEventRepo: Repository<FavoriteEventEntity>,
     private _uploadImageService: UploadImageService,
   ) {}
 
@@ -54,65 +62,62 @@ export class EventsService {
    * Get  events
    * @returns
    */
-  async getEvents({
-    query,
-    page = 1,
-    perPage = 10,
-  }: SearchEventDto): Promise<PaginatedResult<EventEntity>> {
+  async getEvents(
+    { query, page = 1, perPage = 10, favorite = false }: SearchEventDto,
+    userId: number | null = null,
+  ): Promise<PaginatedResult<EventEntity>> {
     // Here you would typically fetch events from a database
-    // For this example, we'll just return an empty array
-    // console.log(query);
+
     const skip = (page - 1) * perPage;
-    if (!query) {
-      return this.getAllEvents(page, perPage, skip);
-    }
-    return this.getSearchEvents(query, page, perPage, skip);
-  }
-
-  /**
-   * Get all events
-   * @returns
-   */
-  async getAllEvents(
-    page: number,
-    perPage: number,
-    skip: number,
-  ): Promise<PaginatedResult<EventEntity>> {
-    const [events, total] = await this._eventRepo.findAndCount({
-      relations: {
-        plans: true,
-      },
-      skip,
-      take: perPage,
-      order: { date: 'ASC' },
-    });
-    return this.getEventsResponse(events, page, perPage, total);
-  }
-
-  /**
-   * get events by search query
-   */
-  async getSearchEvents(
-    query: string,
-    page: number,
-    perPage: number,
-    skip: number,
-  ): Promise<PaginatedResult<EventEntity>> {
-    const [events, total] = await this._eventRepo
+    const qb = this._eventRepo
       .createQueryBuilder('event')
-      .leftJoinAndSelect('event.user', 'user')
-      .leftJoinAndSelect('event.plans', 'plans') // ✅ include related plans
-      .where('LOWER(event.name) LIKE LOWER(:query)', { query: `%${query}%` })
-      .orWhere('LOWER(event.description) LIKE LOWER(:query)', {
-        query: `%${query}%`,
-      })
-      .orWhere('LOWER(event.location) LIKE LOWER(:query)', {
-        query: `%${query}%`,
-      })
-      .orderBy('event.date', 'ASC')
+      .leftJoinAndSelect('event.createdBy', 'user')
+      .leftJoinAndSelect('event.plans', 'plans')
+      .orderBy('event.date', 'ASC');
+
+    if (query?.trim()) {
+      qb.andWhere(
+        new Brackets((subQb) => {
+          subQb
+            .where('LOWER(event.name) LIKE LOWER(:query)', {
+              query: `%${query}%`,
+            })
+            .orWhere('LOWER(event.description) LIKE LOWER(:query)', {
+              query: `%${query}%`,
+            })
+            .orWhere('LOWER(event.location) LIKE LOWER(:query)', {
+              query: `%${query}%`,
+            });
+        }),
+      );
+    }
+
+    if (userId) {
+      qb.leftJoin(
+        'event.favoritedBy',
+        'favorite',
+        'favorite.user.id = :userId',
+        { userId },
+      );
+      qb.addSelect('favorite.id', 'favorite_id');
+    }
+
+    if (favorite && userId) {
+      qb.andWhere('favorite.id IS NOT NULL');
+    }
+
+    const total = await qb.clone().getCount();
+
+    const { entities, raw } = await qb
       .skip(skip)
       .take(perPage)
-      .getManyAndCount();
+      .getRawAndEntities();
+
+    const events = entities.map((event, index) => ({
+      ...event,
+      isFavorite: !!raw[index]?.favorite_id,
+    }));
+
     return this.getEventsResponse(events, page, perPage, total);
   }
 
@@ -153,6 +158,24 @@ export class EventsService {
       throw new NotFoundException('Event Not Found');
     }
     return event;
+  }
+
+  /**
+   * Get Fav by userid and event id
+   * @param eventId
+   * @param userId
+   */
+  async getFavoriteByUserAndEvent(
+    eventId: number,
+    userId: number,
+  ): Promise<FavoriteEventEntity | null> {
+    const favorite = await this._favoriteEventRepo.findOne({
+      where: {
+        event: { id: validateId(eventId) },
+        user: { id: validateId(userId) },
+      },
+    });
+    return favorite;
   }
 
   /**
@@ -218,6 +241,72 @@ export class EventsService {
     return {
       message: `Event ${approved ? 'approved' : 'disapproved'} successfully`,
       event: updatedSavedEvent,
+    };
+  }
+
+  /**
+   * Add to favorite
+   */
+  async addEventToFavorites(
+    eventId: number,
+    user: User,
+  ): Promise<{ message: string; isFavorite: boolean }> {
+    // get user
+    const myuser = await this._userRepo.findOne({ where: { id: user.id } });
+    if (!myuser) {
+      throw new NotFoundException('User not found');
+    }
+
+    // get event
+    const event = await this._eventRepo.findOne({ where: { id: eventId } });
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    // add to favorites
+    const isExists = await this.getFavoriteByUserAndEvent(eventId, myuser.id);
+    if (isExists) {
+      throw new BadRequestException('Event is already in favorites');
+    }
+    const createdFav = this._favoriteEventRepo.create({
+      user: myuser,
+      event,
+    });
+    await this._favoriteEventRepo.save(createdFav);
+    return {
+      message: 'Event added to favorites successfully',
+      isFavorite: true,
+    };
+  }
+
+  /**
+   * Remove from favorites
+   */
+  async removeEventFromFavorites(
+    eventId: number,
+    user: User,
+  ): Promise<{ message: string; isFavorite: boolean }> {
+    // get user
+    const myuser = await this._userRepo.findOne({ where: { id: user.id } });
+    if (!myuser) {
+      throw new NotFoundException('User not found');
+    }
+
+    // get event
+    const event = await this._eventRepo.findOne({ where: { id: eventId } });
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    // remove from favorites
+    const favEntity = await this.getFavoriteByUserAndEvent(eventId, myuser.id);
+    if (!favEntity) {
+      throw new BadRequestException('Event is not in favorites');
+    }
+    await this._favoriteEventRepo.remove(favEntity);
+    return {
+      message: 'Event removed from favorites successfully',
+      isFavorite: false,
     };
   }
 }
